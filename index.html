@@ -1,0 +1,546 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Reference Checker</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,500;8..60,700&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#1C2541; --text:#273048; --muted:#5E667A; --page:#F5F7FB; --surface:#FFFFFF;
+  --line:#D9DEE8; --accent:#2F4FD8; --accent-ink:#FFFFFF;
+  --ok:#22704F; --ok-bg:#E3F3EB; --warn:#8A5A0B; --warn-bg:#FBF0DA; --bad:#A3241C; --bad-bg:#FBE4E2;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --ink:#E6EAF5; --text:#D3D9E6; --muted:#98A1B6; --page:#121726; --surface:#1A2033;
+    --line:#2D3550; --accent:#8EA2FF; --accent-ink:#121726;
+    --ok:#7FD3AA; --ok-bg:#173527; --warn:#F0C674; --warn-bg:#3A2D12; --bad:#FF9A92; --bad-bg:#3D1A18;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"]{
+  --ink:#E6EAF5; --text:#D3D9E6; --muted:#98A1B6; --page:#121726; --surface:#1A2033;
+  --line:#2D3550; --accent:#8EA2FF; --accent-ink:#121726;
+  --ok:#7FD3AA; --ok-bg:#173527; --warn:#F0C674; --warn-bg:#3A2D12; --bad:#FF9A92; --bad-bg:#3D1A18;
+  color-scheme: dark;
+}
+:root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+*,*::before,*::after{box-sizing:inherit}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--page);color:var(--text);font:16px/1.55 "IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif}
+.wrap{max-width:860px;margin:0 auto;padding:3rem 1.25rem 4rem}
+h1{font-family:"Source Serif 4",Georgia,serif;font-weight:700;color:var(--ink);font-size:clamp(2rem,5vw,2.75rem);line-height:1.1;margin:0 0 .5rem}
+.lede{color:var(--muted);max-width:60ch;margin:0 0 2rem}
+label{font-weight:600;color:var(--ink);display:block;margin-bottom:.4rem}
+textarea{width:100%;min-height:220px;resize:vertical;padding:1rem;border:1px solid var(--line);border-radius:10px;background:var(--surface);color:var(--text);font:14px/1.6 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}
+textarea:focus,input:focus,button:focus-visible,select:focus{outline:3px solid color-mix(in srgb,var(--accent) 45%,transparent);outline-offset:2px}
+.row{display:flex;flex-wrap:wrap;gap:.75rem;align-items:center;margin-top:1rem}
+button,.filebtn{font:inherit;font-weight:500;border-radius:8px;padding:.6rem 1.1rem;border:1px solid var(--line);background:var(--surface);color:var(--ink);cursor:pointer}
+button.primary{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+button:disabled{opacity:.55;cursor:not-allowed}
+.filebtn input{display:none}
+.hint{font-size:.875rem;color:var(--muted)}
+details.opts{margin-top:1rem;font-size:.9rem}
+details.opts input{font:inherit;padding:.4rem .6rem;border:1px solid var(--line);border-radius:6px;background:var(--surface);color:var(--text);width:min(320px,100%)}
+.progress{height:4px;background:var(--line);border-radius:2px;margin-top:1.5rem;overflow:hidden;display:none}
+.progress span{display:block;height:100%;width:0;background:var(--accent);transition:width .25s}
+.summary{display:none;margin-top:2.5rem;padding-bottom:1rem;border-bottom:1px solid var(--line)}
+.summary h2{font-family:"Source Serif 4",Georgia,serif;color:var(--ink);font-size:1.5rem;margin:0 0 .75rem}
+.tally{display:flex;flex-wrap:wrap;gap:.5rem}
+.chip{border:1px solid var(--line);background:var(--surface);color:var(--text);border-radius:999px;padding:.35rem .9rem;font-size:.9rem}
+.chip[aria-pressed="true"]{border-color:var(--ink);box-shadow:inset 0 0 0 1px var(--ink)}
+.chip b{font-weight:600}
+ol.results{list-style:none;padding:0;margin:1.25rem 0 0}
+.ref{background:var(--surface);border:1px solid var(--line);border-left:5px solid var(--line);border-radius:8px;padding:1rem 1.1rem;margin-bottom:.85rem}
+.ref.ok{border-left-color:var(--ok)} .ref.warn{border-left-color:var(--warn)} .ref.bad{border-left-color:var(--bad)}
+.ref-head{display:flex;gap:.75rem;align-items:flex-start;justify-content:space-between}
+.num{color:var(--muted);font-variant-numeric:tabular-nums;min-width:2ch}
+.orig{flex:1;font-size:.92rem;overflow-wrap:anywhere}
+.badge{white-space:nowrap;font-size:.8rem;font-weight:600;padding:.2rem .6rem;border-radius:6px}
+.ok .badge{background:var(--ok-bg);color:var(--ok)} .warn .badge{background:var(--warn-bg);color:var(--warn)} .bad .badge{background:var(--bad-bg);color:var(--bad)}
+.pending .badge{background:var(--page);color:var(--muted)}
+.match{margin:.75rem 0 0 2.75ch;padding-top:.75rem;border-top:1px dashed var(--line);font-size:.9rem}
+.match .t{font-family:"Source Serif 4",Georgia,serif;font-weight:500;color:var(--ink);font-size:1rem}
+.match .m{color:var(--muted)}
+.match a{color:var(--accent);overflow-wrap:anywhere}
+.issues{margin:.5rem 0 0;padding-left:1.1rem}
+.issues li{margin:.15rem 0}
+.empty{color:var(--muted);margin-top:1rem}
+.notice{background:var(--warn-bg);color:var(--warn);border-radius:8px;padding:.7rem .9rem;font-size:.9rem;margin:0 0 .9rem}
+details.opts a{color:var(--accent)}
+.fix{margin:.85rem 0 0 2.75ch}
+.fix-head{display:flex;flex-wrap:wrap;gap:.5rem 1rem;align-items:center;justify-content:space-between;font-size:.9rem}
+.fix-head strong{color:var(--ink)}
+.fix-head label{display:inline-flex;gap:.4rem;align-items:center;font-weight:500;margin:0;cursor:pointer}
+.fix-head input{width:1.05rem;height:1.05rem;accent-color:var(--accent)}
+.changed{font-size:.85rem;color:var(--muted);margin:.3rem 0 0}
+.bib{margin:.5rem 0 0;padding:.75rem .9rem;background:var(--page);border:1px solid var(--line);border-radius:6px;overflow-x:auto;font:12.5px/1.55 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;color:var(--text);white-space:pre}
+.fix.off .bib{opacity:.5}
+@media (max-width:540px){.fix{margin-left:0}}
+footer{margin-top:3rem;font-size:.85rem;color:var(--muted)}
+@media (max-width:540px){.match{margin-left:0}.ref-head{flex-wrap:wrap}}
+@media (prefers-reduced-motion:reduce){.progress span{transition:none}}
+</style>
+</head>
+<body>
+<main class="wrap">
+  <h1>Check your reference list</h1>
+  <p class="lede">Paste a bibliography and each entry is looked up in CrossRef, DBLP, Semantic Scholar, arXiv and OpenAlex. You’ll see which citations match a real publication, which have mismatched details, and which can’t be found at all.</p>
+
+  <label for="input">References</label>
+  <textarea id="input" spellcheck="false" placeholder="Paste references here, one per line, numbered ([1], 1.), separated by blank lines, or as BibTeX.
+
+Vaswani, A., Shazeer, N., Parmar, N., et al. (2017). Attention is all you need. Advances in Neural Information Processing Systems, 30.
+He, K., Zhang, X., Ren, S., & Sun, J. (2016). Deep residual learning for image recognition. CVPR, 770–778."></textarea>
+
+  <div class="row">
+    <button class="primary" id="run">Check references</button>
+    <label class="filebtn">Upload .bib or .txt<input type="file" id="file" accept=".bib,.txt,.bbl,.ris,text/plain"></label>
+    <button id="sample">Try an example</button>
+    <button id="clear">Clear</button>
+  </div>
+
+  <details class="opts">
+    <summary>Options</summary>
+    <p class="hint">Adding your email puts requests in CrossRef’s faster “polite” pool. It’s only sent to CrossRef and OpenAlex.</p>
+    <input type="email" id="mailto" placeholder="you@university.edu" autocomplete="email">
+    <p class="hint">OpenAlex needs a free API key for more than a few lookups a day. Get one at <a href="https://openalex.org/settings/api" target="_blank" rel="noopener">openalex.org/settings/api</a> and paste it here. Without it, only CrossRef is used once the free quota runs out.</p>
+    <input type="password" id="oakey" placeholder="OpenAlex API key" autocomplete="off">
+  </details>
+
+  <div class="progress" id="progress"><span></span></div>
+
+  <section class="summary" id="summary" aria-live="polite">
+    <h2 id="sumtitle">Results</h2>
+    <p class="notice" id="oanotice" hidden>OpenAlex refused some lookups because there’s no API key or the daily quota ran out. Those references were checked against CrossRef only, so some “Not found” results may be real papers. Add a free OpenAlex key under Options and check again.</p>
+    <div class="tally" id="tally"></div>
+    <div class="row"><button class="primary" id="bibdl">Download updated .bib</button><button id="csv">Download CSV</button></div>
+    <p class="hint">Entries marked “Check details” are replaced with the corrected version unless you untick them. Verified entries are kept as they are, and entries that weren’t found are kept with a note so you can check them by hand.</p>
+  </section>
+
+  <ol class="results" id="results"></ol>
+
+  <footer>A “not found” result means no close match turned up in any of the databases. Books, reports, theses and very new papers are sometimes missing from both, so check those by hand before treating them as fabricated.</footer>
+</main>
+
+<script>
+(() => {
+const $ = s => document.querySelector(s);
+const input = $("#input"), results = $("#results");
+let items = [], filter = "all", running = false;
+
+const SAMPLE = `[1] Vaswani, A., Shazeer, N., Parmar, N., Uszkoreit, J., Jones, L., Gomez, A. N., Kaiser, Ł., & Polosukhin, I. (2017). Attention is all you need. Advances in Neural Information Processing Systems, 30.
+[2] He, K., Zhang, X., Ren, S., & Sun, J. (2016). Deep residual learning for image recognition. Proceedings of the IEEE Conference on Computer Vision and Pattern Recognition, 770–778.
+[3] LeCun, Y., Bengio, Y., & Hinton, G. (2015). Deep learning. Nature, 521(7553), 436–444. https://doi.org/10.1038/nature14539
+[4] Devlin, J., Chang, M.-W., Lee, K., & Toutanova, K. (2018). BERT: Pre-training of deep bidirectional transformers for language understanding. Nature Machine Intelligence, 2(4), 112–120.
+[5] Thompson, R. L., & Marchetti, A. (2021). Recursive gradient folding for low-resource semantic alignment. Journal of Computational Linguistics Research, 14(3), 201–219.`;
+
+/* ---------- text helpers ---------- */
+const STOP = new Set("a an the of and or in on for to with by from at as is are via its into using towards toward".split(" "));
+const norm = s => (s||"").normalize("NFKD").replace(/[\u0300-\u036f]/g,"").toLowerCase().replace(/<[^>]+>/g," ").replace(/[^a-z0-9]+/g," ").trim();
+const tokens = s => norm(s).split(" ").filter(w => w && !STOP.has(w));
+function coverage(a, b){ // share of a's tokens found in b
+  const ta = tokens(a); if(!ta.length) return 0;
+  const tb = new Set(tokens(b)); return ta.filter(t => tb.has(t)).length / ta.length;
+}
+const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+
+/* ---------- parsing ---------- */
+function parseBibtex(text){
+  const out = [];
+  const entries = []; const start = /@(\w+)\s*\{\s*([^,\s]*)\s*,/g; let st;
+  while((st = start.exec(text))){
+    let depth = 1, i = st.index + st[0].length;
+    for(; i < text.length && depth; i++){ if(text[i] === "{") depth++; else if(text[i] === "}") depth--; }
+    entries.push([text.slice(st.index, i), st[1], st[2], text.slice(st.index + st[0].length, i - 1)]);
+    start.lastIndex = i;
+  }
+  for(const m of entries){
+    if(/^(comment|string|preamble)$/i.test(m[1])) continue;
+    const f = {}; const body = m[3];
+    const fr = /(\w+)\s*=\s*(\{((?:[^{}]|\{(?:[^{}]|\{[^{}]*\})*\})*)\}|"([^"]*)"|(\d+))/g; let g;
+    while((g = fr.exec(body))) f[g[1].toLowerCase()] = (g[3] ?? g[4] ?? g[5] ?? "").replace(/[{}]/g,"").replace(/\s+/g," ").trim();
+    const authors = (f.author||"").split(/\s+and\s+/i).map(a => a.includes(",") ? a.split(",")[0].trim() : a.trim().split(" ").pop()).filter(Boolean);
+    const raw = [f.author, f.year && `(${f.year})`, f.title, f.journal || f.booktitle, f.doi && `doi:${f.doi}`].filter(Boolean).join(". ");
+    out.push({raw, title:f.title||"", year:f.year||"", doi:f.doi||"", firstAuthor:authors[0]||"", key:m[2].trim(),
+              bibType:m[1].toLowerCase(), bibFields:f, bibText:m[0].trim()});
+  }
+  return out;
+}
+function splitPlain(text){
+  text = text.replace(/\r/g,"").trim();
+  let parts;
+  if(/^\s*(\[\d+\]|\d{1,3}[.)])\s+/m.test(text)){
+    parts = text.split(/\n(?=\s*(?:\[\d+\]|\d{1,3}[.)])\s+)/);
+  } else if(/\n\s*\n/.test(text)){
+    parts = text.split(/\n\s*\n/);
+  } else parts = text.split("\n");
+  return parts.map(p => p.replace(/^\s*(\[\d+\]|\d{1,3}[.)])\s+/,"").replace(/\s*\n\s*/g," ").trim()).filter(p => p.length > 15);
+}
+function analyse(raw){
+  const doi = (raw.match(/\b(10\.\d{4,9}\/[^\s"<>,;]+)/i)||[])[1]?.replace(/[.)\]]+$/,"") || "";
+  const arxiv = (raw.match(/arxiv[:\s./a-z]*?(\d{4}\.\d{4,5})(v\d+)?/i)||[])[1] || "";
+  const years = raw.match(/\b(19|20)\d{2}\b/g) || [];
+  const year = years[0] || "";
+  let title = "";
+  const q = raw.match(/[“"]([^”"]{12,})[”"]/);
+  if(q) title = q[1];
+  else {
+    const apa = raw.match(/\((?:19|20)\d{2}[a-z]?\)\.?\s*([^.?!]{10,}[.?!])/);
+    if(apa) title = apa[1];
+    else {
+      const segs = raw.split(/\.\s+/).map(s => s.trim()).filter(s => s.split(" ").length >= 4 && !/\b(19|20)\d{2}\b/.test(s.slice(0,8)));
+      title = segs.sort((a,b) => b.length - a.length)[0] || "";
+    }
+  }
+  const lead = raw.replace(/^\s*[^A-Za-zÀ-ž]+/,"");
+  const firstAuthor = (lead.match(/^([A-Za-zÀ-ž'’\-]+(?:\s[A-Za-zÀ-ž'’\-]+)?)\s*,/)||[])[1] || (lead.match(/^\S+\s+([A-Za-zÀ-ž'’\-]+)[,.]/)||[])[1] || "";
+  return {raw, title: title.replace(/[.?!]$/,"").trim(), year, doi, arxiv, firstAuthor};
+}
+function parseInput(text){
+  if(/@\w+\s*\{/.test(text)) return parseBibtex(text).map(b => ({...analyse(b.raw), ...Object.fromEntries(Object.entries(b).filter(([,v]) => v))}));
+  return splitPlain(text).map(analyse);
+}
+
+/* ---------- lookup ---------- */
+const mail = () => $("#mailto").value.trim();
+let oaBlocked = false;
+try{ const k = localStorage.getItem("oakey"); if(k) $("#oakey").value = k; }catch(e){}
+$("#oakey").addEventListener("change", e => { try{ localStorage.setItem("oakey", e.target.value.trim()); }catch(err){} });
+const oaParams = () => { const p = []; const k = $("#oakey").value.trim(); if(k) p.push("api_key=" + encodeURIComponent(k)); if(mail()) p.push("mailto=" + encodeURIComponent(mail())); return p.join("&"); };
+async function getJSON(url, stats){
+  for(let i = 0; i < 3; i++){
+    try{
+      const r = await fetch(url);
+      if(stats) stats.ok++;
+      if(r.status === 404) return null;
+      if(url.includes("openalex.org") && [401,403,409].includes(r.status)){ oaBlocked = true; return null; }
+      if(r.status === 429 || r.status >= 500){ await new Promise(s => setTimeout(s, 1500 * (i+1))); continue; }
+      if(!r.ok) return null;
+      return await r.json();
+    }catch(e){
+      // network or CORS failure: retry once, then give up on this source only
+      if(i >= 1){ if(stats) stats.fail++; return null; }
+      await new Promise(s => setTimeout(s, 800));
+    }
+  }
+  return null;
+}
+const splitName = full => {
+  const parts = String(full||"").replace(/\s+\d{4}$/,"").trim().split(/\s+/);
+  return {family:parts.pop()||"", given:parts.join(" ")};
+};
+const pack = (o, source) => ({...o, authors:o.people.map(p => p.family), source});
+function fromCrossref(w){
+  if(!w) return null;
+  const y = (w.issued?.["date-parts"]?.[0]?.[0]) || (w.published?.["date-parts"]?.[0]?.[0]) || "";
+  const people = (w.author||[]).map(a => ({family:a.family || a.name || "", given:a.given || ""})).filter(p => p.family);
+  return pack({title:((w.title||[])[0]||"").replace(/<[^>]+>/g,""), year:String(y||""), people,
+          venue:(w["container-title"]||[])[0]||"", publisher:w.publisher||"", volume:w.volume||"", issue:w.issue||"",
+          pages:(w.page||"").replace(/-+/,"--"), kind:w.type||"", doi:w.DOI||"", url:w.DOI ? `https://doi.org/${w.DOI}` : w.URL}, "CrossRef");
+}
+function fromOpenAlex(w){
+  if(!w) return null;
+  const doi = (w.doi||"").replace("https://doi.org/","");
+  const people = (w.authorships||[]).map(a => splitName(a.author?.display_name)).filter(p => p.family);
+  const b = w.biblio || {}, src = w.primary_location?.source || {};
+  const kind = w.type === "preprint" ? "posted-content" : src.type === "conference" ? "proceedings-article" : w.type === "book" ? "book" : w.type === "book-chapter" ? "book-chapter" : "journal-article";
+  return pack({title:(w.display_name||w.title||"").replace(/<[^>]+>/g,""), year:String(w.publication_year||""), people,
+          venue:src.display_name||"", publisher:src.host_organization_name||"", volume:b.volume||"", issue:b.issue||"",
+          pages:b.first_page ? (b.last_page && b.last_page !== b.first_page ? `${b.first_page}--${b.last_page}` : b.first_page) : "",
+          kind, doi, url:doi ? `https://doi.org/${doi}` : (w.primary_location?.landing_page_url || w.id)}, "OpenAlex");
+}
+function fromDataCite(d){
+  const a = d?.attributes; if(!a) return null;
+  const people = (a.creators||[]).map(c => c.familyName ? {family:c.familyName, given:c.givenName||""} : splitName(c.name)).filter(p => p.family);
+  const isArxiv = /^10\.48550\/arxiv/i.test(a.doi||"");
+  return pack({title:(a.titles||[])[0]?.title||"", year:String(a.publicationYear||""), people,
+          venue:isArxiv ? "" : (a.container?.title||""), publisher:a.publisher?.name || a.publisher || "", volume:"", issue:"", pages:"",
+          kind:"posted-content", doi:a.doi||"", url:a.doi ? `https://doi.org/${a.doi}` : a.url}, isArxiv ? "arXiv (DataCite)" : "DataCite");
+}
+function fromDblp(h){
+  const i = h?.info; if(!i) return null;
+  const au = i.authors?.author; const list = Array.isArray(au) ? au : au ? [au] : [];
+  const people = list.map(x => splitName(typeof x === "string" ? x : x.text)).filter(p => p.family);
+  const kind = /Journal/.test(i.type) ? "journal-article" : /Conference/.test(i.type) ? "proceedings-article" : /Informal|Preprint/.test(i.type) ? "posted-content" : /Book/.test(i.type) ? "book" : "";
+  return pack({title:String(i.title||"").replace(/\.$/,""), year:String(i.year||""), people,
+          venue:i.venue === "CoRR" ? "" : (Array.isArray(i.venue) ? i.venue[0] : i.venue)||"", publisher:i.publisher||"",
+          volume:i.volume||"", issue:i.number||"", pages:(i.pages||"").replace(/-+/,"--"), kind,
+          doi:i.doi||"", url:i.doi ? `https://doi.org/${i.doi}` : (i.ee || i.url)}, "DBLP");
+}
+function fromS2(p){
+  if(!p?.title) return null;
+  const people = (p.authors||[]).map(a => splitName(a.name)).filter(x => x.family);
+  const doi = p.externalIds?.DOI || (p.externalIds?.ArXiv ? `10.48550/arXiv.${p.externalIds.ArXiv}` : "");
+  const types = p.publicationTypes || [];
+  const kind = types.includes("JournalArticle") ? "journal-article" : types.includes("Conference") ? "proceedings-article" : p.externalIds?.ArXiv ? "posted-content" : "";
+  return pack({title:p.title, year:String(p.year||""), people, venue:p.venue || p.journal?.name || "",
+          publisher:"", volume:p.journal?.volume||"", issue:"", pages:(p.journal?.pages||"").trim().replace(/-+/,"--"), kind,
+          doi, url:doi ? `https://doi.org/${doi}` : `https://www.semanticscholar.org/paper/${p.paperId}`}, "Semantic Scholar");
+}
+function score(ref, c){
+  if(!c || !c.title) return 0;
+  const inRef = coverage(c.title, ref.raw);
+  const back = ref.title ? coverage(ref.title, c.title) : inRef;
+  return Math.min(inRef, back);
+}
+// share of the candidate's (first few) authors whose surname appears in the citation
+function authorMatch(ref, c){
+  const r = " " + norm(ref.raw) + " ";
+  const fams = c.authors.slice(0, 4).map(norm).filter(f => f.length > 1);
+  if(!fams.length) return {first:false, ratio:0};
+  const hit = f => r.includes(" " + f + " ");
+  return {first:hit(fams[0]), ratio:fams.filter(hit).length / fams.length};
+}
+async function lookup(ref){
+  const m = mail() ? `mailto=${encodeURIComponent(mail())}` : "";
+  const stats = {ok:0, fail:0};
+  const cands = [], add = (list, viaId) => list.filter(Boolean).forEach(c => cands.push(viaId ? {...c, viaId:true} : c));
+  const useOA = $("#oakey").value.trim() || !oaBlocked;
+
+  if(ref.doi){
+    const d = await getJSON(`https://api.crossref.org/works/${encodeURIComponent(ref.doi)}?${m}`, stats);
+    if(d?.message) add([fromCrossref(d.message)], true);
+    else {
+      const dc = await getJSON(`https://api.datacite.org/dois/${encodeURIComponent(ref.doi)}`, stats);
+      if(dc?.data) add([fromDataCite(dc.data)], true);
+      else {
+        const o = useOA ? await getJSON(`https://api.openalex.org/works/doi:${encodeURIComponent(ref.doi)}?${oaParams()}`, stats) : null;
+        if(o) add([fromOpenAlex(o)], true); else if(stats.ok) ref.doiBroken = true;
+      }
+    }
+  }
+  if(ref.arxiv && !/^10\.48550/i.test(ref.doi)){
+    const dc = await getJSON(`https://api.datacite.org/dois/10.48550/arxiv.${ref.arxiv}`, stats);
+    if(dc?.data) add([fromDataCite(dc.data)], true);
+    else ref.arxivBroken = stats.ok > 0;
+  }
+  const best = () => cands.reduce((b, c) => (c.s = score(ref, c)) > (b?.s ?? -1) ? c : b, null);
+  if(!(best()?.s >= 0.85)){
+    const q = (ref.title || ref.raw).slice(0, 250).replace(/[,:;|!?()"“”\[\]{}]/g, " ").replace(/\s+/g, " ").trim();
+    const [cr, db, s2, oa] = await Promise.all([
+      getJSON(`https://api.crossref.org/works?query.bibliographic=${encodeURIComponent(ref.raw.slice(0,400))}&rows=5&select=DOI,title,author,issued,published,container-title,publisher,URL,volume,issue,page,type${m ? "&" + m : ""}`, stats),
+      getJSON(`https://dblp.org/search/publ/api?q=${encodeURIComponent(q)}&format=json&h=5`, stats),
+      getJSON(`https://api.semanticscholar.org/graph/v1/paper/search?query=${encodeURIComponent(q)}&limit=5&fields=title,year,authors,venue,externalIds,journal,publicationTypes`, stats),
+      useOA ? getJSON(`https://api.openalex.org/works?search=${encodeURIComponent(q)}&per-page=5&${oaParams()}`, stats) : null
+    ]);
+    add((cr?.message?.items||[]).map(fromCrossref));
+    add((db?.result?.hits?.hit||[]).map(fromDblp));
+    add((s2?.data||[]).map(fromS2));
+    add((oa?.results||[]).map(fromOpenAlex));
+  }
+  if(!stats.ok) throw new Error("offline");
+  best();
+  return {best: best(), cands};
+}
+function judge(ref, {best, cands}){
+  const issues = [];
+  const idCand = cands.find(c => c.viaId);
+  if(ref.doiBroken) issues.push(`The DOI ${ref.doi} doesn’t resolve in CrossRef, DataCite or OpenAlex.`);
+  if(ref.arxivBroken) issues.push(`The arXiv ID ${ref.arxiv} doesn’t exist.`);
+
+  // A citation that is only a title: judge on the title alone
+  const titleOnly = best && coverage(ref.raw, best.title) >= 0.9;
+
+  if(!best || best.s < 0.6){
+    // Same authors and year but a different title: usually a paper renamed in a later version
+    const renamed = cands
+      .map(c => ({c, a:authorMatch(ref, c), t:Math.max(coverage(ref.title || ref.raw, c.title), coverage(c.title, ref.raw))}))
+      .filter(x => x.a.first && x.a.ratio >= 0.5 && (x.c.viaId || x.t >= 0.3) &&
+                   (!ref.year || !x.c.year || Math.abs(+ref.year - +x.c.year) <= 1))
+      .sort((x, y) => (y.c.viaId - x.c.viaId) || (y.a.ratio + y.t) - (x.a.ratio + x.t))[0];
+    if(renamed){
+      return {status:"warn", label:"Found, title changed", match:renamed.c, renamed:true,
+              issues:[...issues, `${renamed.c.viaId ? "The identifier points to" : "Found"} a paper by the same authors with a different title. It was probably renamed in a later version or published under a new title, so the citation is likely real. Your title was kept unless you tick the box.`]};
+    }
+    if(idCand && score(ref, idCand) < 0.6 && !issues.length) issues.push(`The identifier points to a different work: “${idCand.title}”.`);
+    return {status:"bad", label:"Not found", match:best && best.s >= 0.4 ? best : null,
+            issues:[...issues, best && best.s >= 0.4 ? "Only a loose match turned up. The title may be wrong, or the work may not exist." : "No publication with a matching title turned up."]};
+  }
+  if(idCand && score(ref, idCand) < 0.6) issues.push(`The identifier points to a different work: “${idCand.title}”.`);
+  if(best.s < 0.85) issues.push("The title only partly matches the closest publication.");
+  if(titleOnly) return {status: issues.length ? "warn" : "ok", label: issues.length ? "Check details" : "Verified", match:best,
+                        issues: issues.length ? issues : ["Only a title was given, so authors and year weren’t compared."]};
+  if(ref.year && best.year && ref.year !== best.year){
+    const diff = Math.abs(+ref.year - +best.year);
+    if(diff > 1) issues.push(`Year mismatch: cited ${ref.year}, found ${best.year}.`);
+    else if(!(best.kind === "posted-content")) issues.push(`Year differs slightly: cited ${ref.year}, found ${best.year} (often a preprint vs. published version).`);
+  }
+  if(best.authors.length){
+    const a = authorMatch(ref, best);
+    if(!a.first){
+      issues.push(a.ratio > 0 ? `First author differs: the publication lists ${best.authors[0]} first.` : `None of the listed authors match. The publication is by ${best.authors.slice(0,3).join(", ")}${best.authors.length > 3 ? " et al." : ""}.`);
+    }
+  }
+  if(best.venue && norm(best.venue).length > 3 && coverage(best.venue, ref.raw) < 0.5 && !/arxiv|corr|ssrn|biorxiv|medrxiv/i.test(best.venue))
+    issues.push(`Published in ${best.venue}, which doesn’t appear in the citation.`);
+  const status = issues.length === 0 ? "ok" : "warn";
+  return {status, label: status === "ok" ? "Verified" : "Check details", match:best, issues};
+}
+
+/* ---------- BibTeX ---------- */
+const bibEsc = s => String(s||"").replace(/\s+/g," ").trim().replace(/([&%$#_])/g,"\\$1");
+function makeKey(it, m, used){
+  if(it.key) return it.key;
+  const fam = norm(m.people[0]?.family || it.firstAuthor || "ref").replace(/ /g,"");
+  const word = tokens(it.result?.renamed && it.title ? it.title : m.title)[0] || "";
+  let k = `${fam}${m.year||""}${word}`, base = k, n = 1;
+  while(used.has(k)) k = base + String.fromCharCode(96 + n++);
+  used.add(k); return k;
+}
+function toBib(it, m, key){
+  const arx = (m.doi.match(/^10\.48550\/arxiv\.(.+)$/i)||[])[1];
+  const type = {"journal-article":"article","proceedings-article":"inproceedings","book":"book","book-chapter":"incollection","posted-content":arx ? "article" : "misc"}[m.kind] || (m.venue ? "article" : "misc");
+  const venueField = type === "inproceedings" || type === "incollection" ? "booktitle" : type === "article" ? "journal" : "howpublished";
+  const f = [
+    ["title", `{${bibEsc(m.title)}}`],
+    ["author", m.people.map(p => p.given ? `${bibEsc(p.family)}, ${bibEsc(p.given)}` : bibEsc(p.family)).join(" and ")],
+    [venueField, arx && !m.venue ? `arXiv preprint arXiv:${arx}` : bibEsc(m.venue)],
+    ["year", m.year], ["volume", m.volume], ["number", m.issue], ["pages", m.pages],
+    ["publisher", type === "book" || type === "incollection" ? bibEsc(m.publisher) : ""],
+    ["doi", m.doi], ["url", m.url]
+  ].filter(([,v]) => v);
+  const w = Math.max(...f.map(([k]) => k.length));
+  return `@${type}{${key},\n${f.map(([k,v]) => `  ${k.padEnd(w)} = {${v}}`).join(",\n")}\n}`;
+}
+function changedFields(it, m){
+  const ch = [];
+  if(it.bibFields){
+    const o = it.bibFields;
+    if(coverage(m.title, o.title||"") < 0.9 || coverage(o.title||"", m.title) < 0.9) ch.push("title");
+    const oa = norm(o.author||"");
+    if(m.people.length && !m.people.slice(0,3).every(p => oa.includes(norm(p.family)))) ch.push("authors");
+    if(m.year && o.year !== m.year) ch.push("year");
+    const ov = o.journal || o.booktitle || "";
+    if(m.venue && coverage(m.venue, ov) < 0.6) ch.push("venue");
+    if(m.doi && norm(o.doi) !== norm(m.doi)) ch.push(o.doi ? "DOI" : "DOI added");
+    ["volume","pages"].forEach(k => { const mv = k === "volume" ? m.volume : m.pages; if(mv && norm(o[k]) !== norm(mv)) ch.push(k); });
+  }
+  return ch;
+}
+function prepareFixes(){
+  const used = new Set(items.flatMap(it => [it.key, it.newKey]).filter(Boolean));
+  items.forEach(it => {
+    const m = it.result?.match;
+    if(!m || it.result.status === "bad") return;
+    it.newKey = it.newKey || makeKey(it, m, used);
+    it.fixedBib = toBib(it, m, it.newKey);
+    it.changes = changedFields(it, m);
+    if(it.useFix === undefined) it.useFix = it.result.status === "warn" && !it.result.renamed;
+  });
+}
+function buildBib(){
+  const n = {fixed:0, kept:0, flagged:0};
+  const out = items.map((it, i) => {
+    const st = it.result?.status;
+    if(it.fixedBib && (it.useFix || (st === "ok" && !it.bibText))){
+      if(st === "warn") n.fixed++; else n.kept++;
+      return (st === "warn" ? `% [${i+1}] Corrected: ${(it.changes?.length ? it.changes.join(", ") : it.result.issues.join(" ")).replace(/\n/g," ")}\n` : "") + it.fixedBib;
+    }
+    if(it.bibText){
+      if(st === "bad"){ n.flagged++; return `% [${i+1}] NOT FOUND in any database. Verify this reference by hand.\n${it.bibText}`; }
+      if(st === "warn"){ n.flagged++; return `% [${i+1}] Possible problems, correction not applied: ${it.result.issues.join(" ")}\n${it.bibText}`; }
+      n.kept++; return it.bibText;
+    }
+    if(it.result?.renamed && it.fixedBib){
+      n.kept++;
+      return `% [${i+1}] Same authors found under a later title: “${it.result.match.title.replace(/\n/g," ")}”. Your original title was kept.\n` + toBib(it, {...it.result.match, title: it.title || it.result.match.title}, it.newKey);
+    }
+    n.flagged++;
+    const reason = st === "bad" ? "NOT FOUND in any database" : it.error ? "Lookup failed" : "Correction not applied";
+    return `% [${i+1}] ${reason}. Original citation, add it by hand if it is real:\n% ${it.raw}`;
+  });
+  const head = `% Updated by Reference Checker on ${new Date().toISOString().slice(0,10)}\n% ${n.fixed} corrected, ${n.kept} kept, ${n.flagged} need manual review\n\n`;
+  return head + out.join("\n\n") + "\n";
+}
+
+/* ---------- rendering ---------- */
+function card(it, i){
+  const li = document.createElement("li");
+  li.className = `ref ${it.result ? it.result.status : "pending"}`;
+  li.dataset.status = it.result ? it.result.status : "pending";
+  const r = it.result, m = r?.match;
+  li.innerHTML = `<div class="ref-head"><span class="num">${i+1}</span><div class="orig">${esc(it.raw)}</div>
+    <span class="badge">${r ? esc(r.label) : (it.error ? "Lookup failed" : "Checking…")}</span></div>
+    ${m ? `<div class="match"><div class="t">${esc(m.title)}</div>
+      <div class="m">${esc(m.authors.slice(0,4).join(", "))}${m.authors.length > 4 ? " et al." : ""}${m.year ? ` (${esc(m.year)})` : ""}${m.venue ? `. ${esc(m.venue)}` : ""}</div>
+      ${m.url ? `<a href="${esc(m.url)}" target="_blank" rel="noopener">${esc(m.doi ? "doi.org/" + m.doi : m.url)}</a>` : ""} <span class="m">via ${m.source}</span></div>` : ""}
+    ${r?.issues?.length ? `<ul class="issues">${r.issues.map(x => `<li>${esc(x)}</li>`).join("")}</ul>` : ""}
+    ${it.error ? `<ul class="issues"><li>${esc(it.error)}</li></ul>` : ""}
+    ${r?.status === "warn" && it.fixedBib ? `<div class="fix${it.useFix ? "" : " off"}">
+      <div class="fix-head"><strong>Corrected BibTeX</strong>
+        <label><input type="checkbox" data-fix="${i}" ${it.useFix ? "checked" : ""}> Use in updated .bib</label></div>
+      ${it.changes?.length ? `<p class="changed">Changes: ${esc(it.changes.join(", "))}</p>` : ""}
+      <pre class="bib">${esc(it.fixedBib)}</pre></div>` : ""}`;
+  return li;
+}
+function render(){
+  results.innerHTML = "";
+  items.forEach((it, i) => {
+    const st = it.result ? it.result.status : "pending";
+    if(filter === "all" || filter === st) results.appendChild(card(it, i));
+  });
+  $("#oanotice").hidden = !oaBlocked;
+  const c = s => items.filter(it => it.result?.status === s).length;
+  const done = items.filter(it => it.result || it.error).length;
+  $("#sumtitle").textContent = running ? `Checking ${done} of ${items.length}…` : `${items.length} references checked`;
+  const chips = [["all","All",items.length],["ok","Verified",c("ok")],["warn","Check details",c("warn")],["bad","Not found",c("bad")]];
+  $("#tally").innerHTML = chips.map(([k,l,n]) => `<button class="chip" data-f="${k}" aria-pressed="${filter===k}"><b>${n}</b> ${l}</button>`).join("");
+  $("#progress span").style.width = items.length ? `${100*done/items.length}%` : "0";
+}
+$("#tally").addEventListener("click", e => { const b = e.target.closest(".chip"); if(b){ filter = b.dataset.f; render(); } });
+
+async function run(){
+  const text = input.value.trim();
+  if(!text){ input.focus(); return; }
+  items = parseInput(text);
+  if(!items.length){ results.innerHTML = `<p class="empty">No references found. Put each reference on its own line, or separate them with blank lines.</p>`; return; }
+  running = true; filter = "all"; oaBlocked = false;
+  $("#run").disabled = true; $("#bibdl").disabled = true; $("#summary").style.display = "block"; $("#progress").style.display = "block";
+  render();
+  let next = 0;
+  const worker = async () => {
+    while(next < items.length){
+      const it = items[next++];
+      try{ it.result = judge(it, await lookup(it)); prepareFixes(); }
+      catch(e){ it.error = "Couldn’t reach the lookup services. Check your connection and try again."; }
+      render();
+    }
+  };
+  await Promise.all([worker(), worker(), worker()]);
+  running = false; $("#run").disabled = false; $("#bibdl").disabled = false; prepareFixes(); render();
+  setTimeout(() => $("#progress").style.display = "none", 600);
+}
+$("#run").addEventListener("click", run);
+results.addEventListener("change", e => {
+  const cb = e.target.closest("input[data-fix]"); if(!cb) return;
+  const it = items[+cb.dataset.fix]; it.useFix = cb.checked;
+  cb.closest(".fix").classList.toggle("off", !cb.checked);
+});
+$("#bibdl").addEventListener("click", () => {
+  if(running) return;
+  const blob = new Blob([buildBib()], {type:"application/x-bibtex"});
+  const a = Object.assign(document.createElement("a"), {href:URL.createObjectURL(blob), download:"references-updated.bib"});
+  document.body.appendChild(a); a.click(); a.remove();
+});
+$("#sample").addEventListener("click", () => { input.value = SAMPLE; });
+$("#clear").addEventListener("click", () => { input.value = ""; items = []; results.innerHTML = ""; $("#summary").style.display = "none"; });
+$("#file").addEventListener("change", async e => { const f = e.target.files[0]; if(f){ input.value = await f.text(); e.target.value = ""; } });
+
+$("#csv").addEventListener("click", () => {
+  const q = v => `"${String(v ?? "").replace(/"/g,'""')}"`;
+  const rows = [["#","Status","Cited reference","Matched title","Matched authors","Matched year","Venue","DOI","Issues"]];
+  items.forEach((it, i) => { const r = it.result, m = r?.match;
+    rows.push([i+1, r?.label || "Lookup failed", it.raw, m?.title, m?.authors.join("; "), m?.year, m?.venue, m?.doi, (r?.issues||[it.error]).join(" | ")]); });
+  const blob = new Blob(["\ufeff" + rows.map(r => r.map(q).join(",")).join("\n")], {type:"text/csv"});
+  const a = Object.assign(document.createElement("a"), {href:URL.createObjectURL(blob), download:"reference-check.csv"});
+  document.body.appendChild(a); a.click(); a.remove();
+});
+})();
+</script>
+</body>
+</html>
