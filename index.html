@@ -3,161 +3,273 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Reference Checker</title>
-<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='8' fill='%234C3FD1'/><path d='M9 16.5l4.5 4.5L23 11' stroke='white' stroke-width='3.2' fill='none' stroke-linecap='round' stroke-linejoin='round'/></svg>">
+<title>CiTrue: every reference, verified</title>
+<meta name="author" content="Asadullah Tariq">
+<meta name="description" content="CiTrue is a free citation checker. Verify references against CrossRef, DBLP, Semantic Scholar, arXiv and OpenAlex, catch retractions and duplicates, and download a corrected .bib.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 96 96%22 width=%22512%22 height=%22512%22%3E%3Cdefs%3E%3ClinearGradient id=%22bg%22 x1=%220%22 y1=%220%22 x2=%221%22 y2=%221%22%3E%3Cstop offset=%220%22 stop-color=%22%234126E0%22/%3E%3Cstop offset=%221%22 stop-color=%22%231C0C78%22/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width=%2296%22 height=%2296%22 rx=%2222%22 fill=%22url%28%23bg%29%22/%3E%3Cg transform=%22translate%2818 12%29%22%3E%3Cdefs%3E%3Cmask id=%22gapp%22 maskUnits=%22userSpaceOnUse%22 x=%220%22 y=%220%22 width=%2280%22 height=%2280%22%3E%3Crect width=%2280%22 height=%2280%22 fill=%22%23fff%22/%3E%3Ccircle cx=%2246%22 cy=%2256%22 r=%2215.6%22 fill=%22%23000%22/%3E%3C/mask%3E%3C/defs%3E%0A%3Cg mask=%22url%28%23gapp%29%22 fill=%22none%22 stroke-linecap=%22round%22 stroke-linejoin=%22round%22 stroke-width=%224.2%22%3E%0A  %3Cpath d=%22M14 4H34L46 16V56a8 8 0 0 1-8 8H14a8 8 0 0 1-8-8V12a8 8 0 0 1 8-8Z%22 stroke=%22%23FFFFFF%22/%3E%0A  %3Cpath d=%22M34 4.5V12a4 4 0 0 0 4 4h7.5%22 stroke=%22%23FFFFFF%22/%3E%0A  %3Cpath d=%22M15 25.5H26%22 stroke=%22%23FFFFFF%22/%3E%0A  %3Cpath d=%22M15 33.5H35M15 41.5H33M15 49.5H27%22 stroke=%22rgba%28255%2C255%2C255%2C.55%29%22/%3E%0A%3C/g%3E%0A%3Ccircle cx=%2246%22 cy=%2256%22 r=%2212.2%22 fill=%22%235BD495%22/%3E%0A%3Cpath d=%22M40.4 56.4l4 4 7.4-8%22 fill=%22none%22 stroke=%22%23fff%22 stroke-width=%223.6%22 stroke-linecap=%22round%22 stroke-linejoin=%22round%22/%3E%3C/g%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Newsreader:opsz,wght@6..72,500;6..72,650&family=Atkinson+Hyperlegible:wght@400;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <script>try{const t=localStorage.getItem("theme");if(t)document.documentElement.dataset.theme=t;}catch(e){}</script>
 <style>
 :root{
-  --page:#EEF1F7; --surface:#FFFFFF; --sunk:#F5F7FB; --ink:#131A2E; --text:#2A3247; --muted:#5F6780; --line:#DCE1EA;
-  --accent:#4C3FD1; --accent-ink:#FFFFFF; --accent-soft:#ECEAFD;
+  --page:#F4F2FB; --surface:#FFFFFF; --sunk:#F7F6FC; --ink:#140F2E; --text:#2E2A45; --muted:#65607F; --line:#E6E2F2;
+  --accent:#5B3DF5; --accent-ink:#FFFFFF; --accent-soft:#EEEAFE;
   --ok:#1E7A52; --ok-bg:#E1F4EA; --warn:#8F5B06; --warn-bg:#FCF0D6; --bad:#B42318; --bad-bg:#FDE6E3; --fix:#0E6F8A; --fix-bg:#DDF2F7; --ret:#7F1D1D;
-  --pend:#9AA2B6; --shadow:0 1px 2px rgba(19,26,46,.06),0 8px 24px -12px rgba(19,26,46,.18);
-  --serif:"Newsreader",Georgia,"Times New Roman",serif; --sans:"Atkinson Hyperlegible",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --pend:#A9A4BF; --shadow:0 1px 2px rgba(20,15,46,.05),0 12px 32px -16px rgba(40,20,120,.25);
+  --hero:radial-gradient(70% 60% at 18% 0%,#4126E0 0%,transparent 62%),radial-gradient(55% 55% at 92% 28%,#8B6CFF 0%,transparent 60%),radial-gradient(70% 60% at 50% 115%,#B79CFF 0%,transparent 62%),linear-gradient(180deg,#170A5C 0%,#2810A6 52%,#5B3DF5 100%);
+  --sans:"Outfit",system-ui,-apple-system,"Segoe UI",sans-serif; --serif:var(--sans);
   --mono:"JetBrains Mono",ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+  --r-lg:24px; --r-md:18px; --r-sm:12px;
   color-scheme:light;
 }
 @media (prefers-color-scheme:dark){
   :root:not([data-theme="light"]){
-    --page:#0E1322; --surface:#161C30; --sunk:#11172A; --ink:#EEF1F8; --text:#D3D8E6; --muted:#9AA2B8; --line:#283049;
-    --accent:#A79DFF; --accent-ink:#0E1322; --accent-soft:#25214A;
+    --page:#0D0A1F; --surface:#17132D; --sunk:#120F26; --ink:#F1EEFB; --text:#D7D2EA; --muted:#A39DBE; --line:#2B2547;
+    --accent:#A996FF; --accent-ink:#120F26; --accent-soft:#2A2256;
     --ok:#6FD6A3; --ok-bg:#14301F; --warn:#F2C46B; --warn-bg:#33270E; --bad:#FF9D93; --bad-bg:#3A1816; --fix:#6AD3E8; --fix-bg:#0E2D36; --ret:#C2413A;
-    --pend:#59617A; --shadow:0 1px 2px rgba(0,0,0,.3),0 10px 30px -14px rgba(0,0,0,.6); color-scheme:dark;
+    --pend:#5E5878; --shadow:0 1px 2px rgba(0,0,0,.35),0 14px 36px -18px rgba(0,0,0,.7);
+    --hero:radial-gradient(70% 60% at 18% 0%,#33199F 0%,transparent 62%),radial-gradient(55% 55% at 92% 28%,#5E43D6 0%,transparent 60%),radial-gradient(70% 60% at 50% 115%,#6C51E8 0%,transparent 62%),linear-gradient(180deg,#0E0640 0%,#1D0B7A 55%,#3A24B8 100%);
+    color-scheme:dark;
   }
 }
 :root[data-theme="dark"]{
-  --page:#0E1322; --surface:#161C30; --sunk:#11172A; --ink:#EEF1F8; --text:#D3D8E6; --muted:#9AA2B8; --line:#283049;
-  --accent:#A79DFF; --accent-ink:#0E1322; --accent-soft:#25214A;
+  --page:#0D0A1F; --surface:#17132D; --sunk:#120F26; --ink:#F1EEFB; --text:#D7D2EA; --muted:#A39DBE; --line:#2B2547;
+  --accent:#A996FF; --accent-ink:#120F26; --accent-soft:#2A2256;
   --ok:#6FD6A3; --ok-bg:#14301F; --warn:#F2C46B; --warn-bg:#33270E; --bad:#FF9D93; --bad-bg:#3A1816; --fix:#6AD3E8; --fix-bg:#0E2D36; --ret:#C2413A;
-  --pend:#59617A; --shadow:0 1px 2px rgba(0,0,0,.3),0 10px 30px -14px rgba(0,0,0,.6); color-scheme:dark;
+  --pend:#5E5878; --shadow:0 1px 2px rgba(0,0,0,.35),0 14px 36px -18px rgba(0,0,0,.7);
+  --hero:radial-gradient(70% 60% at 18% 0%,#33199F 0%,transparent 62%),radial-gradient(55% 55% at 92% 28%,#5E43D6 0%,transparent 60%),radial-gradient(70% 60% at 50% 115%,#6C51E8 0%,transparent 62%),linear-gradient(180deg,#0E0640 0%,#1D0B7A 55%,#3A24B8 100%);
+  color-scheme:dark;
 }
-:root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+:root{box-sizing:border-box;padding-bottom:env(safe-area-inset-bottom,0px)}
 *,*::before,*::after{box-sizing:inherit}
-html{scroll-padding-top:calc(env(safe-area-inset-top,0px) + 1rem)}
-body{margin:0;background:var(--page);color:var(--text);font:16px/1.55 var(--sans);-webkit-font-smoothing:antialiased}
+html{scroll-behavior:smooth;scroll-padding-top:1rem}
+body{margin:0;background:var(--page);color:var(--text);font:16.5px/1.6 var(--sans);font-weight:400;-webkit-font-smoothing:antialiased}
 button,input,select,textarea{font:inherit;color:inherit}
-:focus-visible{outline:3px solid color-mix(in srgb,var(--accent) 55%,transparent);outline-offset:2px;border-radius:6px}
+:focus-visible{outline:3px solid color-mix(in srgb,var(--accent) 60%,transparent);outline-offset:2px;border-radius:8px}
 a{color:var(--accent)}
 .sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.wrap{max-width:1160px;margin:0 auto;padding:0 1.5rem}
 
-/* top bar */
-.bar{display:flex;align-items:center;justify-content:space-between;max-width:1320px;margin:0 auto;padding:1rem 1.5rem}
-.brand{display:flex;align-items:center;gap:.6rem;font-family:var(--serif);font-weight:650;font-size:1.2rem;color:var(--ink);text-decoration:none}
-.brand svg{width:30px;height:30px}
-.iconbtn{display:inline-grid;place-items:center;width:40px;height:40px;border-radius:10px;border:1px solid var(--line);background:var(--surface);cursor:pointer;color:var(--ink)}
-.iconbtn svg{width:20px;height:20px}
-.icon-sun{display:none} :root[data-theme="dark"] .icon-sun{display:block} :root[data-theme="dark"] .icon-moon{display:none}
-@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .icon-sun{display:block}:root:not([data-theme="light"]) .icon-moon{display:none}}
-
-/* layout */
-.app{display:grid;grid-template-columns:minmax(340px,430px) minmax(0,1fr);gap:1.75rem;max-width:1320px;margin:0 auto;padding:.5rem 1.5rem 4rem;align-items:start}
-.compose{position:sticky;top:calc(env(safe-area-inset-top,0px) + 1rem)}
-@media (max-width:980px){.app{grid-template-columns:1fr}.compose{position:static}}
-
-/* compose panel */
-.panel{background:var(--surface);border:1px solid var(--line);border-radius:16px;box-shadow:var(--shadow)}
-.compose .panel{padding:1.5rem}
-h1{font-family:var(--serif);font-weight:650;color:var(--ink);font-size:clamp(1.9rem,3.2vw,2.5rem);line-height:1.08;letter-spacing:-.01em;margin:0 0 .6rem}
-.lede{color:var(--muted);margin:0 0 1.25rem;font-size:.975rem}
-.drop{position:relative}
-textarea#input{width:100%;min-height:260px;max-height:55vh;resize:vertical;padding:1rem;border:1.5px solid var(--line);border-radius:12px;background:var(--sunk);color:var(--text);font:13px/1.65 var(--mono);transition:border-color .15s}
-textarea#input:focus{border-color:var(--accent);outline:none;box-shadow:0 0 0 4px color-mix(in srgb,var(--accent) 18%,transparent)}
-.drop-hint{position:absolute;inset:0;display:none;place-items:center;border:2px dashed var(--accent);border-radius:12px;background:color-mix(in srgb,var(--accent-soft) 92%,transparent);color:var(--accent);font-weight:700;pointer-events:none}
-.drop.over .drop-hint{display:grid}
-.detect{display:flex;align-items:center;gap:.5rem;min-height:1.6rem;margin:.6rem 0 0;font-size:.875rem;color:var(--muted)}
-.detect b{color:var(--ink)}
-.detect .dot{width:8px;height:8px;border-radius:50%;background:var(--pend)}
-.detect.has .dot{background:var(--accent)}
-.btn{display:inline-flex;align-items:center;justify-content:center;gap:.45rem;border-radius:10px;padding:.6rem 1rem;border:1px solid var(--line);background:var(--surface);color:var(--ink);cursor:pointer;font-weight:700;font-size:.925rem;text-decoration:none;transition:background .15s,border-color .15s,transform .1s}
+/* ---------- buttons ---------- */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:.45rem;border-radius:999px;padding:.62rem 1.15rem;border:1px solid var(--line);background:var(--surface);color:var(--ink);cursor:pointer;font-weight:500;font-size:.96rem;text-decoration:none;transition:background .15s,border-color .15s,transform .1s,box-shadow .15s}
 .btn:hover{border-color:color-mix(in srgb,var(--accent) 45%,var(--line))}
 .btn:active{transform:translateY(1px)}
 .btn svg{width:17px;height:17px;flex:none}
-.btn.primary{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
-.btn.primary:hover{background:color-mix(in srgb,var(--accent) 88%,var(--ink))}
-.btn.ghost{background:transparent}
-.btn.sm{padding:.4rem .75rem;font-size:.85rem;border-radius:8px}
+.btn.primary{background:var(--accent);color:var(--accent-ink);border-color:var(--accent);box-shadow:0 6px 18px -8px color-mix(in srgb,var(--accent) 80%,transparent)}
+.btn.primary:hover{background:color-mix(in srgb,var(--accent) 88%,#000)}
+.btn.ghost{background:transparent;border-color:transparent}
+.btn.ghost:hover{background:var(--sunk)}
+.btn.dark{background:var(--ink);color:var(--surface);border-color:var(--ink)}
+.btn.sm{padding:.42rem .85rem;font-size:.84rem}
 .btn:disabled{opacity:.5;cursor:not-allowed;transform:none}
-.btn.big{width:100%;padding:.85rem 1rem;font-size:1rem;margin-top:1rem}
-kbd{font:500 .72rem var(--mono);padding:.1rem .35rem;border-radius:5px;border:1px solid color-mix(in srgb,currentColor 35%,transparent);opacity:.8}
-.minor{display:flex;flex-wrap:wrap;gap:.5rem;margin-top:.75rem}
-.minor .btn{flex:1 1 auto}
-.minor input[type=file]{display:none}
-details.opts{margin-top:1.25rem;border-top:1px solid var(--line);padding-top:1rem;font-size:.9rem}
-details.opts summary{cursor:pointer;font-weight:700;color:var(--ink);list-style:none;display:flex;align-items:center;gap:.4rem}
+kbd{font:500 .7rem var(--mono);padding:.08rem .35rem;border-radius:5px;border:1px solid color-mix(in srgb,currentColor 35%,transparent);opacity:.85}
+.pill-label{display:inline-flex;align-items:center;gap:.45rem;padding:.32rem .8rem;border-radius:999px;background:var(--surface);border:1px solid var(--line);font-size:.78rem;font-weight:600;color:var(--ink);box-shadow:0 1px 2px rgba(20,15,46,.04)}
+.pill-label::before{content:"";width:6px;height:6px;border-radius:50%;background:var(--accent)}
+
+/* ---------- hero ---------- */
+.hero{position:relative;overflow:hidden;background:var(--hero);color:#fff;padding-top:env(safe-area-inset-top,0px);isolation:isolate;border-radius:0 0 clamp(24px,4vw,48px) clamp(24px,4vw,48px)}
+.hero::after{content:"";position:absolute;inset:auto 0 0;height:120px;background:linear-gradient(180deg,transparent,rgba(255,255,255,.06));pointer-events:none;z-index:-1}
+.nav{display:flex;align-items:center;justify-content:space-between;gap:1rem;max-width:1240px;margin:0 auto;padding:1.1rem 1.5rem;position:relative;z-index:3}
+.brand{display:flex;align-items:center;gap:.6rem;font-weight:600;font-size:1.3rem;color:#fff;text-decoration:none;letter-spacing:-.01em}
+.brand .logo{height:50px;width:auto;display:block;transition:transform .25s cubic-bezier(.2,.8,.2,1)}
+.brand:hover .logo{transform:scale(1.03)}
+@media (max-width:480px){.brand .logo{height:42px}}
+.navlinks{display:flex;gap:.25rem;list-style:none;margin:0;padding:0}
+.navlinks a{display:block;padding:.5rem .9rem;border-radius:999px;color:rgba(255,255,255,.86);text-decoration:none;font-weight:500;font-size:.95rem}
+.navlinks a:hover{background:rgba(255,255,255,.1);color:#fff}
+.navright{display:flex;align-items:center;gap:.6rem}
+.iconbtn{display:inline-grid;place-items:center;width:42px;height:42px;border-radius:50%;border:1px solid rgba(255,255,255,.25);background:rgba(255,255,255,.1);cursor:pointer;color:#fff;backdrop-filter:blur(6px)}
+.iconbtn svg{width:19px;height:19px}
+.icon-sun{display:none} :root[data-theme="dark"] .icon-sun{display:block} :root[data-theme="dark"] .icon-moon{display:none}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .icon-sun{display:block}:root:not([data-theme="light"]) .icon-moon{display:none}}
+.btn.light{background:#fff;color:#2810A6;border-color:#fff;font-weight:600}
+.btn.light:hover{background:#F1EDFF}
+@media (max-width:860px){.navlinks{display:none}}
+@media (max-width:480px){.navcta{display:none}}
+
+.hero-inner{position:relative;z-index:2;max-width:960px;margin:0 auto;padding:3.5rem 1.5rem 5.5rem;text-align:center}
+.eyebrow{display:inline-flex;align-items:center;gap:.5rem;padding:.38rem .95rem;border-radius:999px;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.22);font-size:.85rem;font-weight:600;backdrop-filter:blur(6px)}
+.eyebrow i{width:7px;height:7px;border-radius:50%;background:#7CF0B5;box-shadow:0 0 0 4px rgba(124,240,181,.2)}
+h1{margin:1.4rem 0 0;font-weight:600;font-size:clamp(3.2rem,9.5vw,7rem);line-height:.96;letter-spacing:-.035em;color:#fff;text-wrap:balance}
+h1 .soft{background:linear-gradient(100deg,#CDBDFF 0%,#FFFFFF 70%);-webkit-background-clip:text;background-clip:text;color:transparent}
+.lede{max-width:620px;margin:1.3rem auto 0;font-size:clamp(1.02rem,1.6vw,1.2rem);color:rgba(255,255,255,.84)}
+
+/* prompt box */
+.prompt{margin:2.4rem auto 0;max-width:820px;padding:9px;border-radius:28px;background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.26);backdrop-filter:blur(10px);text-align:left;box-shadow:0 30px 80px -30px rgba(10,0,60,.65)}
+.prompt-card{background:var(--surface);color:var(--text);border-radius:21px;overflow:hidden}
+.drop{position:relative}
+textarea#input{display:block;width:100%;min-height:170px;max-height:46vh;resize:vertical;padding:1.2rem 1.35rem .6rem;border:0;background:transparent;color:var(--ink);font:16px/1.65 var(--sans)}
+textarea#input::placeholder{color:var(--muted)}
+textarea#input:focus{outline:none}
+.drop-hint{position:absolute;inset:8px;display:none;place-items:center;border:2px dashed var(--accent);border-radius:16px;background:color-mix(in srgb,var(--accent-soft) 94%,transparent);color:var(--accent);font-weight:700;pointer-events:none}
+.drop.over .drop-hint{display:grid}
+.prompt-bar{display:flex;align-items:center;gap:.45rem;padding:.6rem .7rem .7rem .8rem;flex-wrap:wrap}
+.plus{display:inline-grid;place-items:center;width:40px;height:40px;border-radius:50%;background:var(--accent-soft);color:var(--accent);cursor:pointer;flex:none;border:0;transition:transform .15s}
+.plus:hover{transform:scale(1.06)}
+.plus svg{width:20px;height:20px}
+.plus input[type=file]{display:none}
+.chipbtn{display:inline-flex;align-items:center;gap:.4rem;padding:.45rem .75rem;border-radius:999px;border:0;background:transparent;color:var(--ink);font-weight:600;font-size:.9rem;cursor:pointer}
+.chipbtn:hover{background:var(--sunk)}
+.chipbtn svg{width:17px;height:17px}
+.detect{display:flex;align-items:center;gap:.45rem;margin:0 0 0 .25rem;font-size:.84rem;color:var(--muted);min-width:0}
+.detect b{color:var(--ink)}
+.detect .dot{width:7px;height:7px;border-radius:50%;background:var(--pend);flex:none}
+.detect.has .dot{background:var(--accent)}
+.prompt-bar .spacer{flex:1}
+#run{padding:.62rem 1.2rem}
+@media (max-width:640px){.prompt-bar .spacer{display:none} #run{width:100%;order:9;margin-top:.3rem} .detect{width:100%;order:8;margin:.2rem 0 0 .3rem} #run kbd{display:none}}
+details.opts{border-top:1px solid var(--line);font-size:.88rem}
+details.opts summary{cursor:pointer;list-style:none;display:flex;align-items:center;gap:.45rem;padding:.65rem 1.2rem;color:var(--muted);font-weight:600}
 details.opts summary::-webkit-details-marker{display:none}
-details.opts summary svg{width:16px;height:16px;transition:transform .2s}
+details.opts summary svg{width:15px;height:15px;transition:transform .2s}
 details.opts[open] summary svg{transform:rotate(90deg)}
-.field{margin-top:.9rem}
-.field label{display:block;font-weight:700;color:var(--ink);font-size:.85rem;margin-bottom:.3rem}
-.field input{width:100%;padding:.55rem .7rem;border:1px solid var(--line);border-radius:8px;background:var(--sunk)}
-.field p{margin:.35rem 0 0;color:var(--muted);font-size:.8rem}
+.optgrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1rem;padding:0 1.2rem 1.1rem}
+@media (max-width:640px){.optgrid{grid-template-columns:1fr}}
+.field label{display:block;font-weight:700;color:var(--ink);font-size:.82rem;margin-bottom:.3rem}
+.field input{width:100%;padding:.55rem .75rem;border:1px solid var(--line);border-radius:10px;background:var(--sunk)}
+.field p{margin:.35rem 0 0;color:var(--muted);font-size:.78rem}
+.trust{margin:1.4rem auto 0;color:rgba(255,255,255,.8);font-size:.92rem}
+.sources{display:flex;flex-wrap:wrap;justify-content:center;gap:.5rem 1.8rem;margin-top:1.8rem;color:rgba(255,255,255,.62);font-weight:600;font-size:1.02rem;letter-spacing:-.01em}
+.sources span{display:inline-flex;align-items:center;gap:.45rem}
+.sources svg{width:16px;height:16px;opacity:.8}
 
-/* empty state */
-.intro{padding:2rem}
-.intro h2{font-family:var(--serif);font-weight:650;color:var(--ink);font-size:1.5rem;margin:0 0 1.25rem}
-.steps{list-style:none;margin:0;padding:0;display:grid;gap:1rem;counter-reset:s}
-.steps li{display:grid;grid-template-columns:2.25rem 1fr;gap:.9rem;align-items:start;counter-increment:s}
-.steps li::before{content:counter(s);display:grid;place-items:center;width:2.25rem;height:2.25rem;border-radius:50%;background:var(--accent-soft);color:var(--accent);font-weight:700}
-.steps b{display:block;color:var(--ink)}
-.steps span{color:var(--muted);font-size:.925rem}
-.legend{display:flex;flex-wrap:wrap;gap:.5rem;margin-top:1.75rem;padding-top:1.25rem;border-top:1px solid var(--line)}
-.pill{display:inline-flex;align-items:center;gap:.4rem;padding:.3rem .7rem;border-radius:999px;font-size:.825rem;font-weight:700}
-.pill.ok{background:var(--ok-bg);color:var(--ok)} .pill.warn{background:var(--warn-bg);color:var(--warn)} .pill.bad{background:var(--bad-bg);color:var(--bad)} .pill.fix{background:var(--fix-bg);color:var(--fix)} .pill.man{background:var(--accent-soft);color:var(--accent)}
-.sources{margin-top:1rem;font-size:.85rem;color:var(--muted)}
+/* floating decorative reference cards */
+.floaters{position:absolute;inset:0;z-index:1;pointer-events:none}
+.float{position:absolute;width:250px;padding:14px 15px;border-radius:16px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.16);color:rgba(255,255,255,.78);font-size:11.5px;line-height:1.45;transform:rotate(var(--r,0deg));animation:drift 11s ease-in-out infinite;animation-delay:var(--d,0s)}
+.float b{display:block;color:#fff;font-size:12.5px;font-weight:700;margin:.45rem 0 .2rem}
+.float em{font-style:normal;opacity:.75;font-family:var(--mono);font-size:10.5px}
+.fp{display:inline-block;padding:2px 8px;border-radius:999px;font-weight:700;font-size:10.5px}
+.fp.ok{background:rgba(124,240,181,.22);color:#B7F7D6} .fp.fix{background:rgba(106,211,232,.22);color:#BDEFF8} .fp.ret{background:rgba(255,120,110,.28);color:#FFD0CB} .fp.warn{background:rgba(242,196,107,.25);color:#FBE3AE}
+@keyframes drift{0%,100%{transform:translateY(0) rotate(var(--r,0deg))}50%{transform:translateY(-12px) rotate(var(--r,0deg))}}
+@media (max-width:1100px){.float.f3,.float.f4{display:none}}
+@media (max-width:860px){.floaters{display:none}}
 
-/* summary */
-.summary{padding:1.1rem 1.25rem 1rem}
-.sum-top{display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:.5rem 1rem}
-.sum-top h2{font-family:var(--serif);font-weight:650;color:var(--ink);font-size:1.35rem;margin:0}
-.sum-top .sub{color:var(--muted);font-size:.9rem}
-.meter{display:flex;height:12px;border-radius:999px;overflow:hidden;background:var(--sunk);margin:.8rem 0 .9rem;border:1px solid var(--line)}
+/* ---------- sections ---------- */
+main{position:relative}
+.section{padding:5rem 0 0}
+.shead{text-align:center;max-width:720px;margin:0 auto 2.2rem}
+h2{font-weight:600;font-size:clamp(2rem,4.2vw,3.1rem);line-height:1.04;letter-spacing:-.03em;color:var(--ink);margin:.9rem 0 0;text-wrap:balance}
+.shead p{color:var(--muted);margin:.8rem auto 0;max-width:560px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-lg);box-shadow:var(--shadow)}
+
+/* results */
+#results{scroll-margin-top:1rem}
+.results{padding-top:0} #out{padding-top:2.5rem}
+.sumgrid{display:grid;grid-template-columns:minmax(260px,340px) minmax(0,1fr);gap:1rem;align-items:stretch}
+@media (max-width:900px){.sumgrid{grid-template-columns:1fr}}
+.scorecard{position:relative;overflow:hidden;border-radius:var(--r-lg);padding:1.5rem 1.5rem 1.3rem;color:#fff;background:radial-gradient(90% 70% at 100% 0%,#8B6CFF 0%,transparent 60%),radial-gradient(80% 80% at 0% 100%,#2BC4E8 0%,transparent 55%),linear-gradient(160deg,#1C0C78,#3A1FD0);display:flex;flex-direction:column;gap:.4rem;min-height:250px}
+.scorecard .lbl{font-size:.85rem;font-weight:600;color:rgba(255,255,255,.82)}
+.scorecard .big{font-weight:600;font-size:clamp(4rem,9vw,5.6rem);line-height:.9;letter-spacing:-.05em;background:linear-gradient(180deg,#fff 30%,rgba(255,255,255,.55));-webkit-background-clip:text;background-clip:text;color:transparent;margin-top:auto}
+.scorecard .cap{font-size:.92rem;color:rgba(255,255,255,.88);font-weight:600}
+.meter{display:flex;height:10px;border-radius:999px;overflow:hidden;background:rgba(255,255,255,.18);margin-top:.7rem}
 .meter span{height:100%;transition:width .45s cubic-bezier(.2,.8,.2,1)}
-.meter .m-ok{background:var(--ok)} .meter .m-fixed{background:var(--fix)} .meter .m-warn{background:var(--warn)} .meter .m-bad{background:var(--bad)}
-.meter .m-manual{background:var(--accent)} .meter .m-retracted{background:var(--ret)}
-.meter .m-pending{background:repeating-linear-gradient(-45deg,var(--pend) 0 6px,transparent 6px 12px);opacity:.5}
-.chips{display:flex;flex-wrap:wrap;gap:.45rem}
-.chip{display:inline-flex;align-items:center;gap:.45rem;border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:.32rem .8rem;font-size:.85rem;cursor:pointer;color:var(--text);font-weight:700}
-.chip i{width:9px;height:9px;border-radius:50%;background:var(--pend)}
+.meter .m-ok{background:#5EE0A1} .meter .m-fixed{background:#64D8F0} .meter .m-manual{background:#C9BBFF} .meter .m-warn{background:#F5C451} .meter .m-bad{background:#FF7A6E} .meter .m-retracted{background:#FF3B30}
+.meter .m-pending{background:repeating-linear-gradient(-45deg,rgba(255,255,255,.45) 0 6px,transparent 6px 12px)}
+.summary{padding:1.4rem 1.5rem}
+.sum-top{display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:.4rem 1rem}
+.sum-top h2{font-size:1.6rem;margin:0;letter-spacing:-.025em}
+.sum-top .sub{color:var(--muted);font-size:.9rem}
+.chips{display:flex;flex-wrap:wrap;gap:.4rem;margin-top:1rem}
+.chip{display:inline-flex;align-items:center;gap:.45rem;border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:.34rem .85rem;font-size:.84rem;cursor:pointer;color:var(--text);font-weight:600}
+.chip i{width:8px;height:8px;border-radius:50%;background:var(--pend)}
 .chip.c-ok i{background:var(--ok)} .chip.c-warn i{background:var(--warn)} .chip.c-bad i{background:var(--bad)} .chip.c-fixed i{background:var(--fix)} .chip.c-all i{background:var(--ink)} .chip.c-manual i{background:var(--accent)} .chip.c-retracted i{background:var(--ret)}
 .chip.flag i{border-radius:2px;background:transparent;border:2px solid var(--muted)}
 .chipsep{width:1px;align-self:stretch;background:var(--line);margin:0 .2rem}
 .chip[aria-pressed="true"]{background:var(--ink);color:var(--surface);border-color:var(--ink)}
 .chip[aria-pressed="true"] i{box-shadow:0 0 0 2px var(--surface)}
-.chip em{font-style:normal;font-weight:400;opacity:.85}
-.tools{display:flex;flex-wrap:wrap;gap:.5rem;margin-top:.9rem;align-items:center}
-.search{flex:1 1 200px;position:relative}
-.search svg{position:absolute;left:.65rem;top:50%;width:16px;height:16px;transform:translateY(-50%);color:var(--muted)}
-.search input{width:100%;padding:.48rem .7rem .48rem 2.1rem;border:1px solid var(--line);border-radius:8px;background:var(--sunk);font-size:.9rem}
-.tools select{padding:.45rem .6rem;border:1px solid var(--line);border-radius:8px;background:var(--sunk);font-size:.875rem}
-.actions-row{display:flex;flex-wrap:wrap;gap:.5rem;margin-top:.75rem;padding-top:.75rem;border-top:1px solid var(--line)}
-.notice{background:var(--warn-bg);color:var(--warn);border-radius:10px;padding:.7rem .9rem;font-size:.875rem;margin:.75rem 0 0}
+.chip em{font-style:normal;font-weight:500;opacity:.8}
+.tools{display:flex;flex-wrap:wrap;gap:.5rem;margin-top:1rem;align-items:center}
+.search{flex:1 1 220px;position:relative}
+.search svg{position:absolute;left:.85rem;top:50%;width:16px;height:16px;transform:translateY(-50%);color:var(--muted)}
+.search input{width:100%;padding:.55rem .8rem .55rem 2.3rem;border:1px solid var(--line);border-radius:999px;background:var(--sunk);font-size:.9rem}
+.tools select{padding:.52rem .8rem;border:1px solid var(--line);border-radius:999px;background:var(--sunk);font-size:.87rem}
+.actions-row{display:flex;flex-wrap:wrap;gap:.5rem;margin-top:1rem;padding-top:1rem;border-top:1px solid var(--line)}
+.notice{background:var(--warn-bg);color:var(--warn);border-radius:14px;padding:.75rem .95rem;font-size:.87rem;margin:1rem 0 0}
+
+/* process panel */
+.process{display:grid;grid-template-columns:minmax(0,.9fr) minmax(0,1.1fr);gap:2rem;align-items:center;border-radius:28px;padding:clamp(1.6rem,4vw,3rem);color:#fff;background:radial-gradient(70% 90% at 0% 100%,#2BC4E8 0%,transparent 55%),radial-gradient(60% 70% at 100% 0%,#9B7BFF 0%,transparent 60%),linear-gradient(135deg,#1C0C78 0%,#3A1FD0 60%,#6A4CFF 100%)}
+.process h2{color:#fff;margin-top:1rem}
+.process p{color:rgba(255,255,255,.85);margin:.9rem 0 0;max-width:420px}
+.process .pill-label{background:rgba(255,255,255,.14);border-color:rgba(255,255,255,.25);color:#fff}
+.process .pill-label::before{background:#7CF0B5}
+.steps{display:grid;gap:.7rem;list-style:none;margin:0;padding:0;counter-reset:s}
+.steps li{counter-increment:s;display:grid;grid-template-columns:2.4rem 1fr;gap:.9rem;align-items:start;background:rgba(255,255,255,.94);color:#2E2A45;border-radius:18px;padding:1rem 1.1rem;box-shadow:0 14px 30px -18px rgba(10,0,60,.6)}
+.steps li::before{content:counter(s);display:grid;place-items:center;width:2.4rem;height:2.4rem;border-radius:12px;background:#EEEAFE;color:#5B3DF5;font-weight:800}
+.steps b{display:block;color:#140F2E;font-size:1.06rem;font-weight:600}
+.steps span{font-size:.9rem;color:#65607F}
+@media (max-width:860px){.process{grid-template-columns:1fr}}
+
+/* features */
+.fgrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:1rem}
+@media (max-width:900px){.fgrid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:600px){.fgrid{grid-template-columns:1fr}}
+.feat{padding:1.5rem;border-radius:var(--r-lg);background:var(--surface);border:1px solid var(--line);transition:transform .2s,box-shadow .2s}
+.feat:hover{transform:translateY(-3px);box-shadow:var(--shadow)}
+.fic{display:grid;place-items:center;width:46px;height:46px;border-radius:14px;background:var(--accent-soft);color:var(--accent);margin-bottom:1rem}
+.fic svg{width:22px;height:22px}
+.feat h3{margin:0;font-size:1.2rem;font-weight:600;color:var(--ink);letter-spacing:-.01em}
+.feat p{margin:.45rem 0 0;color:var(--muted);font-size:.93rem}
+.feat .tagline{display:inline-block;margin-top:.9rem;font-size:.75rem;font-weight:700;color:var(--accent);background:var(--accent-soft);padding:.2rem .6rem;border-radius:999px}
+.feat.hl{background:linear-gradient(160deg,#1C0C78,#3A1FD0 70%,#6A4CFF);border-color:transparent;color:#fff}
+.feat.hl h3{color:#fff} .feat.hl p{color:rgba(255,255,255,.82)} .feat.hl .fic{background:rgba(255,255,255,.14);color:#fff} .feat.hl .tagline{background:rgba(255,255,255,.14);color:#fff}
+
+/* faq */
+.faq{display:grid;grid-template-columns:minmax(0,.8fr) minmax(0,1.2fr);gap:2.5rem;align-items:start;padding:clamp(1.5rem,4vw,2.8rem)}
+@media (max-width:860px){.faq{grid-template-columns:1fr;gap:1.2rem}}
+.faq h2{margin-top:1rem}
+.faq .side p{color:var(--muted);margin:.9rem 0 0}
+.qa{display:grid;gap:.55rem}
+.qa details{border:1px solid var(--line);border-radius:16px;background:var(--surface);transition:border-color .2s}
+.qa details[open]{border-color:color-mix(in srgb,var(--accent) 45%,var(--line));box-shadow:0 8px 24px -18px rgba(40,20,120,.4)}
+.qa summary{cursor:pointer;list-style:none;display:flex;justify-content:space-between;align-items:center;gap:1rem;padding:1rem 1.15rem;font-weight:600;font-size:1.02rem;color:var(--ink);font-size:.97rem}
+.qa summary::-webkit-details-marker{display:none}
+.qa summary i{flex:none;display:grid;place-items:center;width:28px;height:28px;border-radius:50%;background:var(--sunk);transition:transform .2s}
+.qa summary i svg{width:14px;height:14px}
+.qa details[open] summary i{transform:rotate(45deg);background:var(--accent-soft);color:var(--accent)}
+.qa .ans{padding:0 1.15rem 1.05rem;color:var(--muted);font-size:.94rem}
+.qa .ans p{margin:0}
+
+/* cta */
+.cta{position:relative;overflow:hidden;text-align:center;border-radius:32px;padding:clamp(2.4rem,6vw,4.5rem) 1.5rem;color:#fff;background:var(--hero)}
+.cta h2{color:#fff;font-size:clamp(2rem,5vw,3.4rem)}
+.cta p{color:rgba(255,255,255,.85);max-width:520px;margin:1rem auto 0}
+.cta .row{display:flex;flex-wrap:wrap;gap:.7rem;justify-content:center;margin-top:1.8rem}
+.btn.glass{background:rgba(255,255,255,.12);color:#fff;border-color:rgba(255,255,255,.3)}
+.btn.glass:hover{background:rgba(255,255,255,.2)}
+.sitefoot{max-width:1160px;margin:0 auto;padding:2.5rem 1.5rem 3rem;display:flex;flex-wrap:wrap;gap:.5rem 2rem;justify-content:space-between;color:var(--muted);font-size:.86rem}
+.sitefoot b{color:var(--ink)}
+.sitefoot{align-items:center}
+.footbrand{display:flex;flex-basis:100%;margin-bottom:.4rem}
+.copyright{flex-basis:100%;margin-top:.9rem;padding-top:1rem;border-top:1px solid var(--line);color:var(--muted);font-size:.84rem}
+.footbrand svg{height:30px;width:auto}
+.fl-dark{display:none} :root[data-theme="dark"] .fl-dark{display:block} :root[data-theme="dark"] .fl-light{display:none}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .fl-dark{display:block}:root:not([data-theme="light"]) .fl-light{display:none}}
 
 /* result cards */
-.list{list-style:none;padding:0;margin:1rem 0 0;display:grid;gap:.7rem}
-.ref{background:var(--surface);border:1px solid var(--line);border-radius:14px;overflow:hidden;transition:border-color .2s,box-shadow .2s}
+.list{list-style:none;padding:0;margin:1.1rem 0 0;display:grid;gap:.6rem}
+.ref{background:var(--surface);border:1px solid var(--line);border-radius:20px;overflow:hidden;transition:border-color .2s,box-shadow .2s,transform .2s}
+.ref:hover{border-color:color-mix(in srgb,var(--accent) 30%,var(--line))}
 .ref.open{box-shadow:var(--shadow)}
-.ref-head{display:grid;grid-template-columns:auto minmax(0,1fr) auto auto;gap:.85rem;align-items:center;width:100%;text-align:left;background:none;border:0;padding:.9rem 1rem;cursor:pointer}
+.ref-head{display:grid;grid-template-columns:auto minmax(0,1fr) auto auto;gap:.85rem;align-items:center;width:100%;text-align:left;background:none;border:0;padding:1rem 1.2rem;cursor:pointer}
 .ref-head:hover{background:var(--sunk)}
-.ico{display:grid;place-items:center;width:32px;height:32px;border-radius:50%;font-weight:700;flex:none}
+.ico{display:grid;place-items:center;width:38px;height:38px;border-radius:12px;font-weight:700;flex:none}
 .ico svg{width:17px;height:17px}
 .s-ok .ico{background:var(--ok-bg);color:var(--ok)} .s-warn .ico{background:var(--warn-bg);color:var(--warn)} .s-bad .ico,.s-error .ico{background:var(--bad-bg);color:var(--bad)} .s-fixed .ico{background:var(--fix-bg);color:var(--fix)} .s-pending .ico{background:var(--sunk);color:var(--muted)} .s-manual .ico{background:var(--accent-soft);color:var(--accent)} .s-retracted .ico{background:var(--ret);color:#fff}
-.ref{border-left:4px solid var(--line)}
-.s-ok{border-left-color:var(--ok)} .s-warn{border-left-color:var(--warn)} .s-bad,.s-error{border-left-color:var(--bad)} .s-fixed{border-left-color:var(--fix)} .s-manual{border-left-color:var(--accent)} .s-retracted{border-left-color:var(--ret)}
+.s-retracted{border-color:color-mix(in srgb,var(--ret) 45%,var(--line))}
 .spin{width:16px;height:16px;border-radius:50%;border:2.5px solid currentColor;border-right-color:transparent;animation:spin .8s linear infinite}
 @keyframes spin{to{transform:rotate(360deg)}}
 .ref-main{min-width:0}
-.ref-title{display:block;color:var(--ink);font-family:var(--serif);font-weight:500;font-size:1.05rem;line-height:1.3;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ref-title{display:block;color:var(--ink);font-family:var(--sans);font-weight:600;font-size:1.05rem;letter-spacing:-.01em;line-height:1.3;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .ref.open .ref-title{white-space:normal}
 .ref-meta{display:block;color:var(--muted);font-size:.825rem;margin-top:.1rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.badge{white-space:nowrap;font-size:.78rem;font-weight:700;padding:.25rem .6rem;border-radius:6px}
+.badge{white-space:nowrap;font-size:.76rem;font-weight:700;padding:.3rem .7rem;border-radius:999px}
 .s-ok .badge{background:var(--ok-bg);color:var(--ok)} .s-warn .badge{background:var(--warn-bg);color:var(--warn)} .s-bad .badge,.s-error .badge{background:var(--bad-bg);color:var(--bad)} .s-fixed .badge{background:var(--fix-bg);color:var(--fix)} .s-pending .badge{background:var(--sunk);color:var(--muted)} .s-manual .badge{background:var(--accent-soft);color:var(--accent)} .s-retracted .badge{background:var(--ret);color:#fff}
 .ref-tags{display:flex;flex-wrap:wrap;gap:.3rem;margin-top:.3rem}
-.rtag{font-size:.72rem;font-weight:700;padding:.1rem .45rem;border-radius:4px;background:var(--sunk);color:var(--muted);border:1px solid var(--line)}
+.rtag{font-size:.72rem;font-weight:700;padding:.12rem .55rem;border-radius:999px;background:var(--sunk);color:var(--muted);border:1px solid var(--line)}
 .rtag.dup{background:var(--accent-soft);color:var(--accent);border-color:transparent} .rtag.pub{background:var(--fix-bg);color:var(--fix);border-color:transparent}
 .rtag.unc{background:var(--warn-bg);color:var(--warn);border-color:transparent} .rtag.con{background:var(--warn-bg);color:var(--warn);border-color:transparent} .rtag.cor{background:var(--sunk)}
-.alert{display:grid;grid-template-columns:auto minmax(0,1fr);gap:.75rem;align-items:start;border-radius:12px;padding:.8rem .95rem;font-size:.9rem;border:1px solid transparent}
+.alert{display:grid;grid-template-columns:auto minmax(0,1fr);gap:.75rem;align-items:start;border-radius:16px;padding:.8rem .95rem;font-size:.9rem;border:1px solid transparent}
 .alert svg{width:20px;height:20px;margin-top:.1rem}
 .alert b{display:block;color:inherit;font-size:.95rem}
 .alert p{margin:.15rem 0 0;color:var(--text)}
@@ -168,7 +280,7 @@ details.opts[open] summary svg{transform:rotate(90deg)}
 .alert.dup{background:var(--accent-soft);color:var(--accent)}
 .alert.cor{background:var(--sunk);color:var(--ink);border-color:var(--line)}
 .alert.unc{background:var(--warn-bg);color:var(--warn)}
-.cites{margin-top:.9rem;padding:.85rem 1rem;border:1px solid var(--line);border-radius:12px;background:var(--sunk);font-size:.9rem}
+.cites{margin-top:1rem;padding:.9rem 1.05rem;border:1px solid var(--line);border-radius:16px;background:var(--sunk);font-size:.9rem}
 .cites h3{margin:0 0 .35rem;font-size:.9rem;color:var(--ink)}
 .cites p{margin:.25rem 0}
 .linkbtn{background:none;border:0;padding:0;color:var(--accent);font-weight:700;cursor:pointer;text-decoration:underline;text-underline-offset:2px}
@@ -177,12 +289,12 @@ details.opts[open] summary svg{transform:rotate(90deg)}
 .chev{width:18px;height:18px;color:var(--muted);transition:transform .2s}
 .ref.open .chev{transform:rotate(180deg)}
 @media (max-width:560px){.ref-head{grid-template-columns:auto minmax(0,1fr) auto}.badge{display:none}}
-.ref-body{padding:0 1.1rem 1.1rem 1.1rem;border-top:1px solid var(--line);animation:reveal .22s ease-out}
+.ref-body{padding:0 1.25rem 1.25rem;border-top:1px solid var(--line);animation:reveal .22s ease-out}
 @keyframes reveal{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:none}}
 .sec{margin-top:1rem}
 .sec h3{font-size:.8rem;font-weight:700;color:var(--muted);margin:0 0 .4rem;letter-spacing:.01em}
-.raw{background:var(--sunk);border:1px solid var(--line);border-radius:10px;padding:.7rem .85rem;font-size:.9rem;overflow-wrap:anywhere}
-.cmp-wrap{overflow-x:auto;border:1px solid var(--line);border-radius:10px}
+.raw{background:var(--sunk);border:1px solid var(--line);border-radius:14px;padding:.7rem .85rem;font-size:.9rem;overflow-wrap:anywhere}
+.cmp-wrap{overflow-x:auto;border:1px solid var(--line);border-radius:14px}
 table.cmp{width:100%;border-collapse:collapse;font-size:.9rem;min-width:520px}
 .cmp th,.cmp td{text-align:left;vertical-align:top;padding:.55rem .75rem;border-bottom:1px solid var(--line)}
 .cmp tr:last-child td{border-bottom:0}
@@ -206,7 +318,7 @@ mark.add{background:var(--ok-bg);color:var(--ok);border-radius:3px;padding:0 .1e
 .issues li::before{content:"!";display:grid;place-items:center;width:1.1rem;height:1.1rem;margin-top:.2rem;border-radius:50%;background:var(--warn-bg);color:var(--warn);font-size:.7rem;font-weight:700}
 .s-bad .issues li::before{background:var(--bad-bg);color:var(--bad)}
 .issues li.info::before{content:"i";background:var(--accent-soft);color:var(--accent)}
-.fix{border:1px solid var(--line);border-radius:12px;overflow:hidden}
+.fix{border:1px solid var(--line);border-radius:16px;overflow:hidden}
 .fix-head{display:flex;flex-wrap:wrap;gap:.5rem 1rem;align-items:center;justify-content:space-between;padding:.65rem .85rem;background:var(--sunk);border-bottom:1px solid var(--line)}
 .fix-head b{color:var(--ink);font-size:.9rem}
 .switch{display:inline-flex;align-items:center;gap:.55rem;cursor:pointer;font-size:.875rem;font-weight:700}
@@ -225,7 +337,7 @@ mark.add{background:var(--ok-bg);color:var(--ok);border-radius:3px;padding:0 .1e
 .tag{font-size:.75rem;font-weight:700;padding:.15rem .5rem;border-radius:5px;background:var(--accent-soft);color:var(--accent)}
 .ref-actions{display:flex;flex-wrap:wrap;gap:.5rem;margin-top:1rem}
 .btn.vouch{border-color:color-mix(in srgb,var(--accent) 45%,var(--line));color:var(--accent)}
-.manualbox{border:1.5px solid var(--accent);background:var(--accent-soft);border-radius:12px;padding:.85rem .95rem}
+.manualbox{border:1.5px solid var(--accent);background:var(--accent-soft);border-radius:16px;padding:.85rem .95rem}
 .manualbox p{margin:0 0 .6rem;font-size:.9rem;color:var(--ink)}
 .manualbox input{width:100%;padding:.5rem .7rem;border:1px solid var(--line);border-radius:8px;background:var(--surface);font-size:.9rem}
 .manualbox .ref-actions{margin-top:.6rem}
@@ -235,114 +347,456 @@ mark.add{background:var(--ok-bg);color:var(--ok);border-radius:3px;padding:0 .1e
 .nores{padding:2rem;text-align:center;color:var(--muted)}
 
 /* toast */
-.toast{position:fixed;left:50%;bottom:calc(env(safe-area-inset-bottom,0px) + 1.5rem);transform:translate(-50%,calc(100% + 3rem));visibility:hidden;background:var(--ink);color:var(--surface);padding:.7rem 1.1rem;border-radius:10px;font-weight:700;font-size:.9rem;box-shadow:var(--shadow);transition:transform .25s cubic-bezier(.2,.8,.2,1);z-index:50;max-width:calc(100vw - 2rem)}
+.toast{position:fixed;left:50%;bottom:calc(env(safe-area-inset-bottom,0px) + 1.5rem);transform:translate(-50%,calc(100% + 3rem));visibility:hidden;background:var(--ink);color:var(--surface);padding:.75rem 1.2rem;border-radius:999px;font-weight:700;font-size:.9rem;box-shadow:var(--shadow);transition:transform .25s cubic-bezier(.2,.8,.2,1);z-index:50;max-width:calc(100vw - 2rem)}
 .toast.show{transform:translate(-50%,0);visibility:visible}
-footer{max-width:1320px;margin:0 auto;padding:0 1.5rem 3rem;color:var(--muted);font-size:.85rem}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+
+/* ================= interactive buttons & symmetry ================= */
+.btn,.chipbtn,.chip,.plus,.iconbtn{position:relative;overflow:hidden;-webkit-tap-highlight-color:transparent}
+.btn{height:44px;padding:0 1.25rem;transition:transform .22s cubic-bezier(.2,.8,.2,1),box-shadow .22s,background-color .22s,background-position .45s,color .2s,border-color .2s}
+.btn.sm{height:38px;padding:0 .95rem}
+.btn svg{transition:transform .25s cubic-bezier(.2,.8,.2,1)}
+.btn:hover:not(:disabled){transform:translateY(-2px);background:var(--accent-soft);border-color:color-mix(in srgb,var(--accent) 45%,var(--line));color:var(--accent);box-shadow:0 10px 22px -14px color-mix(in srgb,var(--accent) 80%,transparent)}
+.btn:active:not(:disabled){transform:translateY(0) scale(.97);transition-duration:.08s}
+.btn:hover:not(:disabled) svg{transform:scale(1.12)}
+/* primary: shifting violet gradient, glow and a shine sweep */
+.btn.primary{border:0;color:#fff;background-image:linear-gradient(120deg,#7A5CFF 0%,#5B3DF5 45%,#3F23D6 100%);background-size:200% 100%;background-position:0% 50%;box-shadow:0 8px 20px -10px rgba(91,61,245,.75),inset 0 1px 0 rgba(255,255,255,.22)}
+.btn.primary::after{content:"";position:absolute;top:0;bottom:0;left:-60%;width:45%;background:linear-gradient(100deg,transparent,rgba(255,255,255,.38),transparent);transform:skewX(-20deg);transition:left .6s ease;pointer-events:none}
+.btn.primary:hover:not(:disabled){background:inherit;background-image:linear-gradient(120deg,#7A5CFF 0%,#5B3DF5 45%,#3F23D6 100%);background-size:200% 100%;background-position:100% 50%;color:#fff;box-shadow:0 14px 30px -12px rgba(91,61,245,.9),0 0 0 4px rgba(124,92,255,.18),inset 0 1px 0 rgba(255,255,255,.25)}
+.btn.primary:hover:not(:disabled)::after{left:120%}
+:root[data-theme="dark"] .btn.primary{color:#fff}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .btn.primary{color:#fff}}
+/* light (white) buttons on the violet hero and CTA */
+.btn.light{color:#2810A6;background:#fff}
+.btn.light:hover:not(:disabled){background:linear-gradient(120deg,#FFFFFF,#E9E2FF);color:#3A1FD0;border-color:#fff;box-shadow:0 14px 30px -12px rgba(10,0,60,.6),0 0 0 4px rgba(255,255,255,.18)}
+.btn.glass:hover:not(:disabled){background:rgba(255,255,255,.22);border-color:rgba(255,255,255,.55);color:#fff;box-shadow:0 14px 30px -14px rgba(10,0,60,.6)}
+.btn.ghost:hover:not(:disabled){box-shadow:none}
+/* icons with intent */
+#run:hover:not(:disabled) svg{transform:translateY(-3px)}
+#bibdl:hover:not(:disabled) svg{transform:translateY(2px)}
+#report:hover:not(:disabled) svg{transform:rotate(-8deg) scale(1.1)}
+#report:hover:not(:disabled){background:var(--accent);color:var(--accent-ink)!important;border-color:var(--accent)!important}
+.btn[data-act="recheck"]:hover:not(:disabled) svg,#recheckflag:hover svg{transform:rotate(-180deg)}
+.btn.vouch:hover:not(:disabled){background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+/* prompt-bar controls */
+.plus{transition:transform .25s cubic-bezier(.2,.8,.2,1),background-color .2s,color .2s,box-shadow .2s}
+.plus svg{transition:transform .3s cubic-bezier(.2,.8,.2,1)}
+.plus:hover{transform:scale(1.06);background:var(--accent);color:#fff;box-shadow:0 8px 18px -8px rgba(91,61,245,.8)}
+.plus:hover svg{transform:rotate(90deg)}
+.plus:active{transform:scale(.95)}
+.chipbtn{height:40px;transition:background-color .2s,color .2s,transform .2s}
+.chipbtn svg{transition:transform .45s cubic-bezier(.2,.8,.2,1)}
+.chipbtn:hover{background:var(--accent-soft);color:var(--accent)}
+.chipbtn:hover svg{transform:rotate(180deg)}
+.chipbtn:active{transform:scale(.96)}
+.iconbtn{transition:background-color .2s,border-color .2s,transform .2s}
+.iconbtn svg{transition:transform .35s cubic-bezier(.2,.8,.2,1)}
+.iconbtn:hover{background:rgba(255,255,255,.22);border-color:rgba(255,255,255,.5)}
+.iconbtn:hover svg{transform:rotate(-20deg) scale(1.08)}
+/* filter chips */
+.chip{height:36px;transition:background-color .2s,border-color .2s,color .2s,transform .2s,box-shadow .2s}
+.chip:hover:not([aria-pressed="true"]){border-color:color-mix(in srgb,var(--accent) 50%,var(--line));background:var(--accent-soft);color:var(--accent);transform:translateY(-1px)}
+.chip[aria-pressed="true"]{box-shadow:0 6px 16px -10px rgba(20,15,46,.6)}
+/* nav: true centre + animated underline */
+.nav{display:grid;grid-template-columns:1fr auto 1fr}
+.nav .navright{justify-self:end}
+.navlinks a{position:relative;transition:color .2s,background-color .2s}
+.navlinks a::after{content:"";position:absolute;left:.9rem;right:.9rem;bottom:.3rem;height:2px;border-radius:2px;background:#fff;transform:scaleX(0);transform-origin:left;transition:transform .3s cubic-bezier(.2,.8,.2,1)}
+.navlinks a:hover::after{transform:scaleX(1)}
+@media (max-width:860px){.nav{grid-template-columns:1fr auto}}
+/* results: aligned tool row and an even action grid */
+.tools{align-items:stretch}
+.search input,.tools select{height:44px}
+.tools select,#expand{min-width:150px}
+.actions-row{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:.6rem}
+.actions-row .btn{width:100%;height:44px}
+#bibdl,#report{grid-column:span 3}
+#csv,#recheckflag,#verifybib{grid-column:span 2}
+@media (max-width:560px){.actions-row>.btn{grid-column:1/-1!important}.tools select,#expand{flex:1 1 0;min-width:0}}
+/* reference cards */
+.ref{transition:border-color .2s,box-shadow .25s,transform .25s cubic-bezier(.2,.8,.2,1)}
+.ref:hover{transform:translateY(-1px);box-shadow:0 12px 28px -20px rgba(40,20,120,.45)}
+.ref-head .chev{transition:transform .25s,color .2s}
+.ref-head:hover .chev{color:var(--accent)}
+.ref-head:hover .ico{transform:scale(1.06)}
+.ico{transition:transform .2s}
+.ref-actions{gap:.55rem}
+.copy{height:34px}
+/* feature cards, steps, FAQ */
+.feat{display:flex;flex-direction:column;transition:transform .3s cubic-bezier(.2,.8,.2,1),box-shadow .3s,border-color .3s}
+.feat .tagline{margin-top:auto;align-self:flex-start}
+.feat p{margin-bottom:1rem}
+.feat:hover{transform:translateY(-5px);border-color:color-mix(in srgb,var(--accent) 40%,var(--line));box-shadow:0 22px 40px -24px rgba(60,30,180,.55)}
+.fic{transition:background-color .3s,color .3s,transform .3s}
+.feat:not(.hl):hover .fic{background:var(--accent);color:#fff;transform:rotate(-6deg)}
+.feat.hl:hover .fic{background:#fff;color:#3A1FD0;transform:rotate(-6deg)}
+.steps li{transition:transform .25s cubic-bezier(.2,.8,.2,1),box-shadow .25s}
+.steps li:hover{transform:translateX(6px);box-shadow:0 18px 34px -18px rgba(10,0,60,.7)}
+.steps li::before{transition:background-color .25s,color .25s}
+.steps li:hover::before{background:#5B3DF5;color:#fff}
+.qa summary{transition:color .2s}
+.qa summary:hover{color:var(--accent)}
+.qa summary:hover i{background:var(--accent-soft);color:var(--accent)}
+/* call to action: equal buttons */
+.cta .row .btn{min-width:210px;height:50px;font-size:1rem}
+@media (max-width:480px){.cta .row .btn{width:100%}}
+/* status filters on one row, extra filters on the next */
+.chipsep{flex-basis:100%;width:auto;height:0;margin:0;background:none}
+/* ripple from the click point */
+.ripple{position:absolute;border-radius:50%;pointer-events:none;background:currentColor;opacity:.22;transform:scale(0);animation:ripple .6s ease-out forwards}
+.btn.primary .ripple,.btn.glass .ripple{background:#fff;opacity:.35}
+@keyframes ripple{to{transform:scale(1);opacity:0}}
+@media (prefers-reduced-motion:reduce){.btn:hover,.feat:hover,.steps li:hover,.ref:hover,.chip:hover{transform:none!important}.ripple{display:none}}
+
+/* ---------- "New" tags ---------- */
+.newtag{position:relative;overflow:hidden;display:inline-flex;align-items:center;gap:.3rem;height:20px;padding:0 .55rem;border-radius:999px;font-size:.7rem;font-weight:600;letter-spacing:.03em;text-transform:uppercase;color:#053D22;background:linear-gradient(120deg,#7CF0B5 0%,#5BD495 55%,#3FBF7F 100%);box-shadow:0 0 0 1px rgba(255,255,255,.35) inset,0 4px 12px -4px rgba(63,191,127,.75);flex:none;line-height:1}
+.newtag::before{content:"";width:5px;height:5px;border-radius:50%;background:#053D22;opacity:.75;animation:newpulse 2.2s ease-in-out infinite}
+.newtag::after{content:"";position:absolute;top:0;bottom:0;left:-70%;width:50%;background:linear-gradient(100deg,transparent,rgba(255,255,255,.85),transparent);transform:skewX(-20deg);animation:newshine 3.6s ease-in-out infinite}
+@keyframes newshine{0%,55%{left:-70%}85%,100%{left:130%}}
+@keyframes newpulse{0%,100%{transform:scale(1);opacity:.75}50%{transform:scale(1.5);opacity:.35}}
+#report .newtag{margin-left:.15rem}
+.feat h3{display:flex;align-items:center;gap:.55rem;flex-wrap:wrap}
+/* hero announcement pill */
+.announce{display:inline-flex;align-items:center;gap:.6rem;padding:.32rem .9rem .32rem .35rem;border-radius:999px;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.24);color:#fff;text-decoration:none;font-size:.9rem;font-weight:500;backdrop-filter:blur(6px);transition:background-color .25s,border-color .25s,transform .25s cubic-bezier(.2,.8,.2,1),box-shadow .25s}
+.announce .newtag{height:24px;padding:0 .65rem}
+.announce svg{width:16px;height:16px;transition:transform .25s cubic-bezier(.2,.8,.2,1)}
+.announce:hover{background:rgba(255,255,255,.2);border-color:rgba(255,255,255,.45);transform:translateY(-2px);box-shadow:0 12px 26px -14px rgba(10,0,60,.7)}
+.announce:hover svg{transform:translateX(4px)}
+@media (max-width:480px){.announce{font-size:.8rem;gap:.45rem}.announce .ann-long{display:none}}
+@media (prefers-reduced-motion:reduce){.newtag::before,.newtag::after{animation:none}}
+
+/* ---------- feedback ---------- */
+.fab{position:fixed;right:max(1.1rem,env(safe-area-inset-right,0px));bottom:calc(env(safe-area-inset-bottom,0px) + 1.1rem);z-index:40;display:inline-flex;align-items:center;gap:.5rem;height:46px;padding:0 1.1rem 0 .95rem;border-radius:999px;border:1px solid var(--line);background:var(--surface);color:var(--ink);font:500 .92rem var(--sans);cursor:pointer;box-shadow:0 12px 30px -14px rgba(40,20,120,.55);transition:transform .25s cubic-bezier(.2,.8,.2,1),background-color .2s,color .2s,border-color .2s,box-shadow .25s;overflow:hidden}
+.fab svg{width:19px;height:19px;transition:transform .35s cubic-bezier(.2,.8,.2,1)}
+.fab:hover{transform:translateY(-3px);background:var(--accent);border-color:var(--accent);color:var(--accent-ink);box-shadow:0 18px 36px -14px rgba(91,61,245,.8)}
+.fab:hover svg{transform:rotate(-12deg) scale(1.1)}
+.fab:active{transform:translateY(0) scale(.97)}
+@media (max-width:640px){.fab{width:48px;height:48px;padding:0;justify-content:center}.fab span{display:none}}
+.fab[hidden]{display:none}
+@media (max-width:640px){.fab.away{transform:translateY(140%);opacity:0;pointer-events:none}}
+.linkish{background:none;border:0;padding:0;font:inherit;color:var(--accent);font-weight:600;cursor:pointer;text-decoration:underline;text-underline-offset:3px}
+.linkish:hover{color:var(--ink)}
+dialog.dlg{width:min(560px,calc(100vw - 2rem));max-height:calc(100dvh - 2rem);padding:0;border:1px solid var(--line);border-radius:24px;background:var(--surface);color:var(--text);box-shadow:0 40px 90px -30px rgba(20,10,80,.6);overflow:auto}
+dialog.dlg::backdrop{background:rgba(16,8,60,.45);backdrop-filter:blur(4px)}
+dialog.dlg[open]{animation:dlgin .28s cubic-bezier(.2,.8,.2,1)}
+@keyframes dlgin{from{opacity:0;transform:translateY(14px) scale(.98)}to{opacity:1;transform:none}}
+.dlg-head{position:relative;padding:1.4rem 1.5rem 1.2rem;color:#fff;background:var(--hero)}
+.dlg-head h2{margin:.7rem 0 0;font-size:1.6rem;color:#fff}
+.dlg-head p{margin:.35rem 0 0;color:rgba(255,255,255,.84);font-size:.92rem}
+.dlg-x{position:absolute;top:.9rem;right:.9rem;width:38px;height:38px;border-radius:50%;border:1px solid rgba(255,255,255,.3);background:rgba(255,255,255,.12);color:#fff;cursor:pointer;display:grid;place-items:center;transition:background-color .2s,transform .25s}
+.dlg-x:hover{background:rgba(255,255,255,.25);transform:rotate(90deg)}
+.dlg-x svg{width:16px;height:16px}
+.dlg-body{padding:1.25rem 1.5rem 1.5rem;display:grid;gap:1rem}
+.types{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:.45rem}
+@media (max-width:520px){.types{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.types label{position:relative;display:flex;flex-direction:column;align-items:center;gap:.35rem;padding:.75rem .4rem;border:1px solid var(--line);border-radius:14px;cursor:pointer;font-size:.84rem;font-weight:500;color:var(--text);text-align:center;transition:border-color .2s,background-color .2s,color .2s,transform .2s}
+.types label:hover{border-color:color-mix(in srgb,var(--accent) 45%,var(--line));transform:translateY(-2px)}
+.types input{position:absolute;opacity:0;pointer-events:none}
+.types svg{width:20px;height:20px}
+.types label:has(input:checked){border-color:var(--accent);background:var(--accent-soft);color:var(--accent);box-shadow:0 0 0 3px color-mix(in srgb,var(--accent) 18%,transparent)}
+.types label:has(input:focus-visible){outline:3px solid color-mix(in srgb,var(--accent) 60%,transparent);outline-offset:2px}
+.fld label{display:block;font-weight:600;color:var(--ink);font-size:.88rem;margin-bottom:.35rem}
+.fld textarea,.fld input[type=email]{width:100%;padding:.7rem .85rem;border:1px solid var(--line);border-radius:14px;background:var(--sunk);font:15px/1.55 var(--sans);color:var(--ink);transition:border-color .2s,box-shadow .2s}
+.fld textarea{min-height:120px;resize:vertical}
+.fld textarea:focus,.fld input[type=email]:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 4px color-mix(in srgb,var(--accent) 16%,transparent)}
+.fld .hint{margin:.3rem 0 0;font-size:.8rem;color:var(--muted)}
+.ctxbox{border:1px solid var(--line);border-radius:14px;background:var(--sunk);padding:.75rem .9rem;font-size:.86rem}
+.ctxbox b{color:var(--ink)}
+.ctxbox p{margin:.25rem 0 0;color:var(--muted);overflow-wrap:anywhere}
+.techrow{display:flex;align-items:flex-start;gap:.6rem;font-size:.88rem}
+.techrow input{margin-top:.2rem;width:17px;height:17px;accent-color:var(--accent)}
+.techrow details{margin-top:.25rem}
+.techrow summary{cursor:pointer;color:var(--accent);font-weight:500}
+.techrow pre{margin:.4rem 0 0;padding:.6rem .7rem;border-radius:10px;background:var(--sunk);border:1px solid var(--line);font:12px/1.5 var(--mono);white-space:pre-wrap;color:var(--muted);max-height:160px;overflow:auto}
+.dlg-actions{display:grid;grid-template-columns:1fr 1fr;gap:.6rem;margin-top:.25rem}
+.dlg-actions .btn{width:100%;height:46px;white-space:nowrap;padding:0 .8rem}
+@media (max-width:380px){.dlg-actions .btn{font-size:.88rem;gap:.35rem}}
+.formerr{color:var(--bad);font-size:.84rem;margin:.3rem 0 0;display:none}
+.formerr.show{display:block}
 </style>
 </head>
 <body>
-<header class="bar">
-  <a class="brand" href="#">
-    <svg viewBox="0 0 32 32" aria-hidden="true"><rect width="32" height="32" rx="8" fill="var(--accent)"/><path d="M9 16.5l4.5 4.5L23 11" stroke="var(--accent-ink)" stroke-width="3.2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
-    Reference Checker
-  </a>
-  <button class="iconbtn" id="theme" aria-label="Switch light or dark mode">
-    <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
-    <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="4.5"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>
-  </button>
+<header class="hero">
+  <nav class="nav" aria-label="Main">
+    <a class="brand" href="#top" id="top" aria-label="CiTrue home"><svg class="logo" viewBox="0 0 219 72" height="50" role="img" aria-label="CiTrue"><defs><mask id="lg-nav" maskUnits="userSpaceOnUse" x="0" y="0" width="80" height="80"><rect width="80" height="80" fill="#fff"/><circle cx="46" cy="56" r="15.6" fill="#000"/></mask></defs>
+<g mask="url(#lg-nav)" fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-width="4.2">
+  <path d="M14 4H34L46 16V56a8 8 0 0 1-8 8H14a8 8 0 0 1-8-8V12a8 8 0 0 1 8-8Z" stroke="#FFFFFF"/>
+  <path d="M34 4.5V12a4 4 0 0 0 4 4h7.5" stroke="#FFFFFF"/>
+  <path d="M15 25.5H26" stroke="#FFFFFF"/>
+  <path d="M15 33.5H35M15 41.5H33M15 49.5H27" stroke="rgba(255,255,255,.55)"/>
+</g>
+<circle cx="46" cy="56" r="12.2" fill="#5BD495"/>
+<path d="M40.4 56.4l4 4 7.4-8" fill="none" stroke="#fff" stroke-width="3.6" stroke-linecap="round" stroke-linejoin="round"/>
+
+<path d="M94.71775 47.4935Q91.07525 47.4935 87.97325000000001 46.201Q84.87125 44.908500000000004 82.5565 42.576125000000005Q80.24175 40.24375 78.978625 37.14175Q77.7155 34.03975 77.7155 30.46775Q77.7155 26.884 78.978625 23.787875Q80.24175 20.69175 82.550625 18.38875Q84.8595 16.08575 87.955625 14.775625Q91.05175 13.465499999999999 94.69425 13.465499999999999Q98.66575 13.465499999999999 101.662 14.758Q104.65825 16.0505 106.9495 18.283L102.63725 22.607Q101.2625 21.103 99.2885 20.257Q97.3145 19.411 94.69425 19.411Q92.39125 19.411 90.481875 20.19825Q88.5725 20.9855 87.180125 22.460124999999998Q85.78775 23.93475 85.029875 25.973375Q84.272 28.012 84.272 30.46775Q84.272 32.935249999999996 85.029875 34.973875Q85.78775 37.0125 87.180125 38.487125000000006Q88.5725 39.96175 90.481875 40.754875Q92.39125 41.548 94.69425 41.548Q97.479 41.548 99.46475000000001 40.696125Q101.4505 39.84425 102.84875 38.3285L107.17275000000001 42.6525Q104.858 44.92025 101.79125 46.206875Q98.7245 47.4935 94.71775 47.4935ZM110.49799999999999 47.0V24.299H116.67849999999999V47.0ZM113.58824999999999 20.6565Q112.09599999999999 20.6565 111.10899999999998 19.640125Q110.12199999999999 18.62375 110.12199999999999 17.1315Q110.12199999999999 15.63925 111.10899999999998 14.622874999999999Q112.09599999999999 13.606499999999997 113.58824999999999 13.606499999999997Q115.1275 13.606499999999997 116.091 14.622874999999999Q117.05449999999999 15.63925 117.05449999999999 17.1315Q117.05449999999999 18.62375 116.091 19.640125Q115.1275 20.6565 113.58824999999999 20.6565Z" fill="#FFFFFF"/>
+<path d="M129.82825 47.0V14.664000000000001H136.232V47.0ZM119.2885 19.65775V13.959000000000003H146.7835V19.65775ZM150.04999999999998 47.0V24.299H156.2305V47.0ZM156.2305 34.46275 153.82175 32.84125Q154.26825 28.6935 156.28917791411044 26.26125Q158.31010582822086 23.829 162.09375 23.829Q163.76225 23.829 165.072375 24.38125Q166.3825 24.9335 167.44 26.132L163.6095 30.5735Q163.069 29.986 162.34506944444445 29.709875Q161.62113888888888 29.43375 160.672 29.43375Q158.698 29.43375 157.46425 30.664544025157234Q156.2305 31.895338050314464 156.2305 34.46275ZM179.67175 47.4935Q176.6894478417266 47.4935 174.35597392086328 46.21275Q172.02249999999998 44.932 170.71237499999998 42.67555131264916Q169.40224999999998 40.41910262529833 169.40224999999998 37.47030336457303V24.299H175.58275V37.318Q175.58275 38.72981285714286 176.06303125 39.73134928571429Q176.54331249999998 40.732885714285715 177.47280528846153 41.26969285714286Q178.40229807692307 41.8065 179.6832974137931 41.8065Q181.6105 41.8065 182.67975 40.630795Q183.749 39.45509 183.749 37.318V24.299H189.9295V37.47075Q189.9295 40.45525 188.62525 42.71125Q187.321 44.96725 185.00971582733814 46.230374999999995Q182.69843165467626 47.4935 179.67175 47.4935ZM205.19275 47.4935Q201.64425 47.4935 198.853625 45.965999999999994Q196.063 44.4385 194.45325 41.741875Q192.8435 39.04525 192.8435 35.6495Q192.8435 32.2655 194.423875 29.592375000000004Q196.00424999999998 26.91925 198.724375 25.362375Q201.4445 23.8055 204.79325 23.8055Q208.05975 23.8055 210.568375 25.268375Q213.077 26.73125 214.51049999999998 29.292749999999998Q215.944 31.85425 215.944 35.1325Q215.944 35.73175 215.87349999999998 36.366249999999994Q215.803 37.00075 215.6385 37.788L196.533 37.82325V33.24075L212.7715 33.2055L210.257 35.09725Q210.1865 33.07625 209.54612500000002 31.719125Q208.90575 30.362 207.713125 29.645249999999997Q206.5205 28.9285 204.76975 28.9285Q202.93675 28.9285 201.5855 29.73925Q200.23425 30.55 199.499875 32.024625Q198.7655 33.49925 198.7655 35.5555Q198.7655 37.6235 199.546875 39.145125Q200.32825 40.66675 201.7735 41.483374999999995Q203.21875 42.3 205.1575 42.3Q206.873 42.3 208.29475 41.706625Q209.7165 41.11325 210.7505 39.93825L214.3695 43.58075Q212.701 45.5195 210.3275 46.5065Q207.954 47.4935 205.19275 47.4935Z" fill="#5BD495"/></svg></a>
+    <ul class="navlinks">
+      <li><a href="#how">How it works</a></li>
+      <li><a href="#features">Features</a></li>
+      <li><a href="#faq">FAQ</a></li>
+    </ul>
+    <div class="navright">
+      <button class="iconbtn" id="theme" aria-label="Switch light or dark mode">
+        <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
+        <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="4.5"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>
+      </button>
+      <a class="btn light navcta" href="#checker">Check references</a>
+    </div>
+  </nav>
+
+  <div class="floaters" aria-hidden="true">
+    <div class="float f1" style="left:3%;top:120px;--r:-5deg;--d:0s"><span class="fp ok">Verified</span><b>Deep residual learning for image recognition</b><em>doi.org/10.1109/CVPR.2016.90</em></div>
+    <div class="float f2" style="left:1.5%;top:600px;--r:4deg;--d:-3s"><span class="fp ret">Retracted</span><b>Ileal-lymphoid-nodular hyperplasia, non-specific colitis…</b><em>Retracted on 6 February 2010</em></div>
+    <div class="float f3" style="right:4%;top:110px;--r:5deg;--d:-6s"><span class="fp fix">Corrected</span><b>BERT: Pre-training of deep bidirectional transformers</b><em>Year 2018 → 2019, venue fixed</em></div>
+    <div class="float f4" style="right:3%;top:470px;--r:-4deg;--d:-2s"><span class="fp warn">Now published</span><b>Causal inference Q-network</b><em>AAAI 2022 version available</em></div>
+  </div>
+
+  <div class="hero-inner" id="checker">
+    <a class="announce" href="#features"><span class="newtag">New</span><span>Retraction alerts<span class="ann-long"> and PDF verification reports</span></span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+    <h1><span class="soft">Every reference,</span><br>verified.</h1>
+    <p class="lede">Paste a reference list or drop in a paper. Each entry is checked against five scholarly databases, retractions are flagged, and mistakes come back as a corrected .bib.</p>
+
+    <div class="prompt">
+      <div class="prompt-card">
+        <div class="drop" id="drop">
+          <label class="sr" for="input">References</label>
+          <textarea id="input" spellcheck="false" placeholder="Paste your references here: numbered, APA, IEEE, one per line, or BibTeX. You can also drop a PDF of your paper, a .bib or a .txt file."></textarea>
+          <div class="drop-hint">Drop your file to load it</div>
+        </div>
+        <div class="prompt-bar">
+          <label class="plus" for="file" title="Upload a PDF, .bib or .txt">
+            <span class="sr">Upload a PDF, .bib or .txt file</span>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
+            <input type="file" id="file" accept=".pdf,.bib,.txt,.bbl,.ris,application/pdf,text/plain">
+          </label>
+          <button class="chipbtn" id="sample">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 3h5v5M4 20L21 3M21 16v5h-5M15 15l6 6M4 4l5 5"/></svg>
+            Try an example
+          </button>
+          <button class="chipbtn" id="clear">Clear</button>
+          <p class="detect" id="detect" aria-live="polite"><span class="dot"></span><span id="detectText">Waiting for references</span></p>
+          <span class="spacer"></span>
+          <button class="btn primary" id="run">
+            Check references
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5M6 11l6-6 6 6"/></svg>
+            <kbd>Ctrl ↵</kbd>
+          </button>
+        </div>
+        <details class="opts">
+          <summary><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M9 6l6 6-6 6"/></svg>Options</summary>
+          <div class="optgrid">
+            <div class="field">
+              <label for="mailto">Your email</label>
+              <input type="email" id="mailto" placeholder="you@university.edu" autocomplete="email">
+              <p>Puts your requests in CrossRef’s faster lane. Only sent to CrossRef and OpenAlex.</p>
+            </div>
+            <div class="field">
+              <label for="oakey">OpenAlex API key</label>
+              <input type="password" id="oakey" placeholder="Optional" autocomplete="off">
+              <p>Free at <a href="https://openalex.org/settings/api" target="_blank" rel="noopener">openalex.org/settings/api</a>. Saved in this browser only.</p>
+            </div>
+          </div>
+        </details>
+      </div>
+    </div>
+
+    <p class="trust">No sign-up. Nothing is uploaded or stored. It all runs in your browser.</p>
+    <div class="sources" aria-label="Databases checked">
+      <span>Crossref</span><span>DBLP</span><span>Semantic Scholar</span><span>arXiv</span><span>OpenAlex</span><span>Retraction Watch</span>
+    </div>
+  </div>
 </header>
 
-<main class="app">
-  <section class="compose" aria-label="Your references">
-    <div class="panel">
-      <h1>Are your citations real?</h1>
-      <p class="lede">Paste a bibliography and every entry is checked against five scholarly databases. Mistakes get a corrected BibTeX entry you can download.</p>
-      <div class="drop" id="drop">
-        <label class="sr" for="input">References</label>
-        <textarea id="input" spellcheck="false" placeholder="Paste references here, numbered, one per line, or as BibTeX. You can also drop a paper (PDF), .bib or .txt file here."></textarea>
-        <div class="drop-hint">Drop your file to load it</div>
-      </div>
-      <p class="detect" id="detect" aria-live="polite"><span class="dot"></span><span id="detectText">Waiting for references</span></p>
-      <button class="btn primary big" id="run">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>
-        Check references <kbd>Ctrl ↵</kbd>
-      </button>
-      <div class="minor">
-        <label class="btn sm" for="file">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 16V4M7 9l5-5 5 5M5 20h14"/></svg>
-          Upload .bib or PDF<input type="file" id="file" accept=".pdf,.bib,.txt,.bbl,.ris,application/pdf,text/plain">
-        </label>
-        <button class="btn sm" id="sample">Try an example</button>
-        <button class="btn sm ghost" id="clear">Clear</button>
-      </div>
-      <details class="opts">
-        <summary><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M9 6l6 6-6 6"/></svg>Options</summary>
-        <div class="field">
-          <label for="mailto">Your email</label>
-          <input type="email" id="mailto" placeholder="you@university.edu" autocomplete="email">
-          <p>Puts your requests in CrossRef’s faster lane. Only sent to CrossRef and OpenAlex.</p>
-        </div>
-        <div class="field">
-          <label for="oakey">OpenAlex API key</label>
-          <input type="password" id="oakey" placeholder="Optional" autocomplete="off">
-          <p>Free at <a href="https://openalex.org/settings/api" target="_blank" rel="noopener">openalex.org/settings/api</a>. Adds one more database. Saved in this browser only.</p>
-        </div>
-      </details>
-    </div>
-  </section>
-
-  <section class="results" aria-label="Results">
-    <div class="panel intro" id="intro">
-      <h2>How it works</h2>
-      <ol class="steps">
-        <li><div><b>Paste or upload your references</b><span>Any common format works: APA, IEEE, numbered lists, a .bib file, or a whole paper as a PDF.</span></div></li>
-        <li><div><b>Each entry is looked up</b><span>CrossRef, DBLP, Semantic Scholar, arXiv and OpenAlex are searched for a matching publication.</span></div></li>
-        <li><div><b>Review the differences</b><span>Open any result to compare your citation with the real record, word by word.</span></div></li>
-        <li><div><b>Download a corrected .bib</b><span>Fixes are re-validated automatically, and your citation keys stay the same.</span></div></li>
-      </ol>
-      <div class="legend">
-        <span class="pill ok">Verified</span><span class="pill fix">Corrected</span><span class="pill man">Verified manually</span><span class="pill bad" style="background:var(--ret);color:#fff">Retracted</span><span class="pill warn">Check details</span><span class="pill bad">Not found</span>
-      </div>
-      <p class="sources">“Not found” means no close match in any database. Books, theses and very new papers are sometimes missing, so check those by hand before treating them as fabricated.</p>
-      <button class="btn primary" id="sample2" style="margin-top:1rem">Try an example</button>
-    </div>
-
+<main>
+  <section class="wrap results" id="results" aria-label="Results">
+    <div id="intro"></div>
     <div id="out" hidden>
-      <div class="panel summary" id="summary">
-        <div class="sum-top"><h2 id="sumtitle">Results</h2><span class="sub" id="sumsub"></span></div>
-        <div class="meter" id="meter" role="img" aria-label="Results breakdown"></div>
-        <div class="chips" id="tally" role="toolbar" aria-label="Filter results"></div>
-        <div class="tools">
-          <div class="search">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>
-            <label class="sr" for="q">Search results</label>
-            <input id="q" type="search" placeholder="Search results  ( / )">
+      <div class="sumgrid">
+        <div class="scorecard">
+          <span class="lbl">Integrity score</span>
+          <span class="big" id="score">–</span>
+          <span class="cap" id="scorecap">of references verified or corrected</span>
+          <div class="meter" id="meter" role="img" aria-label="Results breakdown"></div>
+        </div>
+        <div class="card summary" id="summary">
+          <div class="sum-top"><h2 id="sumtitle">Results</h2><span class="sub" id="sumsub"></span></div>
+          <div class="chips" id="tally" role="toolbar" aria-label="Filter results"></div>
+          <div class="tools">
+            <div class="search">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>
+              <label class="sr" for="q">Search results</label>
+              <input id="q" type="search" placeholder="Search results  ( / )">
+            </div>
+            <label class="sr" for="sort">Sort</label>
+            <select id="sort"><option value="order">Original order</option><option value="problems">Problems first</option></select>
+            <button class="btn sm" id="expand">Expand all</button>
           </div>
-          <label class="sr" for="sort">Sort</label>
-          <select id="sort"><option value="order">Original order</option><option value="problems">Problems first</option></select>
-          <button class="btn sm" id="expand">Expand all</button>
+          <div class="actions-row">
+            <button class="btn primary sm" id="bibdl">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v12M7 11l5 5 5-5M5 20h14"/></svg>
+              Download updated .bib
+            </button>
+            <button class="btn sm" id="report" style="border-color:color-mix(in srgb,var(--accent) 50%,var(--line));color:var(--accent)">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H6a1 1 0 0 0-1 1v16a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V8z"/><path d="M14 3v5h5M8.5 13h7M8.5 17h5"/></svg>
+              Verification report
+              <span class="newtag">New</span>
+            </button>
+            <button class="btn sm" id="csv">Download CSV</button>
+            <button class="btn sm" id="recheckflag">Re-check flagged</button>
+            <button class="btn sm" id="verifybib">Re-validate updated .bib</button>
+          </div>
+          <div class="cites" id="cites" hidden></div>
+          <p class="notice" id="oanotice" hidden>OpenAlex refused some lookups because there’s no API key or the daily quota ran out. The other databases were still used. For the widest coverage, add a free key under Options and check again.</p>
         </div>
-        <div class="actions-row">
-          <button class="btn primary sm" id="bibdl">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v12M7 11l5 5 5-5M5 20h14"/></svg>
-            Download updated .bib
-          </button>
-          <button class="btn sm" id="report" style="border-color:var(--accent);color:var(--accent)">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H6a1 1 0 0 0-1 1v16a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V8z"/><path d="M14 3v5h5M8.5 13h7M8.5 17h5"/></svg>
-            Verification report
-          </button>
-          <button class="btn sm" id="csv">Download CSV</button>
-          <button class="btn sm" id="recheckflag">Re-check flagged</button>
-          <button class="btn sm" id="verifybib">Re-validate updated .bib</button>
-        </div>
-        <div class="cites" id="cites" hidden></div>
-        <p class="notice" id="oanotice" hidden>OpenAlex refused some lookups because there’s no API key or the daily quota ran out. The other four databases were still used. For the widest coverage, add a free key under Options and check again.</p>
       </div>
       <ol class="list" id="list"></ol>
     </div>
   </section>
+
+  <section class="wrap section" id="how">
+    <div class="process">
+      <div>
+        <span class="pill-label">How it works</span>
+        <h2>From messy reference list to clean .bib.</h2>
+        <p>Every check runs in your browser and talks straight to public scholarly databases. Nothing you paste is uploaded or kept.</p>
+      </div>
+      <ol class="steps">
+        <li><div><b>Paste or upload</b><span>APA, IEEE, numbered lists, BibTeX, or a whole paper as a PDF.</span></div></li>
+        <li><div><b>Matched in five databases</b><span>CrossRef, DBLP, Semantic Scholar, arXiv and OpenAlex, compared field by field.</span></div></li>
+        <li><div><b>Review what changed</b><span>Word-level differences, retractions, duplicates and newer published versions.</span></div></li>
+        <li><div><b>Download and share</b><span>A re-validated .bib with your citation keys, plus a clean PDF report.</span></div></li>
+      </ol>
+    </div>
+  </section>
+
+  <section class="wrap section" id="features">
+    <div class="shead">
+      <span class="pill-label">What it checks</span>
+      <h2>Catches what reviewers catch, before they do.</h2>
+      <p>Six checks on every reference, so fabricated, outdated or retracted citations never reach your submission.</p>
+    </div>
+    <div class="fgrid">
+      <article class="feat hl">
+        <div class="fic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5M8 11l2 2 4-4"/></svg></div>
+        <h3>Existence</h3><p>Each reference is searched by DOI, arXiv ID and title. Citations with no real publication behind them are flagged.</p><span class="tagline">Five databases</span>
+      </article>
+      <article class="feat">
+        <div class="fic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M4 12h10M4 17h7"/><path d="M15 16l2 2 4-4"/></svg></div>
+        <h3>Accuracy</h3><p>Title, authors, year, venue and DOI compared word by word, with a corrected entry you can accept or keep.</p><span class="tagline">Auto-corrected .bib</span>
+      </article>
+      <article class="feat">
+        <div class="fic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l9.5 17h-19z"/><path d="M12 10v4.5M12 17.5v.01"/></svg></div>
+        <h3>Retractions <span class="newtag">New</span></h3><p>Retractions, withdrawals and expressions of concern from publishers and the Retraction Watch database.</p><span class="tagline">Integrity alerts</span>
+      </article>
+      <article class="feat">
+        <div class="fic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12.5l4 4L16 8.5"/><path d="M12 16.5l1.5 1.5L21 10.5"/></svg></div>
+        <h3>Now published</h3><p>Preprints that have since appeared at a conference or in a journal, even when they were renamed.</p><span class="tagline">One-click swap</span>
+      </article>
+      <article class="feat">
+        <div class="fic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a1 1 0 0 1 1-1h9"/></svg></div>
+        <h3>Duplicates</h3><p>The same paper cited twice under different keys, or as both a preprint and its published version.</p><span class="tagline">Cleaner lists</span>
+      </article>
+      <article class="feat">
+        <div class="fic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H6a1 1 0 0 0-1 1v16a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V8z"/><path d="M14 3v5h5M9 13h6M9 17h4"/></svg></div>
+        <h3>In-text citations</h3><p>Upload the paper as a PDF to find references never cited in the text, and citations with no matching reference.</p><span class="tagline">PDF upload</span>
+      </article>
+    </div>
+  </section>
+
+  <section class="wrap section" id="faq">
+    <div class="card faq">
+      <div class="side">
+        <span class="pill-label">FAQ</span>
+        <h2>Questions, answered.</h2>
+        <p>Still unsure about a result? Open the reference to see exactly which fields differ, or mark it as verified if you’ve checked it yourself.</p>
+      </div>
+      <div class="qa">
+        <details><summary>Is my paper uploaded anywhere?<i><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></i></summary><div class="ans"><p>No. PDFs and reference lists are read inside your browser. Only individual titles, DOIs and arXiv IDs are sent to the public databases to look them up, and nothing is stored.</p></div></details>
+        <details><summary>Does “Not found” mean a reference is fake?<i><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></i></summary><div class="ans"><p>Not necessarily. Books, theses, reports and very new work are sometimes missing from all five databases. Check those by hand, then use “Mark as verified” so they count as confirmed.</p></div></details>
+        <details><summary>Which databases are checked?<i><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></i></summary><div class="ans"><p>CrossRef, DBLP, Semantic Scholar, DataCite for arXiv, and OpenAlex when you add a free key. Retraction data comes from CrossRef, which includes the Retraction Watch database.</p></div></details>
+        <details><summary>Will the corrected .bib break my citation keys?<i><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></i></summary><div class="ans"><p>No. Your original keys are kept, so every \cite{} in your paper still works. Each change is noted in a comment above the entry, and you can switch any correction off.</p></div></details>
+        <details><summary>Do I need an account or an API key?<i><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></i></summary><div class="ans"><p>No account is needed. An OpenAlex key is optional and free. It adds one more database for the widest coverage.</p></div></details>
+      </div>
+    </div>
+  </section>
+
+  <section class="wrap section">
+    <div class="cta">
+      <span class="eyebrow"><i></i>Takes under a minute</span>
+      <h2>Ready to submit with confidence?</h2>
+      <p>Check your reference list now, or try the built-in example to see a retraction, a correction and a duplicate caught live.</p>
+      <div class="row">
+        <a class="btn light" href="#checker" id="ctacheck">Check my references</a>
+        <button class="btn glass" id="sample2">Try an example</button>
+      </div>
+    </div>
+  </section>
 </main>
+<footer class="sitefoot">
+  <span class="footbrand"><svg class="fl-light" viewBox="0 0 219 72" height="30" role="img" aria-label="CiTrue"><defs><mask id="lg-fc" maskUnits="userSpaceOnUse" x="0" y="0" width="80" height="80"><rect width="80" height="80" fill="#fff"/><circle cx="46" cy="56" r="15.6" fill="#000"/></mask></defs>
+<g mask="url(#lg-fc)" fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-width="4.2">
+  <path d="M14 4H34L46 16V56a8 8 0 0 1-8 8H14a8 8 0 0 1-8-8V12a8 8 0 0 1 8-8Z" stroke="#1B2A4A"/>
+  <path d="M34 4.5V12a4 4 0 0 0 4 4h7.5" stroke="#1B2A4A"/>
+  <path d="M15 25.5H26" stroke="#1B2A4A"/>
+  <path d="M15 33.5H35M15 41.5H33M15 49.5H27" stroke="#929FB9"/>
+</g>
+<circle cx="46" cy="56" r="12.2" fill="#3E855E"/>
+<path d="M40.4 56.4l4 4 7.4-8" fill="none" stroke="#fff" stroke-width="3.6" stroke-linecap="round" stroke-linejoin="round"/>
+
+<path d="M94.71775 47.4935Q91.07525 47.4935 87.97325000000001 46.201Q84.87125 44.908500000000004 82.5565 42.576125000000005Q80.24175 40.24375 78.978625 37.14175Q77.7155 34.03975 77.7155 30.46775Q77.7155 26.884 78.978625 23.787875Q80.24175 20.69175 82.550625 18.38875Q84.8595 16.08575 87.955625 14.775625Q91.05175 13.465499999999999 94.69425 13.465499999999999Q98.66575 13.465499999999999 101.662 14.758Q104.65825 16.0505 106.9495 18.283L102.63725 22.607Q101.2625 21.103 99.2885 20.257Q97.3145 19.411 94.69425 19.411Q92.39125 19.411 90.481875 20.19825Q88.5725 20.9855 87.180125 22.460124999999998Q85.78775 23.93475 85.029875 25.973375Q84.272 28.012 84.272 30.46775Q84.272 32.935249999999996 85.029875 34.973875Q85.78775 37.0125 87.180125 38.487125000000006Q88.5725 39.96175 90.481875 40.754875Q92.39125 41.548 94.69425 41.548Q97.479 41.548 99.46475000000001 40.696125Q101.4505 39.84425 102.84875 38.3285L107.17275000000001 42.6525Q104.858 44.92025 101.79125 46.206875Q98.7245 47.4935 94.71775 47.4935ZM110.49799999999999 47.0V24.299H116.67849999999999V47.0ZM113.58824999999999 20.6565Q112.09599999999999 20.6565 111.10899999999998 19.640125Q110.12199999999999 18.62375 110.12199999999999 17.1315Q110.12199999999999 15.63925 111.10899999999998 14.622874999999999Q112.09599999999999 13.606499999999997 113.58824999999999 13.606499999999997Q115.1275 13.606499999999997 116.091 14.622874999999999Q117.05449999999999 15.63925 117.05449999999999 17.1315Q117.05449999999999 18.62375 116.091 19.640125Q115.1275 20.6565 113.58824999999999 20.6565Z" fill="#1B2A4A"/>
+<path d="M129.82825 47.0V14.664000000000001H136.232V47.0ZM119.2885 19.65775V13.959000000000003H146.7835V19.65775ZM150.04999999999998 47.0V24.299H156.2305V47.0ZM156.2305 34.46275 153.82175 32.84125Q154.26825 28.6935 156.28917791411044 26.26125Q158.31010582822086 23.829 162.09375 23.829Q163.76225 23.829 165.072375 24.38125Q166.3825 24.9335 167.44 26.132L163.6095 30.5735Q163.069 29.986 162.34506944444445 29.709875Q161.62113888888888 29.43375 160.672 29.43375Q158.698 29.43375 157.46425 30.664544025157234Q156.2305 31.895338050314464 156.2305 34.46275ZM179.67175 47.4935Q176.6894478417266 47.4935 174.35597392086328 46.21275Q172.02249999999998 44.932 170.71237499999998 42.67555131264916Q169.40224999999998 40.41910262529833 169.40224999999998 37.47030336457303V24.299H175.58275V37.318Q175.58275 38.72981285714286 176.06303125 39.73134928571429Q176.54331249999998 40.732885714285715 177.47280528846153 41.26969285714286Q178.40229807692307 41.8065 179.6832974137931 41.8065Q181.6105 41.8065 182.67975 40.630795Q183.749 39.45509 183.749 37.318V24.299H189.9295V37.47075Q189.9295 40.45525 188.62525 42.71125Q187.321 44.96725 185.00971582733814 46.230374999999995Q182.69843165467626 47.4935 179.67175 47.4935ZM205.19275 47.4935Q201.64425 47.4935 198.853625 45.965999999999994Q196.063 44.4385 194.45325 41.741875Q192.8435 39.04525 192.8435 35.6495Q192.8435 32.2655 194.423875 29.592375000000004Q196.00424999999998 26.91925 198.724375 25.362375Q201.4445 23.8055 204.79325 23.8055Q208.05975 23.8055 210.568375 25.268375Q213.077 26.73125 214.51049999999998 29.292749999999998Q215.944 31.85425 215.944 35.1325Q215.944 35.73175 215.87349999999998 36.366249999999994Q215.803 37.00075 215.6385 37.788L196.533 37.82325V33.24075L212.7715 33.2055L210.257 35.09725Q210.1865 33.07625 209.54612500000002 31.719125Q208.90575 30.362 207.713125 29.645249999999997Q206.5205 28.9285 204.76975 28.9285Q202.93675 28.9285 201.5855 29.73925Q200.23425 30.55 199.499875 32.024625Q198.7655 33.49925 198.7655 35.5555Q198.7655 37.6235 199.546875 39.145125Q200.32825 40.66675 201.7735 41.483374999999995Q203.21875 42.3 205.1575 42.3Q206.873 42.3 208.29475 41.706625Q209.7165 41.11325 210.7505 39.93825L214.3695 43.58075Q212.701 45.5195 210.3275 46.5065Q207.954 47.4935 205.19275 47.4935Z" fill="#3E855E"/></svg><svg class="fl-dark" viewBox="0 0 219 72" height="30" role="img" aria-label="CiTrue"><defs><mask id="lg-fw" maskUnits="userSpaceOnUse" x="0" y="0" width="80" height="80"><rect width="80" height="80" fill="#fff"/><circle cx="46" cy="56" r="15.6" fill="#000"/></mask></defs>
+<g mask="url(#lg-fw)" fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-width="4.2">
+  <path d="M14 4H34L46 16V56a8 8 0 0 1-8 8H14a8 8 0 0 1-8-8V12a8 8 0 0 1 8-8Z" stroke="#FFFFFF"/>
+  <path d="M34 4.5V12a4 4 0 0 0 4 4h7.5" stroke="#FFFFFF"/>
+  <path d="M15 25.5H26" stroke="#FFFFFF"/>
+  <path d="M15 33.5H35M15 41.5H33M15 49.5H27" stroke="rgba(255,255,255,.55)"/>
+</g>
+<circle cx="46" cy="56" r="12.2" fill="#5BD495"/>
+<path d="M40.4 56.4l4 4 7.4-8" fill="none" stroke="#fff" stroke-width="3.6" stroke-linecap="round" stroke-linejoin="round"/>
+
+<path d="M94.71775 47.4935Q91.07525 47.4935 87.97325000000001 46.201Q84.87125 44.908500000000004 82.5565 42.576125000000005Q80.24175 40.24375 78.978625 37.14175Q77.7155 34.03975 77.7155 30.46775Q77.7155 26.884 78.978625 23.787875Q80.24175 20.69175 82.550625 18.38875Q84.8595 16.08575 87.955625 14.775625Q91.05175 13.465499999999999 94.69425 13.465499999999999Q98.66575 13.465499999999999 101.662 14.758Q104.65825 16.0505 106.9495 18.283L102.63725 22.607Q101.2625 21.103 99.2885 20.257Q97.3145 19.411 94.69425 19.411Q92.39125 19.411 90.481875 20.19825Q88.5725 20.9855 87.180125 22.460124999999998Q85.78775 23.93475 85.029875 25.973375Q84.272 28.012 84.272 30.46775Q84.272 32.935249999999996 85.029875 34.973875Q85.78775 37.0125 87.180125 38.487125000000006Q88.5725 39.96175 90.481875 40.754875Q92.39125 41.548 94.69425 41.548Q97.479 41.548 99.46475000000001 40.696125Q101.4505 39.84425 102.84875 38.3285L107.17275000000001 42.6525Q104.858 44.92025 101.79125 46.206875Q98.7245 47.4935 94.71775 47.4935ZM110.49799999999999 47.0V24.299H116.67849999999999V47.0ZM113.58824999999999 20.6565Q112.09599999999999 20.6565 111.10899999999998 19.640125Q110.12199999999999 18.62375 110.12199999999999 17.1315Q110.12199999999999 15.63925 111.10899999999998 14.622874999999999Q112.09599999999999 13.606499999999997 113.58824999999999 13.606499999999997Q115.1275 13.606499999999997 116.091 14.622874999999999Q117.05449999999999 15.63925 117.05449999999999 17.1315Q117.05449999999999 18.62375 116.091 19.640125Q115.1275 20.6565 113.58824999999999 20.6565Z" fill="#FFFFFF"/>
+<path d="M129.82825 47.0V14.664000000000001H136.232V47.0ZM119.2885 19.65775V13.959000000000003H146.7835V19.65775ZM150.04999999999998 47.0V24.299H156.2305V47.0ZM156.2305 34.46275 153.82175 32.84125Q154.26825 28.6935 156.28917791411044 26.26125Q158.31010582822086 23.829 162.09375 23.829Q163.76225 23.829 165.072375 24.38125Q166.3825 24.9335 167.44 26.132L163.6095 30.5735Q163.069 29.986 162.34506944444445 29.709875Q161.62113888888888 29.43375 160.672 29.43375Q158.698 29.43375 157.46425 30.664544025157234Q156.2305 31.895338050314464 156.2305 34.46275ZM179.67175 47.4935Q176.6894478417266 47.4935 174.35597392086328 46.21275Q172.02249999999998 44.932 170.71237499999998 42.67555131264916Q169.40224999999998 40.41910262529833 169.40224999999998 37.47030336457303V24.299H175.58275V37.318Q175.58275 38.72981285714286 176.06303125 39.73134928571429Q176.54331249999998 40.732885714285715 177.47280528846153 41.26969285714286Q178.40229807692307 41.8065 179.6832974137931 41.8065Q181.6105 41.8065 182.67975 40.630795Q183.749 39.45509 183.749 37.318V24.299H189.9295V37.47075Q189.9295 40.45525 188.62525 42.71125Q187.321 44.96725 185.00971582733814 46.230374999999995Q182.69843165467626 47.4935 179.67175 47.4935ZM205.19275 47.4935Q201.64425 47.4935 198.853625 45.965999999999994Q196.063 44.4385 194.45325 41.741875Q192.8435 39.04525 192.8435 35.6495Q192.8435 32.2655 194.423875 29.592375000000004Q196.00424999999998 26.91925 198.724375 25.362375Q201.4445 23.8055 204.79325 23.8055Q208.05975 23.8055 210.568375 25.268375Q213.077 26.73125 214.51049999999998 29.292749999999998Q215.944 31.85425 215.944 35.1325Q215.944 35.73175 215.87349999999998 36.366249999999994Q215.803 37.00075 215.6385 37.788L196.533 37.82325V33.24075L212.7715 33.2055L210.257 35.09725Q210.1865 33.07625 209.54612500000002 31.719125Q208.90575 30.362 207.713125 29.645249999999997Q206.5205 28.9285 204.76975 28.9285Q202.93675 28.9285 201.5855 29.73925Q200.23425 30.55 199.499875 32.024625Q198.7655 33.49925 198.7655 35.5555Q198.7655 37.6235 199.546875 39.145125Q200.32825 40.66675 201.7735 41.483374999999995Q203.21875 42.3 205.1575 42.3Q206.873 42.3 208.29475 41.706625Q209.7165 41.11325 210.7505 39.93825L214.3695 43.58075Q212.701 45.5195 210.3275 46.5065Q207.954 47.4935 205.19275 47.4935Z" fill="#5BD495"/></svg></span><span><b>CiTrue</b>. Free and private. Lookups go straight from your browser to CrossRef, DBLP, Semantic Scholar, DataCite and OpenAlex.</span>
+  <span>Results are a guide, not a verdict. Always confirm flagged references.</span>
+  <span>Have an idea or found a problem? <button class="linkish" id="bugfoot">Share feedback</button></span>
+  <span class="copyright">© <span id="year">2026</span> Asadullah Tariq. All rights reserved.</span>
+</footer>
+<button class="fab" id="bugfab" aria-label="Share feedback"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.7 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/><path d="M8.5 11h7M8.5 14h4.5"/></svg><span>Feedback</span></button>
+<dialog class="dlg" id="bugdlg" aria-labelledby="bugtitle">
+  <div class="dlg-head">
+    <span class="eyebrow"><i></i>Feedback</span>
+    <h2 id="bugtitle">Share your feedback</h2>
+    <p>An idea, a problem, or a result that looks wrong? Every message helps make CiTrue better.</p>
+    <button class="dlg-x" id="bugclose" aria-label="Close"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+  </div>
+  <div class="dlg-body">
+    <fieldset class="types" style="border:0;padding:0;margin:0">
+      <legend class="sr">What kind of feedback is this?</legend>
+      <label><input type="radio" name="bugtype" value="Feedback" checked><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.7 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/><path d="M8.5 11h7M8.5 14h4.5"/></svg>Feedback</label>
+      <label><input type="radio" name="bugtype" value="Bug"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="7" y="7" width="10" height="13" rx="5"/><path d="M9.5 7.5a2.5 2.5 0 0 1 5 0M4 10l3 1.5M20 10l-3 1.5M4 16h3M17 16h3M4.5 21l3-2.5M19.5 21l-3-2.5M12 11v8"/></svg>Bug</label>
+      <label><input type="radio" name="bugtype" value="Wrong result"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 21V4M5 4h11l-2 4 2 4H5"/></svg>Wrong result</label>
+      <label><input type="radio" name="bugtype" value="Feature idea"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 18h6M10 21h4M12 3a6 6 0 0 0-3.5 10.9c.6.5 1 1.2 1 2.1h5c0-.9.4-1.6 1-2.1A6 6 0 0 0 12 3z"/></svg>Feature idea</label>
+    </fieldset>
+    <div class="ctxbox" id="bugctx" hidden></div>
+    <div class="fld">
+      <label for="bugdesc">Your message</label>
+      <textarea id="bugdesc" placeholder="Tell us what you think, what you’d like to see, or what went wrong."></textarea>
+      <p class="formerr" id="bugerr">Please write a few words first.</p>
+    </div>
+    <div class="fld">
+      <label for="bugemail">Your email <span style="font-weight:400;color:var(--muted)">(optional)</span></label>
+      <input type="email" id="bugemail" placeholder="So we can reply to you" autocomplete="email">
+    </div>
+    <div class="techrow">
+      <input type="checkbox" id="bugtech" checked>
+      <div><label for="bugtech">Include technical details</label>
+        <details><summary>See what’s included</summary><pre id="bugtechpre"></pre></details></div>
+    </div>
+    <div class="dlg-actions">
+      <button class="btn" id="bugcopy"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a1 1 0 0 1 1-1h9"/></svg>Copy message</button>
+      <button class="btn primary" id="bugsend">Send feedback<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12l16-8-6 16-2.5-6.5z"/></svg></button>
+    </div>
+  </div>
+</dialog>
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 <script>
 (() => {
@@ -444,16 +898,27 @@ let oaBlocked = false;
 try{ const k = localStorage.getItem("oakey"); if(k) $("#oakey").value = k; }catch(e){}
 $("#oakey").addEventListener("change", e => { try{ localStorage.setItem("oakey", e.target.value.trim()); }catch(err){} });
 const oaParams = () => { const p = []; const k = $("#oakey").value.trim(); if(k) p.push("api_key=" + encodeURIComponent(k)); if(mail()) p.push("mailto=" + encodeURIComponent(mail())); return p.join("&"); };
+// Answers are remembered for the session, so re-checks and re-validation don't repeat lookups.
+// Only real answers are kept (found or not found), never failures, so "Check again" still retries those.
+const lookupCache = new Map();
+let s2Throttled = 0;
 async function getJSON(url, stats){
+  if(lookupCache.has(url)){ if(stats) stats.ok++; return lookupCache.get(url); }
+  const isS2 = url.includes("semanticscholar.org");
   for(let i = 0; i < 3; i++){
     try{
       const r = await fetch(url);
       if(stats) stats.ok++;
-      if(r.status === 404) return null;
+      if(r.status === 404){ lookupCache.set(url, null); return null; }
       if(url.includes("openalex.org") && [401,403,409].includes(r.status)){ oaBlocked = true; return null; }
-      if(r.status === 429 || r.status >= 500){ await new Promise(s => setTimeout(s, 1500 * (i+1))); continue; }
+      // Semantic Scholar rate-limits anonymous use; skip it rather than wait, the other databases cover it
+      if(isS2 && r.status === 429){ s2Throttled++; return null; }
+      if(r.status === 429 || r.status >= 500){ await new Promise(s => setTimeout(s, 1200 * (i+1))); continue; }
       if(!r.ok) return null;
-      return await r.json();
+      const data = await r.json();
+      if(lookupCache.size > 5000) lookupCache.clear();
+      lookupCache.set(url, data);
+      return data;
     }catch(e){
       // network or CORS failure: retry once, then give up on this source only
       if(i >= 1){ if(stats) stats.fail++; return null; }
@@ -578,7 +1043,7 @@ async function lookup(ref){
     const [cr, db, s2, oa] = await Promise.all([
       getJSON(`https://api.crossref.org/works?query.bibliographic=${encodeURIComponent(ref.raw.slice(0,400))}&rows=5&select=DOI,title,subtitle,author,issued,published,container-title,publisher,URL,volume,issue,page,type${m ? "&" + m : ""}`, stats),
       getJSON(`https://dblp.org/search/publ/api?q=${encodeURIComponent(q)}&format=json&h=5`, stats),
-      getJSON(`https://api.semanticscholar.org/graph/v1/paper/search?query=${encodeURIComponent(q)}&limit=5&fields=title,year,authors,venue,externalIds,journal,publicationTypes`, stats),
+      s2Throttled >= 3 ? null : getJSON(`https://api.semanticscholar.org/graph/v1/paper/search?query=${encodeURIComponent(q)}&limit=5&fields=title,year,authors,venue,externalIds,journal,publicationTypes`, stats),
       useOA ? getJSON(`https://api.openalex.org/works?search=${encodeURIComponent(q)}&per-page=5&${oaParams()}`, stats) : null
     ]);
     add((cr?.message?.items||[]).map(fromCrossref));
@@ -730,7 +1195,7 @@ function buildBib(){
     const reason = st === "bad" ? "NOT FOUND in any database" : it.error ? "Lookup failed" : "Correction not applied";
     return `% [${i+1}] ${reason}. Original citation, add it by hand if it is real:\n% ${it.raw}`;
   })()));
-  const head = `% Updated by Reference Checker on ${new Date().toISOString().slice(0,10)}\n% ${n.fixed} corrected, ${n.kept} kept, ${n.manual} verified manually, ${n.flagged} need manual review\n\n`;
+  const head = `% Updated by CiTrue on ${new Date().toISOString().slice(0,10)}\n% ${n.fixed} corrected, ${n.kept} kept, ${n.manual} verified manually, ${n.flagged} need manual review\n\n`;
   return head + out.join("\n\n") + "\n";
 }
 
@@ -866,7 +1331,6 @@ function buildReport(){
   const s = reportStats(), cite = citeAnalysis(), now = new Date();
   const good = s.ok + s.fixed + s.manual, attention = s.warn + s.bad + s.retracted;
   const when = now.toLocaleString(undefined, {year:"numeric", month:"long", day:"numeric", hour:"2-digit", minute:"2-digit"});
-  const site = /^https?:/.test(location.href) ? location.href.split("#")[0] : "atariq-hash.github.io/Publication";
   const docName = pdfContext ? pdfContext.name : "Pasted reference list";
   let verdict;
   if(s.retracted) verdict = `${attention} of ${s.total} references need attention, including ${s.retracted} retracted ${s.retracted === 1 ? "paper" : "papers"}.`;
@@ -886,7 +1350,8 @@ function buildReport(){
   items.forEach((it, i) => { if(statusOf(it) === "warn") alerts.push(["warn", it.result.renamed ? "Title changed" : "Check details", i, esc(it.result.renamed ? `Found under a different title by the same authors: “${it.result.match.title}”. Probably renamed in a later version, so the citation is likely real.` : it.result.issues.join(" "))]); });
   items.forEach((it, i) => { if(it.dupOf !== undefined) alerts.push(["dup", "Duplicate", i, it.dupKind === "version" ? `The same work as [${it.dupOf + 1}], cited once as a preprint and once as the published version.` : `The same paper as [${it.dupOf + 1}].`]); });
 
-  const sec = (title, inner, note) => `<section><h2>${title}</h2>${note ? `<p class="note">${note}</p>` : ""}${inner}</section>`;
+  // short sections stay on one page; long ones (alerts, the full table) may flow across pages
+  const sec = (title, inner, note, keep) => `<section${keep ? ' class="keep"' : ""}><h2>${title}</h2>${note ? `<p class="note">${note}</p>` : ""}${inner}</section>`;
   const alertList = alerts.length ? `<table class="alerts"><tbody>${alerts.map(([k, label, i, detail]) => `<tr><td class="ak"><span class="pill ${k}">${label}</span></td><td>${ref(i)}<div class="detail">${detail}</div></td></tr>`).join("")}</tbody></table>` : "";
 
   let citeSec = "";
@@ -902,13 +1367,13 @@ function buildReport(){
       ${cite.uncited.length ? `<h3>References never cited in the text</h3><ul class="plain">${cite.uncited.map(i => `<li>${ref(i)}</li>`).join("")}</ul>` : ""}
       ${cite.missing.length ? `<h3>Citations with no matching reference</h3><p class="chips">${cite.missing.map(m => `<span>${esc(m)}</span>`).join("")}</p>` : ""}
       ${!cite.uncited.length && !cite.missing.length ? `<p class="okline">Every reference is cited in the text, and every citation has a matching reference.</p>` : ""}`,
-      `Body text of <i>${esc(pdfContext.name)}</i> compared with its reference list (${cite.style === "numbered" ? "numbered citations such as [3] or [4–6]" : "author–year citations such as (Smith, 2020) or Smith et al. (2020)"}).${cite.edited ? " The reference list was edited after extraction, so numbering may not line up exactly." : ""}`);
+      `Body text of <i>${esc(pdfContext.name)}</i> compared with its reference list (${cite.style === "numbered" ? "numbered citations such as [3] or [4–6]" : "author–year citations such as (Smith, 2020) or Smith et al. (2020)"}).${cite.edited ? " The reference list was edited after extraction, so numbering may not line up exactly." : ""}`, cite.uncited.length + cite.missing.length < 12);
   }
   const pubs = items.map((it, i) => it.published ? i : -1).filter(i => i >= 0);
-  const pubSec = pubs.length ? sec("Published versions available", `<ul class="plain">${pubs.map(i => { const p = items[i].published; return `<li>${ref(i)}<div class="detail">Cited as a preprint. Published in <b>${esc(p.venue)}</b>${p.year ? ` (${esc(p.year)})` : ""}${p.doi ? ", " + doiLink(p.doi) : ""}${items[i].usePublished ? ". The updated .bib uses the published version." : "."}</div></li>`; }).join("")}</ul>`, "Reviewers usually prefer the peer-reviewed version where one exists.") : "";
+  const pubSec = pubs.length ? sec("Published versions available", `<ul class="plain">${pubs.map(i => { const p = items[i].published; return `<li>${ref(i)}<div class="detail">Cited as a preprint. Published in <b>${esc(p.venue)}</b>${p.year ? ` (${esc(p.year)})` : ""}${p.doi ? ", " + doiLink(p.doi) : ""}${items[i].usePublished ? ". The updated .bib uses the published version." : "."}</div></li>`; }).join("")}</ul>`, "Reviewers usually prefer the peer-reviewed version where one exists.", pubs.length <= 6) : "";
   const fixes = items.map((it, i) => it.useFix && it.fixedBib && it.result?.status === "warn" ? i : -1).filter(i => i >= 0);
   const changed = it => (it.changes?.length ? it.changes : diffFields(it, it.result?.match)).join(", ") || "details";
-  const fixSec = fixes.length ? sec("Corrections applied", `<ul class="plain">${fixes.map(i => `<li>${ref(i)}<div class="detail">Corrected ${esc(changed(items[i]))}${items[i].fixCheck === "confirmed" ? ", then re-validated against the database" : ""}.</div></li>`).join("")}</ul>`, "These entries were replaced with the matched record in the updated .bib file.") : "";
+  const fixSec = fixes.length ? sec("Corrections applied", `<ul class="plain">${fixes.map(i => `<li>${ref(i)}<div class="detail">Corrected ${esc(changed(items[i]))}${items[i].fixCheck === "confirmed" ? ", then re-validated against the database" : ""}.</div></li>`).join("")}</ul>`, "These entries were replaced with the matched record in the updated .bib file.", fixes.length <= 6) : "";
 
   const first = t => String(t || "").split(/(?<=\.)\s/)[0].replace(/\.$/, "");
   const PAST = {retraction:"Retracted", partial_retraction:"Partially retracted", withdrawal:"Withdrawn", removal:"Removed"};
@@ -936,87 +1401,135 @@ function buildReport(){
   return `<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Reference Verification Report – ${esc(docName)}</title>
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Newsreader:opsz,wght@6..72,500;6..72,650&family=Atkinson+Hyperlegible:wght@400;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
-@page{size:A4;margin:16mm 15mm 18mm;@bottom-left{content:"Reference Verification Report";font:8.5pt "Atkinson Hyperlegible",sans-serif;color:#5F6780}@bottom-right{content:"Page " counter(page) " of " counter(pages);font:8.5pt "Atkinson Hyperlegible",sans-serif;color:#5F6780}}
+@page{size:A4;margin:14mm 14mm 16mm;@bottom-left{content:"CiTrue Reference Verification Report";font:7.5pt "Outfit",sans-serif;color:#65607F}@bottom-right{content:"Page " counter(page) " of " counter(pages);font:7.5pt "Outfit",sans-serif;color:#65607F}}
 *{box-sizing:border-box}
 html{-webkit-print-color-adjust:exact;print-color-adjust:exact}
-body{margin:0;background:#E9ECF3;color:#2A3247;font:10.5pt/1.5 "Atkinson Hyperlegible","Segoe UI",system-ui,sans-serif}
-.bar{position:sticky;top:0;z-index:2;display:flex;gap:.6rem;justify-content:center;align-items:center;padding:.75rem;background:#131A2E;color:#fff;font-size:.9rem}
-.bar button{font:700 .9rem "Atkinson Hyperlegible",sans-serif;padding:.55rem 1.1rem;border-radius:8px;border:1px solid #4C3FD1;background:#4C3FD1;color:#fff;cursor:pointer}
-.bar button.ghost{background:transparent;border-color:#4A526A}
-.bar span{opacity:.8}
-.sheet{width:210mm;min-height:297mm;margin:1.25rem auto;background:#fff;padding:16mm 15mm;box-shadow:0 2px 20px rgba(19,26,46,.12)}
-@media print{body{background:#fff}.bar{display:none}.sheet{width:auto;min-height:0;margin:0;padding:0;box-shadow:none}}
-@media screen and (max-width:820px){.sheet{width:auto;margin:0;padding:1.25rem}}
-header{display:flex;justify-content:space-between;align-items:flex-start;gap:1rem;padding-bottom:10pt;border-bottom:2px solid #131A2E}
-.brand{display:flex;align-items:center;gap:8pt;font:650 12pt "Newsreader",Georgia,serif;color:#131A2E}
-.brand i{display:grid;place-items:center;width:20pt;height:20pt;border-radius:5pt;background:#4C3FD1}
-.hmeta{text-align:right;font-size:8.5pt;color:#5F6780;line-height:1.45}
-h1{font:650 25pt/1.1 "Newsreader",Georgia,serif;color:#131A2E;margin:16pt 0 4pt;letter-spacing:-.01em}
-.sub{color:#5F6780;margin:0 0 12pt;font-size:10pt}
-.facts{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:0;border:1px solid #DCE1EA;border-radius:6pt;margin-bottom:12pt}
-.facts div{padding:7pt 9pt;border-right:1px solid #DCE1EA}.facts div:last-child{border-right:0}
-.facts span{display:block;font-size:7.5pt;font-weight:700;color:#5F6780;letter-spacing:.04em;text-transform:uppercase}
-.facts b{display:block;font-size:9.5pt;color:#131A2E;overflow-wrap:anywhere}
-.verdict{display:flex;gap:9pt;align-items:center;padding:10pt 12pt;border-radius:7pt;margin-bottom:12pt;font:500 13pt/1.35 "Newsreader",Georgia,serif;color:#131A2E;background:#ECEAFD}
+body{margin:0;background:#ECE9F7;color:#2E2A45;font:10pt/1.55 "Outfit",system-ui,-apple-system,"Segoe UI",sans-serif}
+a{color:#5B3DF5;text-decoration:none}
+.bar{position:sticky;top:0;z-index:2;display:flex;gap:.6rem;justify-content:center;align-items:center;padding:.8rem;background:rgba(20,15,46,.92);backdrop-filter:blur(8px);color:#fff;font-size:.92rem}
+.bar button{font:500 .95rem "Outfit",sans-serif;height:42px;padding:0 1.2rem;border-radius:999px;border:0;color:#fff;cursor:pointer;background:linear-gradient(120deg,#7A5CFF,#5B3DF5 45%,#3F23D6);background-size:200% 100%;box-shadow:0 8px 20px -10px rgba(91,61,245,.8);transition:background-position .4s,transform .2s,box-shadow .2s}
+.bar button:hover{background-position:100% 50%;transform:translateY(-2px);box-shadow:0 14px 28px -12px rgba(91,61,245,.95),0 0 0 4px rgba(124,92,255,.2)}
+.bar button.ghost{background:transparent;border:1px solid rgba(255,255,255,.3);box-shadow:none}
+.bar button.ghost:hover{background:rgba(255,255,255,.12)}
+.bar span{opacity:.75}
+.sheet{width:210mm;min-height:297mm;margin:1.5rem auto;background:#fff;padding:14mm;border-radius:6px;box-shadow:0 20px 60px -30px rgba(40,20,120,.45)}
+@media print{body{background:#fff}.bar{display:none}.sheet{width:auto;min-height:0;margin:0;padding:0;box-shadow:none;border-radius:0}}
+@media screen and (max-width:820px){.sheet{width:auto;margin:0;padding:1rem;border-radius:0}}
+/* violet header, like the website hero */
+.hero{position:relative;overflow:hidden;border-radius:16pt;padding:15pt 18pt 18pt;color:#fff;background:radial-gradient(70% 90% at 0% 0%,#4126E0 0%,transparent 60%),radial-gradient(60% 80% at 100% 0%,#8B6CFF 0%,transparent 60%),radial-gradient(70% 90% at 55% 125%,#B79CFF 0%,transparent 60%),linear-gradient(160deg,#170A5C 0%,#2810A6 55%,#5B3DF5 100%)}
+.htop{display:flex;justify-content:space-between;align-items:flex-start;gap:12pt}
+.htop svg{height:30pt;width:auto;display:block}
+.hmeta{text-align:right;font-size:7.5pt;color:rgba(255,255,255,.78);line-height:1.55}
+.hbody{display:grid;grid-template-columns:minmax(0,1fr) 148pt;gap:16pt;align-items:end;margin-top:20pt}
+.eyebrow{display:inline-flex;align-items:center;gap:5pt;padding:2.5pt 8pt;border-radius:999px;background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.26);font-size:7.5pt;font-weight:600}
+.eyebrow i{width:5pt;height:5pt;border-radius:50%;background:#7CF0B5}
+h1{font:600 27pt/1 "Outfit",sans-serif;letter-spacing:-.035em;margin:8pt 0 6pt;color:#fff}
+.hero p{margin:0;color:rgba(255,255,255,.86);font-size:9.5pt;max-width:290pt}
+.score{background:rgba(255,255,255,.13);border:1px solid rgba(255,255,255,.26);border-radius:12pt;padding:10pt 12pt 11pt}
+.score .lbl{font-size:7.5pt;font-weight:600;color:rgba(255,255,255,.82)}
+.score b{display:block;font:600 34pt/1 "Outfit",sans-serif;letter-spacing:-.045em;margin:5pt 0 3pt}
+.score .cap{font-size:8pt;color:rgba(255,255,255,.88)}
+.meter{display:flex;height:5pt;border-radius:3pt;overflow:hidden;background:rgba(255,255,255,.2);margin-top:8pt}
+.meter .ok{background:#5EE0A1}.meter .fix{background:#64D8F0}.meter .man{background:#C9BBFF}.meter .warn{background:#F5C451}.meter .bad{background:#FF7A6E}.meter .ret{background:#FF3B30}
+/* summary cards */
+.facts{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6pt;margin-top:10pt}
+.facts div{border:1px solid #E6E2F2;border-radius:10pt;padding:7pt 9pt}
+.facts span{display:block;font-size:7.5pt;font-weight:500;color:#65607F}
+.facts b{display:block;font-size:9.5pt;font-weight:600;color:#140F2E;overflow-wrap:anywhere;line-height:1.35;margin-top:1pt}
+.verdict{display:flex;gap:9pt;align-items:center;padding:9pt 13pt;border-radius:12pt;margin:8pt 0;font:500 12pt/1.35 "Outfit",sans-serif;color:#140F2E;background:#EEEAFE}
 .verdict.warn{background:#FCF0D6}.verdict.bad{background:#FDE6E3}.verdict.ok{background:#E1F4EA}
-.verdict i{flex:none;width:9pt;height:9pt;border-radius:50%;background:#4C3FD1}.verdict.warn i{background:#B07A12}.verdict.bad i{background:#B42318}.verdict.ok i{background:#1E7A52}
-.tiles{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:6pt;margin-bottom:8pt}
-.tile{border:1px solid #DCE1EA;border-radius:6pt;padding:7pt 9pt}
-.tile b{display:block;font:650 19pt/1 "Newsreader",Georgia,serif;color:#131A2E}
-.tile span{font-size:8pt;color:#5F6780}
-.tile.ok b{color:#1E7A52}.tile.warn b{color:#8F5B06}.tile.bad b{color:#B42318}.tile.ret b{color:#7F1D1D}.tile.dup b{color:#4C3FD1}
-.meter{display:flex;height:6pt;border-radius:3pt;overflow:hidden;background:#EEF1F7;margin-bottom:4pt}
-.meter .ok{background:#1E7A52}.meter .fix{background:#0E6F8A}.meter .man{background:#4C3FD1}.meter .warn{background:#B07A12}.meter .bad{background:#B42318}.meter .ret{background:#7F1D1D}
-.legend{display:flex;flex-wrap:wrap;gap:4pt 12pt;font-size:8pt;color:#5F6780;margin-bottom:4pt}
-.legend span::before{content:"";display:inline-block;width:7pt;height:7pt;border-radius:2pt;margin-right:4pt;vertical-align:-.5pt;background:var(--c)}
-section{margin-top:16pt}
-h2{font:650 13.5pt "Newsreader",Georgia,serif;color:#131A2E;margin:0 0 6pt;padding-bottom:4pt;border-bottom:1px solid #DCE1EA;break-after:avoid}
-h3{font-size:9pt;font-weight:700;color:#131A2E;margin:10pt 0 4pt;break-after:avoid}
-.note{font-size:9pt;color:#5F6780;margin:0 0 7pt}
-.pill{display:inline-block;font-size:7.5pt;font-weight:700;padding:1.5pt 6pt;border-radius:3pt;white-space:nowrap}
-.pill.ok{background:#E1F4EA;color:#1E7A52}.pill.fix{background:#DDF2F7;color:#0E6F8A}.pill.man{background:#ECEAFD;color:#4C3FD1}.pill.warn{background:#FCF0D6;color:#8F5B06}.pill.bad{background:#FDE6E3;color:#B42318}.pill.ret{background:#7F1D1D;color:#fff}.pill.dup{background:#ECEAFD;color:#4C3FD1}
-table{width:100%;border-collapse:collapse}
+.verdict i{flex:none;width:8pt;height:8pt;border-radius:50%;background:#5B3DF5;box-shadow:0 0 0 3pt rgba(91,61,245,.15)}
+.verdict.warn i{background:#B07A12;box-shadow:0 0 0 3pt rgba(176,122,18,.15)}.verdict.bad i{background:#B42318;box-shadow:0 0 0 3pt rgba(180,35,24,.14)}.verdict.ok i{background:#1E7A52;box-shadow:0 0 0 3pt rgba(30,122,82,.14)}
+.tiles{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:6pt}
+.tile{border:1px solid #E6E2F2;border-radius:10pt;padding:8pt 10pt}
+.tile b{display:block;font:600 20pt/1 "Outfit",sans-serif;letter-spacing:-.03em;color:#140F2E}
+.tile span{font-size:8pt;color:#65607F}
+.tile.ok b{color:#1E7A52}.tile.warn b{color:#8F5B06}.tile.bad b{color:#B42318}.tile.ret b{color:#7F1D1D}.tile.dup b{color:#5B3DF5}
+.legend{display:flex;flex-wrap:wrap;gap:4pt 12pt;font-size:7.5pt;color:#65607F;margin:7pt 0 0}
+.legend span::before{content:"";display:inline-block;width:7pt;height:7pt;border-radius:50%;margin-right:4pt;vertical-align:-.5pt;background:var(--c)}
+/* sections */
+section{margin-top:17pt}
+section.keep{break-inside:avoid}
+.note{break-after:avoid}
+h2{display:flex;align-items:center;gap:6pt;font:600 14pt/1.2 "Outfit",sans-serif;letter-spacing:-.02em;color:#140F2E;margin:0 0 4pt;break-after:avoid}
+h2::before{content:"";width:6pt;height:6pt;border-radius:50%;background:#5B3DF5;flex:none}
+h3{font-size:9pt;font-weight:600;color:#140F2E;margin:10pt 0 4pt;break-after:avoid}
+.note{font-size:8.75pt;color:#65607F;margin:0 0 7pt}
+.pill{display:inline-block;font-size:7.5pt;font-weight:600;padding:2pt 7pt;border-radius:999px;white-space:nowrap}
+.pill.ok{background:#E1F4EA;color:#1E7A52}.pill.fix{background:#DDF2F7;color:#0E6F8A}.pill.man{background:#EEEAFE;color:#5B3DF5}.pill.warn{background:#FCF0D6;color:#8F5B06}.pill.bad{background:#FDE6E3;color:#B42318}.pill.ret{background:#7F1D1D;color:#fff}.pill.dup{background:#EEEAFE;color:#5B3DF5}
+table{width:100%;border-collapse:separate;border-spacing:0}
 tr{break-inside:avoid}
-.alerts td{padding:5pt 0;border-bottom:1px solid #EEF1F7;vertical-align:top}
-.alerts .ak{width:1%;padding-right:9pt}
-.rn{font-weight:700;color:#131A2E}
-.rt{font-family:"Newsreader",Georgia,serif;font-style:italic;color:#131A2E}
-.detail{font-size:8.75pt;color:#4A526A;margin-top:1.5pt}
-a{color:#4C3FD1;text-decoration:none}
+.alerts{border:1px solid #E6E2F2;border-radius:12pt;overflow:hidden}
+.alerts td{padding:7pt 10pt;border-bottom:1px solid #EEEBF7;vertical-align:top}
+.alerts tr:last-child td{border-bottom:0}
+.alerts .ak{width:1%;padding-right:4pt}
+.rn{font-weight:600;color:#5B3DF5}
+.rt{font-weight:500;color:#140F2E}
+.detail{font-size:8.5pt;color:#4A4664;margin-top:2pt}
 .mini{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6pt}
-.mini div{border:1px solid #DCE1EA;border-radius:6pt;padding:6pt 8pt}
-.mini b{display:block;font:650 14pt "Newsreader",Georgia,serif;color:#131A2E}
-.mini span{font-size:8pt;color:#5F6780}
-.mini .flag b{color:#B42318}
-ul.plain{margin:0;padding:0;list-style:none}
-ul.plain li{padding:4pt 0;border-bottom:1px solid #EEF1F7;break-inside:avoid}
+.mini div{border:1px solid #E6E2F2;border-radius:10pt;padding:7pt 9pt}
+.mini b{display:block;font:600 15pt/1.1 "Outfit",sans-serif;letter-spacing:-.02em;color:#140F2E}
+.mini span{font-size:7.75pt;color:#65607F}
+.mini .flag{background:#FFF6F5;border-color:#F7D3CF}.mini .flag b{color:#B42318}
+ul.plain{margin:0;padding:0;list-style:none;border:1px solid #E6E2F2;border-radius:12pt;overflow:hidden}
+ul.plain li{padding:7pt 10pt;border-bottom:1px solid #EEEBF7;break-inside:avoid}
+ul.plain li:last-child{border-bottom:0}
 .chips{display:flex;flex-wrap:wrap;gap:4pt;margin:0}
-.chips span{font-size:8.5pt;padding:1.5pt 6pt;border-radius:3pt;background:#FDE6E3;color:#B42318}
-.okline{margin:6pt 0 0;color:#1E7A52;font-weight:700;font-size:9.5pt}
+.chips span{font-size:8.25pt;font-weight:500;padding:2pt 8pt;border-radius:999px;background:#FDE6E3;color:#B42318}
+.okline{margin:6pt 0 0;padding:8pt 11pt;border-radius:10pt;background:#E1F4EA;color:#1E7A52;font-weight:600;font-size:9.5pt}
+.all{border:1px solid #E6E2F2;border-radius:12pt;overflow:hidden}
 .all thead{display:table-header-group}
-.all th{text-align:left;font-size:7.5pt;font-weight:700;color:#5F6780;letter-spacing:.04em;text-transform:uppercase;padding:4pt 6pt;border-bottom:1.5px solid #131A2E}
-.all td{padding:5pt 6pt;border-bottom:1px solid #EEF1F7;vertical-align:top;font-size:9pt}
-.all .num{color:#5F6780;width:1%;text-align:right;font-variant-numeric:tabular-nums}
-.all .who{font-weight:700;color:#131A2E;font-size:8.5pt}
-.all .rt{font-size:9.5pt}
-.all .doi{font-size:8pt}
-.all .nt{color:#4A526A;font-size:8.5pt;width:30%}
+.all th{text-align:left;font-size:7.5pt;font-weight:600;color:#65607F;padding:6pt 8pt;background:#F7F6FC;border-bottom:1px solid #E6E2F2}
+.all td{padding:6pt 8pt;border-bottom:1px solid #EEEBF7;vertical-align:top;font-size:9pt}
+.all tr:last-child td{border-bottom:0}
+.all .num{color:#65607F;width:1%;text-align:right;font-variant-numeric:tabular-nums}
+.all .who{font-weight:600;color:#140F2E;font-size:8.5pt}
+.all .rt{font-size:9.25pt;font-weight:400;color:#2E2A45}
+.all .doi{font-size:7.75pt;margin-top:1pt}
+.all .nt{color:#4A4664;font-size:8.25pt;width:30%}
 .all .nt div+div{margin-top:2pt}
 .all td:nth-child(3){width:1%}
-.method{font-size:8.75pt;color:#4A526A}
-.method p{margin:0 0 5pt}
-footer{margin-top:16pt;padding-top:7pt;border-top:1px solid #DCE1EA;font-size:8pt;color:#5F6780;display:flex;justify-content:space-between;gap:1rem}
+.method{background:#F7F6FC;border-radius:12pt;padding:11pt 13pt;font-size:8.75pt;color:#4A4664}
+.method h2{font-size:12pt}
+.method p{margin:0 0 5pt}.method p:last-child{margin:0}
+footer{margin-top:14pt;padding-top:8pt;border-top:1px solid #E6E2F2;font-size:7.75pt;color:#65607F;display:flex;align-items:center;justify-content:space-between;gap:1rem}
+footer .fb{display:flex;align-items:center;gap:8pt}
+footer svg{height:14pt;width:auto;display:block}
 </style></head><body>
 <div class="bar"><button onclick="window.print()">Save as PDF or print</button><button class="ghost" onclick="window.close()">Close</button><span>Tip: choose “Save as PDF” as the printer</span></div>
 <main class="sheet">
-<header>
-  <div class="brand"><i><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></i>Reference Checker</div>
-  <div class="hmeta">${esc(when)}<br>${esc(site.replace(/^https?:\/\//, ""))}</div>
+<header class="hero">
+  <div class="htop">
+    <svg viewBox="0 0 219 72" height="30" role="img" aria-label="CiTrue"><defs><mask id="lg-rw" maskUnits="userSpaceOnUse" x="0" y="0" width="80" height="80"><rect width="80" height="80" fill="#fff"/><circle cx="46" cy="56" r="15.6" fill="#000"/></mask></defs>
+<g mask="url(#lg-rw)" fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-width="4.2">
+  <path d="M14 4H34L46 16V56a8 8 0 0 1-8 8H14a8 8 0 0 1-8-8V12a8 8 0 0 1 8-8Z" stroke="#FFFFFF"/>
+  <path d="M34 4.5V12a4 4 0 0 0 4 4h7.5" stroke="#FFFFFF"/>
+  <path d="M15 25.5H26" stroke="#FFFFFF"/>
+  <path d="M15 33.5H35M15 41.5H33M15 49.5H27" stroke="rgba(255,255,255,.55)"/>
+</g>
+<circle cx="46" cy="56" r="12.2" fill="#5BD495"/>
+<path d="M40.4 56.4l4 4 7.4-8" fill="none" stroke="#fff" stroke-width="3.6" stroke-linecap="round" stroke-linejoin="round"/>
+
+<path d="M94.71775 47.4935Q91.07525 47.4935 87.97325000000001 46.201Q84.87125 44.908500000000004 82.5565 42.576125000000005Q80.24175 40.24375 78.978625 37.14175Q77.7155 34.03975 77.7155 30.46775Q77.7155 26.884 78.978625 23.787875Q80.24175 20.69175 82.550625 18.38875Q84.8595 16.08575 87.955625 14.775625Q91.05175 13.465499999999999 94.69425 13.465499999999999Q98.66575 13.465499999999999 101.662 14.758Q104.65825 16.0505 106.9495 18.283L102.63725 22.607Q101.2625 21.103 99.2885 20.257Q97.3145 19.411 94.69425 19.411Q92.39125 19.411 90.481875 20.19825Q88.5725 20.9855 87.180125 22.460124999999998Q85.78775 23.93475 85.029875 25.973375Q84.272 28.012 84.272 30.46775Q84.272 32.935249999999996 85.029875 34.973875Q85.78775 37.0125 87.180125 38.487125000000006Q88.5725 39.96175 90.481875 40.754875Q92.39125 41.548 94.69425 41.548Q97.479 41.548 99.46475000000001 40.696125Q101.4505 39.84425 102.84875 38.3285L107.17275000000001 42.6525Q104.858 44.92025 101.79125 46.206875Q98.7245 47.4935 94.71775 47.4935ZM110.49799999999999 47.0V24.299H116.67849999999999V47.0ZM113.58824999999999 20.6565Q112.09599999999999 20.6565 111.10899999999998 19.640125Q110.12199999999999 18.62375 110.12199999999999 17.1315Q110.12199999999999 15.63925 111.10899999999998 14.622874999999999Q112.09599999999999 13.606499999999997 113.58824999999999 13.606499999999997Q115.1275 13.606499999999997 116.091 14.622874999999999Q117.05449999999999 15.63925 117.05449999999999 17.1315Q117.05449999999999 18.62375 116.091 19.640125Q115.1275 20.6565 113.58824999999999 20.6565Z" fill="#FFFFFF"/>
+<path d="M129.82825 47.0V14.664000000000001H136.232V47.0ZM119.2885 19.65775V13.959000000000003H146.7835V19.65775ZM150.04999999999998 47.0V24.299H156.2305V47.0ZM156.2305 34.46275 153.82175 32.84125Q154.26825 28.6935 156.28917791411044 26.26125Q158.31010582822086 23.829 162.09375 23.829Q163.76225 23.829 165.072375 24.38125Q166.3825 24.9335 167.44 26.132L163.6095 30.5735Q163.069 29.986 162.34506944444445 29.709875Q161.62113888888888 29.43375 160.672 29.43375Q158.698 29.43375 157.46425 30.664544025157234Q156.2305 31.895338050314464 156.2305 34.46275ZM179.67175 47.4935Q176.6894478417266 47.4935 174.35597392086328 46.21275Q172.02249999999998 44.932 170.71237499999998 42.67555131264916Q169.40224999999998 40.41910262529833 169.40224999999998 37.47030336457303V24.299H175.58275V37.318Q175.58275 38.72981285714286 176.06303125 39.73134928571429Q176.54331249999998 40.732885714285715 177.47280528846153 41.26969285714286Q178.40229807692307 41.8065 179.6832974137931 41.8065Q181.6105 41.8065 182.67975 40.630795Q183.749 39.45509 183.749 37.318V24.299H189.9295V37.47075Q189.9295 40.45525 188.62525 42.71125Q187.321 44.96725 185.00971582733814 46.230374999999995Q182.69843165467626 47.4935 179.67175 47.4935ZM205.19275 47.4935Q201.64425 47.4935 198.853625 45.965999999999994Q196.063 44.4385 194.45325 41.741875Q192.8435 39.04525 192.8435 35.6495Q192.8435 32.2655 194.423875 29.592375000000004Q196.00424999999998 26.91925 198.724375 25.362375Q201.4445 23.8055 204.79325 23.8055Q208.05975 23.8055 210.568375 25.268375Q213.077 26.73125 214.51049999999998 29.292749999999998Q215.944 31.85425 215.944 35.1325Q215.944 35.73175 215.87349999999998 36.366249999999994Q215.803 37.00075 215.6385 37.788L196.533 37.82325V33.24075L212.7715 33.2055L210.257 35.09725Q210.1865 33.07625 209.54612500000002 31.719125Q208.90575 30.362 207.713125 29.645249999999997Q206.5205 28.9285 204.76975 28.9285Q202.93675 28.9285 201.5855 29.73925Q200.23425 30.55 199.499875 32.024625Q198.7655 33.49925 198.7655 35.5555Q198.7655 37.6235 199.546875 39.145125Q200.32825 40.66675 201.7735 41.483374999999995Q203.21875 42.3 205.1575 42.3Q206.873 42.3 208.29475 41.706625Q209.7165 41.11325 210.7505 39.93825L214.3695 43.58075Q212.701 45.5195 210.3275 46.5065Q207.954 47.4935 205.19275 47.4935Z" fill="#5BD495"/></svg>
+    <div class="hmeta">${esc(when)}</div>
+  </div>
+  <div class="hbody">
+    <div>
+      <span class="eyebrow"><i></i>Verification report</span>
+      <h1>Reference Verification Report</h1>
+      <p>Each reference was checked against public scholarly databases for existence, accuracy and integrity.</p>
+    </div>
+    <div class="score">
+      <span class="lbl">Integrity score</span>
+      <b>${s.total ? Math.round(100 * good / s.total) : 0}%</b>
+      <span class="cap">${good} of ${s.total} verified or corrected</span>
+      <div class="meter">${seg(s.ok, "ok")}${seg(s.fixed, "fix")}${seg(s.manual, "man")}${seg(s.warn, "warn")}${seg(s.bad, "bad")}${seg(s.retracted, "ret")}</div>
+    </div>
+  </div>
 </header>
-<h1>Reference Verification Report</h1>
-<p class="sub">Each reference was checked against public scholarly databases for existence, accuracy and integrity.</p>
 <div class="facts">
   <div><span>Document</span><b>${esc(docName)}</b></div>
   <div><span>References</span><b>${s.total}</b></div>
@@ -1027,8 +1540,7 @@ footer{margin-top:16pt;padding-top:7pt;border-top:1px solid #DCE1EA;font-size:8p
 <div class="tiles">
   ${tile(good, "verified or corrected", "ok")}${tile(s.warn, "need review", "warn")}${tile(s.bad, "not found", "bad")}${tile(s.retracted, "retracted", "ret")}${tile(s.dups, "duplicates", "dup")}
 </div>
-<div class="meter">${seg(s.ok, "ok")}${seg(s.fixed, "fix")}${seg(s.manual, "man")}${seg(s.warn, "warn")}${seg(s.bad, "bad")}${seg(s.retracted, "ret")}</div>
-<div class="legend"><span style="--c:#1E7A52">Verified ${s.ok}</span><span style="--c:#0E6F8A">Corrected ${s.fixed}</span><span style="--c:#4C3FD1">Verified manually ${s.manual}</span><span style="--c:#B07A12">Needs review ${s.warn}</span><span style="--c:#B42318">Not found ${s.bad}</span><span style="--c:#7F1D1D">Retracted ${s.retracted}</span></div>
+<div class="legend"><span style="--c:#1E7A52">Verified ${s.ok}</span><span style="--c:#0E6F8A">Corrected ${s.fixed}</span><span style="--c:#5B3DF5">Verified manually ${s.manual}</span><span style="--c:#B07A12">Needs review ${s.warn}</span><span style="--c:#B42318">Not found ${s.bad}</span><span style="--c:#7F1D1D">Retracted ${s.retracted}</span></div>
 ${alerts.length ? sec("Items needing attention", alertList, "Listed in order of severity. Resolve these before submission.") : sec("Items needing attention", `<p class="okline">Nothing needs attention. Every reference matched a real publication with no retractions or duplicates.</p>`)}
 ${citeSec}${pubSec}${fixSec}
 ${sec("All references", `<table class="all"><thead><tr><th>#</th><th>Reference</th><th>Result</th><th>Notes</th></tr></thead><tbody>${rows}</tbody></table>`)}
@@ -1036,7 +1548,18 @@ ${sec("All references", `<table class="all"><thead><tr><th>#</th><th>Reference</
 <p>Each reference was searched by DOI, arXiv ID and title in CrossRef, DBLP, Semantic Scholar, DataCite (arXiv)${$("#oakey").value.trim() ? " and OpenAlex" : ""}. The closest match was compared field by field: title, authors, year, venue and DOI. Retractions, withdrawals and expressions of concern come from CrossRef, which includes publisher notices and the Retraction Watch database.</p>
 <p>“Not found” means no close match was found in these databases. It is not proof that a reference is fabricated: books, theses, reports and very recent work are sometimes missing. Items marked “Verified manually” were confirmed by the author.</p>
 </section>
-<footer><span>Generated by Reference Checker, ${esc(site.replace(/^https?:\/\//, ""))}</span><span>${esc(when)}</span></footer>
+<footer><span class="fb"><svg viewBox="0 0 219 72" height="16" role="img" aria-label="CiTrue"><defs><mask id="lg-rp" maskUnits="userSpaceOnUse" x="0" y="0" width="80" height="80"><rect width="80" height="80" fill="#fff"/><circle cx="46" cy="56" r="15.6" fill="#000"/></mask></defs>
+<g mask="url(#lg-rp)" fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-width="4.2">
+  <path d="M14 4H34L46 16V56a8 8 0 0 1-8 8H14a8 8 0 0 1-8-8V12a8 8 0 0 1 8-8Z" stroke="#1B2A4A"/>
+  <path d="M34 4.5V12a4 4 0 0 0 4 4h7.5" stroke="#1B2A4A"/>
+  <path d="M15 25.5H26" stroke="#1B2A4A"/>
+  <path d="M15 33.5H35M15 41.5H33M15 49.5H27" stroke="#929FB9"/>
+</g>
+<circle cx="46" cy="56" r="12.2" fill="#3E855E"/>
+<path d="M40.4 56.4l4 4 7.4-8" fill="none" stroke="#fff" stroke-width="3.6" stroke-linecap="round" stroke-linejoin="round"/>
+
+<path d="M94.71775 47.4935Q91.07525 47.4935 87.97325000000001 46.201Q84.87125 44.908500000000004 82.5565 42.576125000000005Q80.24175 40.24375 78.978625 37.14175Q77.7155 34.03975 77.7155 30.46775Q77.7155 26.884 78.978625 23.787875Q80.24175 20.69175 82.550625 18.38875Q84.8595 16.08575 87.955625 14.775625Q91.05175 13.465499999999999 94.69425 13.465499999999999Q98.66575 13.465499999999999 101.662 14.758Q104.65825 16.0505 106.9495 18.283L102.63725 22.607Q101.2625 21.103 99.2885 20.257Q97.3145 19.411 94.69425 19.411Q92.39125 19.411 90.481875 20.19825Q88.5725 20.9855 87.180125 22.460124999999998Q85.78775 23.93475 85.029875 25.973375Q84.272 28.012 84.272 30.46775Q84.272 32.935249999999996 85.029875 34.973875Q85.78775 37.0125 87.180125 38.487125000000006Q88.5725 39.96175 90.481875 40.754875Q92.39125 41.548 94.69425 41.548Q97.479 41.548 99.46475000000001 40.696125Q101.4505 39.84425 102.84875 38.3285L107.17275000000001 42.6525Q104.858 44.92025 101.79125 46.206875Q98.7245 47.4935 94.71775 47.4935ZM110.49799999999999 47.0V24.299H116.67849999999999V47.0ZM113.58824999999999 20.6565Q112.09599999999999 20.6565 111.10899999999998 19.640125Q110.12199999999999 18.62375 110.12199999999999 17.1315Q110.12199999999999 15.63925 111.10899999999998 14.622874999999999Q112.09599999999999 13.606499999999997 113.58824999999999 13.606499999999997Q115.1275 13.606499999999997 116.091 14.622874999999999Q117.05449999999999 15.63925 117.05449999999999 17.1315Q117.05449999999999 18.62375 116.091 19.640125Q115.1275 20.6565 113.58824999999999 20.6565Z" fill="#1B2A4A"/>
+<path d="M129.82825 47.0V14.664000000000001H136.232V47.0ZM119.2885 19.65775V13.959000000000003H146.7835V19.65775ZM150.04999999999998 47.0V24.299H156.2305V47.0ZM156.2305 34.46275 153.82175 32.84125Q154.26825 28.6935 156.28917791411044 26.26125Q158.31010582822086 23.829 162.09375 23.829Q163.76225 23.829 165.072375 24.38125Q166.3825 24.9335 167.44 26.132L163.6095 30.5735Q163.069 29.986 162.34506944444445 29.709875Q161.62113888888888 29.43375 160.672 29.43375Q158.698 29.43375 157.46425 30.664544025157234Q156.2305 31.895338050314464 156.2305 34.46275ZM179.67175 47.4935Q176.6894478417266 47.4935 174.35597392086328 46.21275Q172.02249999999998 44.932 170.71237499999998 42.67555131264916Q169.40224999999998 40.41910262529833 169.40224999999998 37.47030336457303V24.299H175.58275V37.318Q175.58275 38.72981285714286 176.06303125 39.73134928571429Q176.54331249999998 40.732885714285715 177.47280528846153 41.26969285714286Q178.40229807692307 41.8065 179.6832974137931 41.8065Q181.6105 41.8065 182.67975 40.630795Q183.749 39.45509 183.749 37.318V24.299H189.9295V37.47075Q189.9295 40.45525 188.62525 42.71125Q187.321 44.96725 185.00971582733814 46.230374999999995Q182.69843165467626 47.4935 179.67175 47.4935ZM205.19275 47.4935Q201.64425 47.4935 198.853625 45.965999999999994Q196.063 44.4385 194.45325 41.741875Q192.8435 39.04525 192.8435 35.6495Q192.8435 32.2655 194.423875 29.592375000000004Q196.00424999999998 26.91925 198.724375 25.362375Q201.4445 23.8055 204.79325 23.8055Q208.05975 23.8055 210.568375 25.268375Q213.077 26.73125 214.51049999999998 29.292749999999998Q215.944 31.85425 215.944 35.1325Q215.944 35.73175 215.87349999999998 36.366249999999994Q215.803 37.00075 215.6385 37.788L196.533 37.82325V33.24075L212.7715 33.2055L210.257 35.09725Q210.1865 33.07625 209.54612500000002 31.719125Q208.90575 30.362 207.713125 29.645249999999997Q206.5205 28.9285 204.76975 28.9285Q202.93675 28.9285 201.5855 29.73925Q200.23425 30.55 199.499875 32.024625Q198.7655 33.49925 198.7655 35.5555Q198.7655 37.6235 199.546875 39.145125Q200.32825 40.66675 201.7735 41.483374999999995Q203.21875 42.3 205.1575 42.3Q206.873 42.3 208.29475 41.706625Q209.7165 41.11325 210.7505 39.93825L214.3695 43.58075Q212.701 45.5195 210.3275 46.5065Q207.954 47.4935 205.19275 47.4935Z" fill="#3E855E"/></svg><span>Generated by CiTrue</span></span><span>${esc(when)}</span></footer>
 </main></body></html>`;
 }
 function openReport(){
@@ -1057,6 +1580,7 @@ const SVG = {
   bad:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M7 7l10 10M17 7L7 17"/></svg>',
   chev:'<svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>',
   ret:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l9.5 17h-19z"/><path d="M12 10v4.5M12 17.5v.01"/></svg>',
+  flag:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 21V4M5 4h11l-2 4 2 4H5"/></svg>',
   manual:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3.5"/><path d="M3 20c0-3.3 2.7-6 6-6 1.3 0 2.5.4 3.4 1.1"/><path d="M14.5 17.5l2.2 2.2L21 15.3"/></svg>',
   copy:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a1 1 0 0 1 1-1h9"/></svg>',
   redo:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 11a8 8 0 1 0-2.3 5.7"/><path d="M20 4v7h-7"/></svg>',
@@ -1230,7 +1754,8 @@ function card(it, i){
         <button class="btn sm" data-act="recheck" data-i="${i}" ${running ? "disabled" : ""}>${SVG.redo}Check again</button>
         <button class="btn sm" data-act="edit" data-i="${i}" ${running ? "disabled" : ""}>${SVG.edit}Edit</button>
         ${["warn","bad","error"].includes(st) ? `<button class="btn sm vouch" data-act="manual" data-i="${i}" ${running ? "disabled" : ""}>${SVG.manual}Mark as verified</button>` : ""}
-        ${m?.url ? `<a class="btn sm ghost" href="${esc(m.url)}" target="_blank" rel="noopener">${SVG.open}Open publication</a>` : ""}</div>`;
+        ${m?.url ? `<a class="btn sm ghost" href="${esc(m.url)}" target="_blank" rel="noopener">${SVG.open}Open publication</a>` : ""}
+        <button class="btn sm ghost" data-act="bug" data-i="${i}">${SVG.flag}Feedback on this result</button></div>`;
     }
   }
   li.innerHTML = `<button class="ref-head" id="h${i}" data-act="toggle" data-i="${i}" aria-expanded="${open}">
@@ -1254,7 +1779,11 @@ function render(){
   const total = items.length, done = total - counts.pending;
   $("#meter").innerHTML = ["ok","manual","fixed","warn","bad","retracted","pending"].map(k => `<span class="m-${k}" style="width:${100 * counts[k] / total}%"></span>`).join("");
   $("#meter").setAttribute("aria-label", `${counts.ok} verified, ${counts.manual} verified manually, ${counts.fixed} corrected, ${counts.warn} need checking, ${counts.bad} not found, ${counts.pending} pending`);
-  $("#sumtitle").textContent = running ? `Checking ${done} of ${total}…` : `${total} reference${total === 1 ? "" : "s"} checked`;
+  const goodN = counts.ok + counts.fixed + counts.manual;
+  $("#score").textContent = done ? Math.round(100 * goodN / total) + "%" : "…";
+  $("#scorecap").textContent = done ? `${goodN} of ${total} references verified or corrected` : "Checking your references…";
+  $("#sumtitle").textContent = !running ? `${total} reference${total === 1 ? "" : "s"} checked`
+    : done < total ? `Checking ${done} of ${total}…` : extrasLeft > 0 ? `Checking for retractions and newer versions…` : `Finishing up…`;
   $("#sumsub").textContent = done ? `${counts.ok + counts.fixed + counts.manual} look good, ${counts.warn} need a look, ${counts.bad} not found${counts.retracted ? `, ${counts.retracted} retracted` : ""}` : "";
   const chips = [["all","All",total],["ok","Verified",counts.ok],["manual","Verified manually",counts.manual],["fixed","Corrected",counts.fixed],["warn","Check details",counts.warn],["bad","Not found",counts.bad],["retracted","Retracted",counts.retracted]]
     .filter(([k,,c]) => k === "all" || c > 0 || filter === k);
@@ -1295,24 +1824,41 @@ const BTNS = ["#run", "#bibdl", "#recheckflag", "#verifybib", "#csv", "#report"]
 function reset(it){
   ["result","error","fixedBib","newKey","changes","useFix","editing","doiBroken","arxivBroken","fixCheck","fixIssues","manual","manualNote","confirming","updates","retraction","concern","corrections","published","usePublished","retractionAck","dupOf","dupKind"].forEach(k => delete it[k]);
 }
+// Run async jobs with at most `n` in flight
+function limiter(n){
+  let active = 0; const waiting = [];
+  const next = () => { if(active >= n || !waiting.length) return; active++; const [fn, res, rej] = waiting.shift(); fn().then(res, rej).finally(() => { active--; next(); }); };
+  return fn => new Promise((res, rej) => { waiting.push([fn, res, rej]); next(); });
+}
+// Coalesce many quick updates into one repaint per frame
+let renderQueued = false;
+function renderSoon(){ if(renderQueued) return; renderQueued = true; requestAnimationFrame(() => { renderQueued = false; render(); }); }
+let extrasLeft = 0;
 async function check(indices){
   if(running || !indices.length) return;
-  running = true; oaBlocked = false;
+  running = true; oaBlocked = false; s2Throttled = 0; extrasLeft = 0;
   indices.forEach(i => reset(items[i]));
   BTNS.forEach(b => $(b).disabled = true);
   render();
   const queue = [...indices];
+  const background = limiter(4), pending = [];
   const worker = async () => {
     while(queue.length){
       const it = items[queue.shift()];
-      try{ it.result = judge(it, await lookup(it)); prepareFixes(); await extras(it); }
+      try{
+        it.result = judge(it, await lookup(it)); prepareFixes();
+        // show the match straight away; retraction and published-version checks follow in the background
+        extrasLeft++;
+        pending.push(background(() => extras(it)).catch(() => {}).finally(() => { extrasLeft--; renderSoon(); }));
+      }
       catch(e){ it.error = "Couldn’t reach the lookup services. Check your connection and try again."; }
-      render();
+      renderSoon();
     }
   };
-  await Promise.all([worker(), worker(), worker()]);
-  prepareFixes(); findDuplicates();
-  await verifyFixes(indices.filter(i => items[i].useFix && items[i].fixedBib));
+  await Promise.all(Array.from({length: Math.min(6, indices.length)}, worker));
+  prepareFixes();
+  await Promise.all([Promise.all(pending), verifyFixes(indices.filter(i => items[i].useFix && items[i].fixedBib))]);
+  findDuplicates();
   running = false; BTNS.forEach(b => $(b).disabled = false); render();
   const c = items.map(statusOf);
   const nr = c.filter(s => s === "retracted").length;
@@ -1322,7 +1868,7 @@ async function verifyFixes(indices){
   if(!indices.length) return;
   indices.forEach(i => { items[i].fixCheck = "pending"; });
   render();
-  $("#sumtitle").textContent = `Re-validating ${indices.length} correction${indices.length === 1 ? "" : "s"}…`;
+
   const queue = [...indices];
   const worker = async () => {
     while(queue.length){
@@ -1333,10 +1879,10 @@ async function verifyFixes(indices){
         it.fixCheck = res.status === "ok" ? "confirmed" : "problem";
         it.fixIssues = res.status === "ok" ? [] : res.issues;
       }catch(e){ it.fixCheck = "error"; it.fixIssues = ["Couldn’t reach the lookup services to re-validate."]; }
-      render();
+      renderSoon();
     }
   };
-  await Promise.all([worker(), worker(), worker()]);
+  await Promise.all(Array.from({length: Math.min(4, indices.length)}, worker));
 }
 async function run(){
   const text = input.value.trim();
@@ -1345,7 +1891,8 @@ async function run(){
   const parsed = parseInput(text);
   if(!parsed.length){ toast("No references found. Put each one on its own line."); return; }
   items = parsed; filter = "all"; query = ""; $("#q").value = "";
-  if(matchMedia("(max-width: 980px)").matches) $("#out").scrollIntoView({behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth"});
+  render();
+  $("#results").scrollIntoView({behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth", block: "start"});
   await check(items.map((_, i) => i));
 }
 
@@ -1509,8 +2056,12 @@ async function loadFile(f){
   if(f.type === "application/pdf" || /\.pdf$/i.test(f.name)) return loadPdf(f);
   pdfContext = null; input.value = await f.text(); detect(); toast(`Loaded ${f.name}`);
 }
+const warmPdf = () => { loadPdfJs().catch(() => {}); };
+$("label[for=file]").addEventListener("pointerenter", warmPdf, {once:true});
+$("label[for=file]").addEventListener("focusin", warmPdf, {once:true});
 $("#file").addEventListener("change", e => { loadFile(e.target.files[0]); e.target.value = ""; });
 const drop = $("#drop");
+drop.addEventListener("dragenter", warmPdf, {once:true});
 ["dragenter","dragover"].forEach(ev => drop.addEventListener(ev, e => { e.preventDefault(); drop.classList.add("over"); }));
 ["dragleave","drop"].forEach(ev => drop.addEventListener(ev, e => { e.preventDefault(); drop.classList.remove("over"); }));
 drop.addEventListener("drop", e => loadFile(e.dataTransfer.files[0]));
@@ -1545,6 +2096,99 @@ function jumpTo(i){
 }
 $("#cites").addEventListener("click", e => { const b = e.target.closest("[data-jump]"); if(b) jumpTo(+b.dataset.jump); });
 $("#report").addEventListener("click", openReport);
+
+/* ---------- feedback ---------- */
+const BUG_EMAIL = "a.tariq@newuu.uz";   // where feedback is sent: change this one line to use another address
+let bugRef = null;
+function techDetails(){
+  const sts = items.map(statusOf), c = k => sts.filter(x => x === k).length;
+  const dark = getComputedStyle(document.documentElement).colorScheme.includes("dark");
+  return [
+    `Page: CiTrue`,
+    `Time: ${new Date().toISOString()}`,
+    `Browser: ${navigator.userAgent}`,
+    `Screen: ${innerWidth}×${innerHeight}, ${dark ? "dark" : "light"} mode`,
+    `References: ${items.length}${items.length ? ` (verified ${c("ok")}, corrected ${c("fixed")}, manual ${c("manual")}, review ${c("warn")}, not found ${c("bad") + c("error")}, retracted ${c("retracted")})` : ""}`,
+    `Source: ${pdfContext ? "PDF upload (" + pdfContext.style + " citations)" : "pasted or .bib"}`,
+    `OpenAlex key: ${$("#oakey").value.trim() ? "yes" : "no"}${oaBlocked ? " (blocked)" : ""}`
+  ].join("\n");
+}
+function refContext(i){
+  const it = items[i]; if(!it) return "";
+  const r = it.result, m = r?.match;
+  return [`Reference [${i + 1}]: ${it.raw}`, `Result: ${labelOf(it)}`, r?.issues?.length ? `Notes: ${r.issues.join(" ")}` : "",
+    m ? `Matched: ${m.title}${m.year ? " (" + m.year + ")" : ""}, ${m.source}${m.doi ? ", doi " + m.doi : ""}` : "",
+    it.retraction ? `Retraction: ${it.retraction.label} ${it.retraction.date || ""}` : ""].filter(Boolean).join("\n");
+}
+function openBug(i){
+  bugRef = Number.isInteger(i) ? i : null;
+  const box = $("#bugctx");
+  if(bugRef !== null){
+    document.querySelector('input[name=bugtype][value="Wrong result"]').checked = true;
+    const it = items[bugRef];
+    box.hidden = false;
+    box.innerHTML = `<b>About reference [${bugRef + 1}]: ${esc(labelOf(it))}</b><p>${esc(it.raw.length > 220 ? it.raw.slice(0, 220) + "…" : it.raw)}</p>`;
+  } else { box.hidden = true; document.querySelector('input[name=bugtype][value="Feedback"]').checked = true; }
+  $("#bugtechpre").textContent = techDetails();
+  $("#bugerr").classList.remove("show");
+  $("#bugfab").hidden = true;
+  $("#bugdlg").showModal();
+  setTimeout(() => $("#bugdesc").focus(), 60);
+}
+function bugText(){
+  const type = document.querySelector('input[name=bugtype]:checked').value;
+  const parts = [`Type: ${type}`, "", "Message:", $("#bugdesc").value.trim()];
+  if(bugRef !== null) parts.push("", refContext(bugRef));
+  const em = $("#bugemail").value.trim(); if(em) parts.push("", `Reply to: ${em}`);
+  if($("#bugtech").checked) parts.push("", "Technical details:", techDetails());
+  return {type, text: parts.join("\n")};
+}
+function bugValid(){
+  const ok = $("#bugdesc").value.trim().length >= 3;
+  $("#bugerr").classList.toggle("show", !ok);
+  if(!ok) $("#bugdesc").focus();
+  return ok;
+}
+$("#bugfab").addEventListener("click", () => openBug());
+// on phones, keep the floating button out of the way while the main input box is on screen
+if("IntersectionObserver" in window){
+  new IntersectionObserver(([e]) => $("#bugfab").classList.toggle("away", e.isIntersecting), {threshold: 0.15}).observe(document.querySelector(".prompt"));
+}
+$("#bugfoot").addEventListener("click", () => openBug());
+$("#bugclose").addEventListener("click", () => $("#bugdlg").close());
+$("#bugdlg").addEventListener("close", () => { $("#bugfab").hidden = false; });
+$("#bugdlg").addEventListener("click", e => { if(e.target === $("#bugdlg")) $("#bugdlg").close(); });
+$("#bugdesc").addEventListener("input", () => $("#bugerr").classList.remove("show"));
+$("#bugtech").addEventListener("change", () => { $("#bugtechpre").textContent = techDetails(); });
+$("#bugsend").addEventListener("click", () => {
+  if(!bugValid()) return;
+  const {type, text} = bugText();
+  let body = text; if(body.length > 1800) body = body.slice(0, 1800) + "\n…(shortened, use Copy message for the full text)";
+  const subject = `[CiTrue] ${type}: ${$("#bugdesc").value.trim().split("\n")[0].slice(0, 60)}`;
+  location.href = `mailto:${BUG_EMAIL}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+  $("#bugdlg").close();
+  $("#bugdesc").value = "";
+  toast("Your email app has opened with your feedback. Press send there. Thank you!");
+});
+$("#bugcopy").addEventListener("click", async () => {
+  if(!bugValid()) return;
+  const t = `To: ${BUG_EMAIL}\n` + bugText().text;
+  try{ await navigator.clipboard.writeText(t); }
+  catch(e){ const a = Object.assign(document.createElement("textarea"), {value: t}); document.body.appendChild(a); a.select(); document.execCommand("copy"); a.remove(); }
+  toast("Message copied. Paste it into an email or chat. Thank you!");
+});
+$("#year").textContent = new Date().getFullYear();
+document.addEventListener("pointerdown", e => {
+  const b = e.target.closest(".btn, .chipbtn, .chip, .plus, .iconbtn");
+  if(!b || b.disabled || matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+  const r = b.getBoundingClientRect(), d = Math.max(r.width, r.height) * 2.2;
+  const sp = document.createElement("span");
+  sp.className = "ripple";
+  sp.style.cssText = `width:${d}px;height:${d}px;left:${e.clientX - r.left - d / 2}px;top:${e.clientY - r.top - d / 2}px`;
+  b.appendChild(sp);
+  setTimeout(() => sp.remove(), 650);
+});
+document.querySelectorAll('a[href="#checker"]').forEach(a => a.addEventListener("click", () => setTimeout(() => input.focus({preventScroll: true}), 450)));
 list.addEventListener("click", e => {
   const b = e.target.closest("[data-act]"); if(!b) return;
   const i = +b.dataset.i, it = items[i], act = b.dataset.act;
@@ -1569,6 +2213,7 @@ list.addEventListener("click", e => {
   if(act === "unackRet"){ it.retractionAck = false; it.open = true; render(); }
   if(act === "usePub"){ it.usePublished = !it.usePublished; render(); toast(it.usePublished ? "The .bib will use the published version" : "The .bib will keep the preprint"); }
   if(act === "jump"){ jumpTo(i); }
+  if(act === "bug"){ openBug(i); return; }
   if(act === "undoManual"){ it.manual = false; delete it.manualNote; it.open = true; render(); toast("Manual verification removed"); }
   if(act === "save"){
     const text = document.getElementById("ed" + i).value.trim();
@@ -1629,6 +2274,5 @@ $("#csv").addEventListener("click", () => {
 detect(); render();
 })();
 </script>
-<footer>Lookups go straight from your browser to CrossRef, DBLP, Semantic Scholar, DataCite (arXiv) and OpenAlex. Nothing is stored on a server.</footer>
 </body>
 </html>
