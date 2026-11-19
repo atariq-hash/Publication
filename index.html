@@ -801,6 +801,22 @@ dialog.dlg[open]{animation:dlgin .28s cubic-bezier(.2,.8,.2,1)}
 <script>
 (() => {
 const $ = s => document.querySelector(s);
+
+/* ---------- private visitor analytics (GoatCounter) ----------
+   Put your GoatCounter code between the quotes, e.g. "citrue" for citrue.goatcounter.com.
+   Leave it empty to switch analytics off. Only counts are sent: never references, titles or files. */
+const ANALYTICS_CODE = "";
+if(ANALYTICS_CODE){
+  const gc = document.createElement("script");
+  gc.async = true;
+  gc.src = "https://gc.zgo.at/count.js";
+  gc.dataset.goatcounter = `https://${ANALYTICS_CODE}.goatcounter.com/count`;
+  document.head.appendChild(gc);
+}
+function track(name, title){
+  if(!ANALYTICS_CODE) return;
+  try{ window.goatcounter?.count?.({path: name, title: title || name, event: true}); }catch(e){}
+}
 const input = $("#input");
 let items = [], filter = "all", running = false, query = "", sortMode = "order";
 
@@ -1564,6 +1580,7 @@ ${sec("All references", `<table class="all"><thead><tr><th>#</th><th>Reference</
 }
 function openReport(){
   if(!items.length || running) return;
+  track("report-open", "Opened verification report");
   const html = buildReport();
   const url = URL.createObjectURL(new Blob([html], {type: "text/html"}));
   const w = window.open(url, "_blank");
@@ -1886,6 +1903,7 @@ async function verifyFixes(indices){
 }
 async function run(){
   const text = input.value.trim();
+  if(text) track("check-run", "Checked references");
   if(!text){ input.focus(); toast("Paste some references first"); return; }
   if(running) return;
   const parsed = parseInput(text);
@@ -2028,6 +2046,7 @@ async function loadPdf(f){
   }
   input.value = refs.map((r, i) => `[${i + 1}] ${r}`).join("\n");
   pdfContext = {name: f.name, body, style, count: refs.length};
+  track("pdf-upload", "Uploaded a PDF");
   input.scrollTop = 0;
   detect();
   toast(`Found ${refs.length} references in ${f.name}. Review them, then press Check references.`);
@@ -2131,6 +2150,7 @@ function openBug(i){
   } else { box.hidden = true; document.querySelector('input[name=bugtype][value="Feedback"]').checked = true; }
   $("#bugtechpre").textContent = techDetails();
   $("#bugerr").classList.remove("show");
+  track("feedback-open", "Opened feedback");
   $("#bugfab").hidden = true;
   $("#bugdlg").showModal();
   setTimeout(() => $("#bugdesc").focus(), 60);
@@ -2243,6 +2263,7 @@ list.addEventListener("change", async e => {
 $("#bibdl").addEventListener("click", () => {
   if(running) return;
   download("references-updated.bib", buildBib(), "application/x-bibtex");
+  track("bib-download", "Downloaded updated .bib");
   toast("Downloaded references-updated.bib");
 });
 $("#recheckflag").addEventListener("click", () => {
