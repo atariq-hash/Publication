@@ -13,7 +13,7 @@
 :root{
   --page:#EEF1F7; --surface:#FFFFFF; --sunk:#F5F7FB; --ink:#131A2E; --text:#2A3247; --muted:#5F6780; --line:#DCE1EA;
   --accent:#4C3FD1; --accent-ink:#FFFFFF; --accent-soft:#ECEAFD;
-  --ok:#1E7A52; --ok-bg:#E1F4EA; --warn:#8F5B06; --warn-bg:#FCF0D6; --bad:#B42318; --bad-bg:#FDE6E3; --fix:#0E6F8A; --fix-bg:#DDF2F7;
+  --ok:#1E7A52; --ok-bg:#E1F4EA; --warn:#8F5B06; --warn-bg:#FCF0D6; --bad:#B42318; --bad-bg:#FDE6E3; --fix:#0E6F8A; --fix-bg:#DDF2F7; --ret:#7F1D1D;
   --pend:#9AA2B6; --shadow:0 1px 2px rgba(19,26,46,.06),0 8px 24px -12px rgba(19,26,46,.18);
   --serif:"Newsreader",Georgia,"Times New Roman",serif; --sans:"Atkinson Hyperlegible",system-ui,-apple-system,"Segoe UI",sans-serif;
   --mono:"JetBrains Mono",ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
@@ -23,14 +23,14 @@
   :root:not([data-theme="light"]){
     --page:#0E1322; --surface:#161C30; --sunk:#11172A; --ink:#EEF1F8; --text:#D3D8E6; --muted:#9AA2B8; --line:#283049;
     --accent:#A79DFF; --accent-ink:#0E1322; --accent-soft:#25214A;
-    --ok:#6FD6A3; --ok-bg:#14301F; --warn:#F2C46B; --warn-bg:#33270E; --bad:#FF9D93; --bad-bg:#3A1816; --fix:#6AD3E8; --fix-bg:#0E2D36;
+    --ok:#6FD6A3; --ok-bg:#14301F; --warn:#F2C46B; --warn-bg:#33270E; --bad:#FF9D93; --bad-bg:#3A1816; --fix:#6AD3E8; --fix-bg:#0E2D36; --ret:#C2413A;
     --pend:#59617A; --shadow:0 1px 2px rgba(0,0,0,.3),0 10px 30px -14px rgba(0,0,0,.6); color-scheme:dark;
   }
 }
 :root[data-theme="dark"]{
   --page:#0E1322; --surface:#161C30; --sunk:#11172A; --ink:#EEF1F8; --text:#D3D8E6; --muted:#9AA2B8; --line:#283049;
   --accent:#A79DFF; --accent-ink:#0E1322; --accent-soft:#25214A;
-  --ok:#6FD6A3; --ok-bg:#14301F; --warn:#F2C46B; --warn-bg:#33270E; --bad:#FF9D93; --bad-bg:#3A1816; --fix:#6AD3E8; --fix-bg:#0E2D36;
+  --ok:#6FD6A3; --ok-bg:#14301F; --warn:#F2C46B; --warn-bg:#33270E; --bad:#FF9D93; --bad-bg:#3A1816; --fix:#6AD3E8; --fix-bg:#0E2D36; --ret:#C2413A;
   --pend:#59617A; --shadow:0 1px 2px rgba(0,0,0,.3),0 10px 30px -14px rgba(0,0,0,.6); color-scheme:dark;
 }
 :root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
@@ -115,12 +115,14 @@ details.opts[open] summary svg{transform:rotate(90deg)}
 .meter{display:flex;height:12px;border-radius:999px;overflow:hidden;background:var(--sunk);margin:.8rem 0 .9rem;border:1px solid var(--line)}
 .meter span{height:100%;transition:width .45s cubic-bezier(.2,.8,.2,1)}
 .meter .m-ok{background:var(--ok)} .meter .m-fixed{background:var(--fix)} .meter .m-warn{background:var(--warn)} .meter .m-bad{background:var(--bad)}
-.meter .m-manual{background:var(--accent)}
+.meter .m-manual{background:var(--accent)} .meter .m-retracted{background:var(--ret)}
 .meter .m-pending{background:repeating-linear-gradient(-45deg,var(--pend) 0 6px,transparent 6px 12px);opacity:.5}
 .chips{display:flex;flex-wrap:wrap;gap:.45rem}
 .chip{display:inline-flex;align-items:center;gap:.45rem;border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:.32rem .8rem;font-size:.85rem;cursor:pointer;color:var(--text);font-weight:700}
 .chip i{width:9px;height:9px;border-radius:50%;background:var(--pend)}
-.chip.c-ok i{background:var(--ok)} .chip.c-warn i{background:var(--warn)} .chip.c-bad i{background:var(--bad)} .chip.c-fixed i{background:var(--fix)} .chip.c-all i{background:var(--ink)} .chip.c-manual i{background:var(--accent)}
+.chip.c-ok i{background:var(--ok)} .chip.c-warn i{background:var(--warn)} .chip.c-bad i{background:var(--bad)} .chip.c-fixed i{background:var(--fix)} .chip.c-all i{background:var(--ink)} .chip.c-manual i{background:var(--accent)} .chip.c-retracted i{background:var(--ret)}
+.chip.flag i{border-radius:2px;background:transparent;border:2px solid var(--muted)}
+.chipsep{width:1px;align-self:stretch;background:var(--line);margin:0 .2rem}
 .chip[aria-pressed="true"]{background:var(--ink);color:var(--surface);border-color:var(--ink)}
 .chip[aria-pressed="true"] i{box-shadow:0 0 0 2px var(--surface)}
 .chip em{font-style:normal;font-weight:400;opacity:.85}
@@ -140,9 +142,9 @@ details.opts[open] summary svg{transform:rotate(90deg)}
 .ref-head:hover{background:var(--sunk)}
 .ico{display:grid;place-items:center;width:32px;height:32px;border-radius:50%;font-weight:700;flex:none}
 .ico svg{width:17px;height:17px}
-.s-ok .ico{background:var(--ok-bg);color:var(--ok)} .s-warn .ico{background:var(--warn-bg);color:var(--warn)} .s-bad .ico,.s-error .ico{background:var(--bad-bg);color:var(--bad)} .s-fixed .ico{background:var(--fix-bg);color:var(--fix)} .s-pending .ico{background:var(--sunk);color:var(--muted)} .s-manual .ico{background:var(--accent-soft);color:var(--accent)}
+.s-ok .ico{background:var(--ok-bg);color:var(--ok)} .s-warn .ico{background:var(--warn-bg);color:var(--warn)} .s-bad .ico,.s-error .ico{background:var(--bad-bg);color:var(--bad)} .s-fixed .ico{background:var(--fix-bg);color:var(--fix)} .s-pending .ico{background:var(--sunk);color:var(--muted)} .s-manual .ico{background:var(--accent-soft);color:var(--accent)} .s-retracted .ico{background:var(--ret);color:#fff}
 .ref{border-left:4px solid var(--line)}
-.s-ok{border-left-color:var(--ok)} .s-warn{border-left-color:var(--warn)} .s-bad,.s-error{border-left-color:var(--bad)} .s-fixed{border-left-color:var(--fix)} .s-manual{border-left-color:var(--accent)}
+.s-ok{border-left-color:var(--ok)} .s-warn{border-left-color:var(--warn)} .s-bad,.s-error{border-left-color:var(--bad)} .s-fixed{border-left-color:var(--fix)} .s-manual{border-left-color:var(--accent)} .s-retracted{border-left-color:var(--ret)}
 .spin{width:16px;height:16px;border-radius:50%;border:2.5px solid currentColor;border-right-color:transparent;animation:spin .8s linear infinite}
 @keyframes spin{to{transform:rotate(360deg)}}
 .ref-main{min-width:0}
@@ -150,7 +152,28 @@ details.opts[open] summary svg{transform:rotate(90deg)}
 .ref.open .ref-title{white-space:normal}
 .ref-meta{display:block;color:var(--muted);font-size:.825rem;margin-top:.1rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .badge{white-space:nowrap;font-size:.78rem;font-weight:700;padding:.25rem .6rem;border-radius:6px}
-.s-ok .badge{background:var(--ok-bg);color:var(--ok)} .s-warn .badge{background:var(--warn-bg);color:var(--warn)} .s-bad .badge,.s-error .badge{background:var(--bad-bg);color:var(--bad)} .s-fixed .badge{background:var(--fix-bg);color:var(--fix)} .s-pending .badge{background:var(--sunk);color:var(--muted)} .s-manual .badge{background:var(--accent-soft);color:var(--accent)}
+.s-ok .badge{background:var(--ok-bg);color:var(--ok)} .s-warn .badge{background:var(--warn-bg);color:var(--warn)} .s-bad .badge,.s-error .badge{background:var(--bad-bg);color:var(--bad)} .s-fixed .badge{background:var(--fix-bg);color:var(--fix)} .s-pending .badge{background:var(--sunk);color:var(--muted)} .s-manual .badge{background:var(--accent-soft);color:var(--accent)} .s-retracted .badge{background:var(--ret);color:#fff}
+.ref-tags{display:flex;flex-wrap:wrap;gap:.3rem;margin-top:.3rem}
+.rtag{font-size:.72rem;font-weight:700;padding:.1rem .45rem;border-radius:4px;background:var(--sunk);color:var(--muted);border:1px solid var(--line)}
+.rtag.dup{background:var(--accent-soft);color:var(--accent);border-color:transparent} .rtag.pub{background:var(--fix-bg);color:var(--fix);border-color:transparent}
+.rtag.unc{background:var(--warn-bg);color:var(--warn);border-color:transparent} .rtag.con{background:var(--warn-bg);color:var(--warn);border-color:transparent} .rtag.cor{background:var(--sunk)}
+.alert{display:grid;grid-template-columns:auto minmax(0,1fr);gap:.75rem;align-items:start;border-radius:12px;padding:.8rem .95rem;font-size:.9rem;border:1px solid transparent}
+.alert svg{width:20px;height:20px;margin-top:.1rem}
+.alert b{display:block;color:inherit;font-size:.95rem}
+.alert p{margin:.15rem 0 0;color:var(--text)}
+.alert .ref-actions{margin-top:.6rem}
+.alert.ret{background:var(--bad-bg);color:var(--bad);border-color:color-mix(in srgb,var(--bad) 35%,transparent)}
+.alert.con{background:var(--warn-bg);color:var(--warn)}
+.alert.pub{background:var(--fix-bg);color:var(--fix)}
+.alert.dup{background:var(--accent-soft);color:var(--accent)}
+.alert.cor{background:var(--sunk);color:var(--ink);border-color:var(--line)}
+.alert.unc{background:var(--warn-bg);color:var(--warn)}
+.cites{margin-top:.9rem;padding:.85rem 1rem;border:1px solid var(--line);border-radius:12px;background:var(--sunk);font-size:.9rem}
+.cites h3{margin:0 0 .35rem;font-size:.9rem;color:var(--ink)}
+.cites p{margin:.25rem 0}
+.linkbtn{background:none;border:0;padding:0;color:var(--accent);font-weight:700;cursor:pointer;text-decoration:underline;text-underline-offset:2px}
+.missing{display:inline-block;margin:.15rem .25rem 0 0;padding:.05rem .45rem;border-radius:4px;background:var(--bad-bg);color:var(--bad);font-weight:700;font-size:.8rem}
+.ref.flash{box-shadow:0 0 0 3px var(--accent)}
 .chev{width:18px;height:18px;color:var(--muted);transition:transform .2s}
 .ref.open .chev{transform:rotate(180deg)}
 @media (max-width:560px){.ref-head{grid-template-columns:auto minmax(0,1fr) auto}.badge{display:none}}
@@ -237,7 +260,7 @@ footer{max-width:1320px;margin:0 auto;padding:0 1.5rem 3rem;color:var(--muted);f
       <p class="lede">Paste a bibliography and every entry is checked against five scholarly databases. Mistakes get a corrected BibTeX entry you can download.</p>
       <div class="drop" id="drop">
         <label class="sr" for="input">References</label>
-        <textarea id="input" spellcheck="false" placeholder="Paste references here, numbered, one per line, or as BibTeX. You can also drop a .bib or .txt file here."></textarea>
+        <textarea id="input" spellcheck="false" placeholder="Paste references here, numbered, one per line, or as BibTeX. You can also drop a paper (PDF), .bib or .txt file here."></textarea>
         <div class="drop-hint">Drop your file to load it</div>
       </div>
       <p class="detect" id="detect" aria-live="polite"><span class="dot"></span><span id="detectText">Waiting for references</span></p>
@@ -248,7 +271,7 @@ footer{max-width:1320px;margin:0 auto;padding:0 1.5rem 3rem;color:var(--muted);f
       <div class="minor">
         <label class="btn sm" for="file">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 16V4M7 9l5-5 5 5M5 20h14"/></svg>
-          Upload file<input type="file" id="file" accept=".bib,.txt,.bbl,.ris,text/plain">
+          Upload .bib or PDF<input type="file" id="file" accept=".pdf,.bib,.txt,.bbl,.ris,application/pdf,text/plain">
         </label>
         <button class="btn sm" id="sample">Try an example</button>
         <button class="btn sm ghost" id="clear">Clear</button>
@@ -273,13 +296,13 @@ footer{max-width:1320px;margin:0 auto;padding:0 1.5rem 3rem;color:var(--muted);f
     <div class="panel intro" id="intro">
       <h2>How it works</h2>
       <ol class="steps">
-        <li><div><b>Paste or upload your references</b><span>Any common format works: APA, IEEE, numbered lists, or a .bib file.</span></div></li>
+        <li><div><b>Paste or upload your references</b><span>Any common format works: APA, IEEE, numbered lists, a .bib file, or a whole paper as a PDF.</span></div></li>
         <li><div><b>Each entry is looked up</b><span>CrossRef, DBLP, Semantic Scholar, arXiv and OpenAlex are searched for a matching publication.</span></div></li>
         <li><div><b>Review the differences</b><span>Open any result to compare your citation with the real record, word by word.</span></div></li>
         <li><div><b>Download a corrected .bib</b><span>Fixes are re-validated automatically, and your citation keys stay the same.</span></div></li>
       </ol>
       <div class="legend">
-        <span class="pill ok">Verified</span><span class="pill fix">Corrected</span><span class="pill man">Verified manually</span><span class="pill warn">Check details</span><span class="pill bad">Not found</span>
+        <span class="pill ok">Verified</span><span class="pill fix">Corrected</span><span class="pill man">Verified manually</span><span class="pill bad" style="background:var(--ret);color:#fff">Retracted</span><span class="pill warn">Check details</span><span class="pill bad">Not found</span>
       </div>
       <p class="sources">“Not found” means no close match in any database. Books, theses and very new papers are sometimes missing, so check those by hand before treating them as fabricated.</p>
       <button class="btn primary" id="sample2" style="margin-top:1rem">Try an example</button>
@@ -305,10 +328,15 @@ footer{max-width:1320px;margin:0 auto;padding:0 1.5rem 3rem;color:var(--muted);f
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v12M7 11l5 5 5-5M5 20h14"/></svg>
             Download updated .bib
           </button>
+          <button class="btn sm" id="report" style="border-color:var(--accent);color:var(--accent)">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H6a1 1 0 0 0-1 1v16a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V8z"/><path d="M14 3v5h5M8.5 13h7M8.5 17h5"/></svg>
+            Verification report
+          </button>
           <button class="btn sm" id="csv">Download CSV</button>
           <button class="btn sm" id="recheckflag">Re-check flagged</button>
           <button class="btn sm" id="verifybib">Re-validate updated .bib</button>
         </div>
+        <div class="cites" id="cites" hidden></div>
         <p class="notice" id="oanotice" hidden>OpenAlex refused some lookups because there’s no API key or the daily quota ran out. The other four databases were still used. For the widest coverage, add a free key under Options and check again.</p>
       </div>
       <ol class="list" id="list"></ol>
@@ -322,12 +350,14 @@ const $ = s => document.querySelector(s);
 const input = $("#input");
 let items = [], filter = "all", running = false, query = "", sortMode = "order";
 
-const SAMPLE = `[1] Vaswani, A., Shazeer, N., Parmar, N., Uszkoreit, J., Jones, L., Gomez, A. N., Kaiser, Ł., & Polosukhin, I. (2017). Attention is all you need. Advances in Neural Information Processing Systems, 30.
+const SAMPLE = `[1] Vaswani, A., Shazeer, N., Parmar, N., Uszkoreit, J., Jones, L., Gomez, A. N., Kaiser, Ł., & Polosukhin, I. (2017). Attention is all you need. arXiv preprint arXiv:1706.03762.
 [2] He, K., Zhang, X., Ren, S., & Sun, J. (2016). Deep residual learning for image recognition. Proceedings of the IEEE Conference on Computer Vision and Pattern Recognition, 770–778.
 [3] LeCun, Y., Bengio, Y., & Hinton, G. (2015). Deep learning. Nature, 521(7553), 436–444. https://doi.org/10.1038/nature14539
 [4] Devlin, J., Chang, M.-W., Lee, K., & Toutanova, K. (2018). BERT: Pre-training of deep bidirectional transformers for language understanding. Nature Machine Intelligence, 2(4), 112–120.
 [5] Yang, C.-H. H., Hung, I.-T. D., Ouyang, Y., & Chen, P.-Y. (2021). Causal inference Q-network: Toward resilient reinforcement learning. arXiv preprint arXiv:2102.09677.
-[6] Thompson, R. L., & Marchetti, A. (2021). Recursive gradient folding for low-resource semantic alignment. Journal of Computational Linguistics Research, 14(3), 201–219.`;
+[6] Thompson, R. L., & Marchetti, A. (2021). Recursive gradient folding for low-resource semantic alignment. Journal of Computational Linguistics Research, 14(3), 201–219.
+[7] Wakefield, A. J., Murch, S. H., Anthony, A., Linnell, J., Casson, D. M., Malik, M., et al. (1998). Ileal-lymphoid-nodular hyperplasia, non-specific colitis, and pervasive developmental disorder in children. The Lancet, 351(9103), 637–641. https://doi.org/10.1016/S0140-6736(97)11096-0
+[8] LeCun, Y., Bengio, Y., & Hinton, G. (2015). Deep learning. Nature, 521, 436–444.`;
 
 /* ---------- text helpers ---------- */
 const STOP = new Set("a an the of and or in on for to with by from at as is are via its into using towards toward".split(" "));
@@ -371,6 +401,14 @@ function splitPlain(text){
   } else parts = text.split("\n");
   return parts.map(p => p.replace(/^\s*(\[\d+\]|\d{1,3}[.)])\s+/,"").replace(/\s*\n\s*/g," ").trim()).filter(p => p.length > 15);
 }
+// A title plus its plausible shorter forms (the part before a ? ! or :), longest first
+function titleVariants(t){
+  t = String(t||"").trim(); if(!t) return [];
+  const out = [t];
+  const m = t.match(/^(.{8,}?[?!:])\s+\S/);
+  if(m) out.push(m[1].replace(/:$/,""));
+  return [...new Set(out)];
+}
 function analyse(raw){
   const doi = (raw.match(/\b(10\.\d{4,9}\/[^\s"<>,;]+)/i)||[])[1]?.replace(/[.)\]]+$/,"") || "";
   const arxiv = (raw.match(/arxiv[:\s./a-z]*?(\d{4}\.\d{4,5})(v\d+)?/i)||[])[1] || "";
@@ -380,8 +418,11 @@ function analyse(raw){
   const q = raw.match(/[“"]([^”"]{12,})[”"]/);
   if(q) title = q[1];
   else {
-    const apa = raw.match(/\((?:19|20)\d{2}[a-z]?\)\.?\s*([^.?!]{10,}[.?!])/);
-    if(apa) title = apa[1];
+    // Take the title up to the first full stop, so "What and When to Explain? On-road ..." stays whole
+    const apa = raw.match(/\((?:19|20)\d{2}[a-z]?\)\.?\s*(.{10,}?[.?!])(?=\s+[A-Z(]|\s*$)/);
+    const apaLong = raw.match(/\((?:19|20)\d{2}[a-z]?\)\.?\s*(.{10,}?\.)(?=\s|$)/);
+    if(apaLong) title = apaLong[1];
+    else if(apa) title = apa[1];
     else {
       const segs = raw.split(/\.\s+/).map(s => s.trim()).filter(s => s.split(" ").length >= 4 && !/\b(19|20)\d{2}\b/.test(s.slice(0,8)));
       title = segs.sort((a,b) => b.length - a.length)[0] || "";
@@ -389,10 +430,11 @@ function analyse(raw){
   }
   const lead = raw.replace(/^\s*[^A-Za-zÀ-ž]+/,"");
   const firstAuthor = (lead.match(/^([A-Za-zÀ-ž'’\-]+(?:\s[A-Za-zÀ-ž'’\-]+)?)\s*,/)||[])[1] || (lead.match(/^\S+\s+([A-Za-zÀ-ž'’\-]+)[,.]/)||[])[1] || "";
-  return {raw, title: title.replace(/[.?!]$/,"").trim(), year, doi, arxiv, firstAuthor};
+  title = title.replace(/[.,;:]+$/,"").trim();
+  return {raw, title, titleAlts: titleVariants(title), year, doi, arxiv, firstAuthor};
 }
 function parseInput(text){
-  if(/@\w+\s*\{/.test(text)) return parseBibtex(text).map(b => ({...analyse(b.raw), ...Object.fromEntries(Object.entries(b).filter(([,v]) => v))}));
+  if(/@\w+\s*\{/.test(text)) return parseBibtex(text).map(b => { const r = {...analyse(b.raw), ...Object.fromEntries(Object.entries(b).filter(([,v]) => v))}; r.titleAlts = r.title ? [r.title] : []; return r; });
   return splitPlain(text).map(analyse);
 }
 
@@ -425,11 +467,17 @@ const splitName = full => {
   return {family:parts.pop()||"", given:parts.join(" ")};
 };
 const pack = (o, source) => ({...o, authors:o.people.map(p => p.family), source});
+function joinTitle(main, sub){
+  main = String(main||"").replace(/<[^>]+>/g,"").replace(/\s+/g," ").trim();
+  sub = String(sub||"").replace(/<[^>]+>/g,"").replace(/\s+/g," ").trim();
+  if(!sub || norm(main).includes(norm(sub))) return main;
+  return main + (/[?!:.]$/.test(main) ? " " : ": ") + sub;
+}
 function fromCrossref(w){
   if(!w) return null;
   const y = (w.issued?.["date-parts"]?.[0]?.[0]) || (w.published?.["date-parts"]?.[0]?.[0]) || "";
   const people = (w.author||[]).map(a => ({family:a.family || a.name || "", given:a.given || ""})).filter(p => p.family);
-  return pack({title:((w.title||[])[0]||"").replace(/<[^>]+>/g,""), year:String(y||""), people,
+  return pack({title:joinTitle((w.title||[])[0], (w.subtitle||[])[0]), year:String(y||""), people,
           venue:(w["container-title"]||[])[0]||"", publisher:w.publisher||"", volume:w.volume||"", issue:w.issue||"",
           pages:(w.page||"").replace(/-+/,"--"), kind:w.type||"", doi:w.DOI||"", url:w.DOI ? `https://doi.org/${w.DOI}` : w.URL}, "CrossRef");
 }
@@ -448,7 +496,7 @@ function fromDataCite(d){
   const a = d?.attributes; if(!a) return null;
   const people = (a.creators||[]).map(c => c.familyName ? {family:c.familyName, given:c.givenName||""} : splitName(c.name)).filter(p => p.family);
   const isArxiv = /^10\.48550\/arxiv/i.test(a.doi||"");
-  return pack({title:(a.titles||[])[0]?.title||"", year:String(a.publicationYear||""), people,
+  return pack({title:joinTitle(((a.titles||[]).find(t => !t.titleType) || (a.titles||[])[0])?.title, (a.titles||[]).find(t => t.titleType === "Subtitle")?.title), year:String(a.publicationYear||""), people,
           venue:isArxiv ? "" : (a.container?.title||""), publisher:a.publisher?.name || a.publisher || "", volume:"", issue:"", pages:"",
           kind:"posted-content", doi:a.doi||"", url:a.doi ? `https://doi.org/${a.doi}` : a.url}, isArxiv ? "arXiv (DataCite)" : "DataCite");
 }
@@ -474,10 +522,25 @@ function fromS2(p){
 }
 function score(ref, c){
   if(!c || !c.title) return 0;
+  c.subtitleMissing = false; c.altUsed = null;
   const inRef = coverage(c.title, ref.raw);
-  const back = ref.title ? coverage(ref.title, c.title) : inRef;
-  return Math.min(inRef, back);
+  const alts = ref.titleAlts?.length ? ref.titleAlts : titleVariants(ref.title);
+  if(!alts.length) return inRef;
+  let best = {v:0, alt:null};
+  for(const a of alts){ const v = coverage(a, c.title); if(v > best.v) best = {v, alt:a}; }
+  // The database may list only the main title, with the subtitle stored separately or dropped.
+  // Keep the full title unless the extra text looks like a venue rather than a subtitle.
+  const full = alts[0], ct = norm(c.title), nf = norm(full);
+  if((best.alt !== full || best.v < 0.9) && inRef >= 0.9 && tokens(c.title).length >= 3 && nf.startsWith(ct) && nf.length > ct.length){
+    const rest = nf.slice(ct.length);
+    const venueLike = /\b(proceedings|proc|journal|conference|conf|transactions|trans|arxiv|preprint|advances|symposium|workshop|vol|volume|pp|press|letters|review|magazine|ieee|acm)\b/.test(rest)
+      || /\b\d{2,}\b/.test(rest) || (c.venue && coverage(c.venue, rest) >= 0.6);
+    if(!venueLike){ best = {v:1, alt:full}; c.subtitleMissing = true; }
+  }
+  c.altUsed = best.alt;
+  return Math.min(inRef, best.v);
 }
+const titlesMatch = (it, m) => score(it, m) >= 0.9;
 // share of the candidate's (first few) authors whose surname appears in the citation
 function authorMatch(ref, c){
   const r = " " + norm(ref.raw) + " ";
@@ -513,7 +576,7 @@ async function lookup(ref){
   if(!(best()?.s >= 0.85)){
     const q = (ref.title || ref.raw).slice(0, 250).replace(/[,:;|!?()"“”\[\]{}]/g, " ").replace(/\s+/g, " ").trim();
     const [cr, db, s2, oa] = await Promise.all([
-      getJSON(`https://api.crossref.org/works?query.bibliographic=${encodeURIComponent(ref.raw.slice(0,400))}&rows=5&select=DOI,title,author,issued,published,container-title,publisher,URL,volume,issue,page,type${m ? "&" + m : ""}`, stats),
+      getJSON(`https://api.crossref.org/works?query.bibliographic=${encodeURIComponent(ref.raw.slice(0,400))}&rows=5&select=DOI,title,subtitle,author,issued,published,container-title,publisher,URL,volume,issue,page,type${m ? "&" + m : ""}`, stats),
       getJSON(`https://dblp.org/search/publ/api?q=${encodeURIComponent(q)}&format=json&h=5`, stats),
       getJSON(`https://api.semanticscholar.org/graph/v1/paper/search?query=${encodeURIComponent(q)}&limit=5&fields=title,year,authors,venue,externalIds,journal,publicationTypes`, stats),
       useOA ? getJSON(`https://api.openalex.org/works?search=${encodeURIComponent(q)}&per-page=5&${oaParams()}`, stats) : null
@@ -529,6 +592,7 @@ async function lookup(ref){
 }
 function judge(ref, {best, cands}){
   const issues = [];
+  if(best && best.s >= 0.6 && best.altUsed && best.altUsed !== ref.title){ ref.title = best.altUsed; ref.titleAlts = [best.altUsed]; }
   const idCand = cands.find(c => c.viaId);
   if(ref.doiBroken) issues.push(`The DOI ${ref.doi} doesn’t resolve in CrossRef, DataCite or OpenAlex.`);
   if(ref.arxivBroken) issues.push(`The arXiv ID ${ref.arxiv} doesn’t exist.`);
@@ -588,7 +652,7 @@ function toBib(it, m, key){
   const type = {"journal-article":"article","proceedings-article":"inproceedings","book":"book","book-chapter":"incollection","posted-content":arx ? "article" : "misc"}[m.kind] || (m.venue ? "article" : "misc");
   const venueField = type === "inproceedings" || type === "incollection" ? "booktitle" : type === "article" ? "journal" : "howpublished";
   const f = [
-    ["title", `{${bibEsc(m.title)}}`],
+    ["title", `{${bibEsc(it.title && norm(it.title).startsWith(norm(m.title)) && it.title.length > m.title.length ? it.title : m.title)}}`],
     ["author", m.people.map(p => p.given ? `${bibEsc(p.family)}, ${bibEsc(p.given)}` : bibEsc(p.family)).join(" and ")],
     [venueField, arx && !m.venue ? `arXiv preprint arXiv:${arx}` : bibEsc(m.venue)],
     ["year", m.year], ["volume", m.volume], ["number", m.issue], ["pages", m.pages],
@@ -602,7 +666,7 @@ function changedFields(it, m){
   const ch = [];
   if(it.bibFields){
     const o = it.bibFields;
-    if(coverage(m.title, o.title||"") < 0.9 || coverage(o.title||"", m.title) < 0.9) ch.push("title");
+    if(!titlesMatch({...it, title:o.title||"", titleAlts:o.title ? [o.title] : []}, m)) ch.push("title");
     const oa = norm(o.author||"");
     if(m.people.length && !m.people.slice(0,3).every(p => oa.includes(norm(p.family)))) ch.push("authors");
     if(m.year && o.year !== m.year) ch.push("year");
@@ -624,10 +688,19 @@ function prepareFixes(){
     if(it.useFix === undefined) it.useFix = it.result.status === "warn" && !it.result.renamed;
   });
 }
+function bibNotes(it, i){
+  const out = [];
+  if(it.retraction) out.push(`% [${i+1}] WARNING: ${it.retraction.label.toUpperCase()}${it.retraction.date ? " on " + it.retraction.date : ""}${it.retraction.notice ? ", notice https://doi.org/" + it.retraction.notice : ""}${it.retractionAck ? " (cited intentionally)" : ""}`);
+  if(it.concern) out.push(`% [${i+1}] Expression of concern${it.concern.date ? " " + it.concern.date : ""}${it.concern.notice ? ", https://doi.org/" + it.concern.notice : ""}`);
+  if(it.dupOf !== undefined) out.push(`% [${i+1}] Duplicate of [${it.dupOf + 1}]${items[it.dupOf]?.key || items[it.dupOf]?.newKey ? " (" + (items[it.dupOf].key || items[it.dupOf].newKey) + ")" : ""}`);
+  if(it.published && !it.usePublished) out.push(`% [${i+1}] Published version available: ${it.published.venue}${it.published.year ? " (" + it.published.year + ")" : ""}${it.published.doi ? ", https://doi.org/" + it.published.doi : ""}`);
+  return out.length ? out.join("\n") + "\n" : "";
+}
 function buildBib(){
+  findDuplicates();
   const n = {fixed:0, kept:0, flagged:0, manual:0};
   const used = new Set(items.flatMap(x => [x.key, x.newKey]).filter(Boolean));
-  const out = items.map((it, i) => {
+  const out = items.map((it, i) => bibNotes(it, i) + (it.usePublished && it.published ? (n.kept++, `% [${i+1}] Preprint replaced with the published version${it.published.doi ? " (" + it.published.doi + ")" : ""}\n` + toBib(it, it.published, it.key || it.newKey || makeKey(it, it.published, used))) : (() => {
     const st = it.result?.status;
     if(it.manual){
       n.manual++;
@@ -656,11 +729,324 @@ function buildBib(){
     n.flagged++;
     const reason = st === "bad" ? "NOT FOUND in any database" : it.error ? "Lookup failed" : "Correction not applied";
     return `% [${i+1}] ${reason}. Original citation, add it by hand if it is real:\n% ${it.raw}`;
-  });
+  })()));
   const head = `% Updated by Reference Checker on ${new Date().toISOString().slice(0,10)}\n% ${n.fixed} corrected, ${n.kept} kept, ${n.manual} verified manually, ${n.flagged} need manual review\n\n`;
   return head + out.join("\n\n") + "\n";
 }
 
+
+/* ---------- integrity checks: retractions, published versions, duplicates ---------- */
+const UPD_LABEL = {retraction:"Retraction", partial_retraction:"Partial retraction", withdrawal:"Withdrawal", removal:"Removal",
+  expression_of_concern:"Expression of concern", correction:"Correction", erratum:"Erratum", corrigendum:"Corrigendum",
+  addendum:"Addendum", clarification:"Clarification", reinstatement:"Reinstatement"};
+const SEVERE = new Set(["retraction","partial_retraction","withdrawal","removal"]);
+const dateOf = u => u?.["date-time"] ? u["date-time"].slice(0, 10) : (u?.["date-parts"]?.[0] || []).filter(Boolean).map(n => String(n).padStart(2, "0")).join("-");
+const fmtDate = d => { if(!d) return ""; const p = d.split("-"); const M = ["January","February","March","April","May","June","July","August","September","October","November","December"];
+  return p.length >= 3 ? `${+p[2]} ${M[+p[1]-1]} ${p[0]}` : p.length === 2 ? `${M[+p[1]-1]} ${p[0]}` : p[0]; };
+const isDoi = s => /^10\.\d{4,9}\//.test(s || "");
+
+async function checkUpdates(doi){
+  const m = mail() ? `&mailto=${encodeURIComponent(mail())}` : "";
+  const d = encodeURIComponent(doi);
+  const [own, notices] = await Promise.all([
+    getJSON(`https://api.crossref.org/works/${d}?${m.slice(1)}`),
+    getJSON(`https://api.crossref.org/works?filter=updates:${d}&rows=20&select=DOI,update-to,type${m}`)
+  ]);
+  const out = [], seen = new Set();
+  const add = (u, notice) => {
+    const type = String(u?.type || "").toLowerCase().replace(/[\s-]+/g, "_"); if(!type) return;
+    const key = type + "|" + norm(notice || "") + "|" + dateOf(u.updated).slice(0, 7);
+    if(seen.has(key)) return; seen.add(key);
+    out.push({type, label: UPD_LABEL[type] || u.label || type, notice: isDoi(notice) ? notice : "", source: u.source || "publisher", date: dateOf(u.updated)});
+  };
+  (own?.message?.["updated-by"] || []).forEach(u => add(u, u.DOI));
+  (notices?.message?.items || []).forEach(w => (w["update-to"] || []).filter(u => norm(u.DOI) === norm(doi)).forEach(u => add(u, w.DOI)));
+  return out.sort((a, b) => (b.date || "").localeCompare(a.date || ""));
+}
+
+const PREPRINT_RE = /arxiv|\bcorr\b|biorxiv|medrxiv|ssrn|preprint|research square|techrxiv|chemrxiv|psyarxiv|osf preprints/i;
+const isPreprint = (it, m) => !!m && (/^10\.48550\//i.test(m.doi || "") || m.kind === "posted-content" || PREPRINT_RE.test(`${m.venue || ""} ${m.publisher || ""}`) || (!!it.arxiv && !m.venue));
+async function findPublished(it, m){
+  const q = m.title, fam = norm(m.people[0]?.family || "");
+  const mm = mail() ? `&mailto=${encodeURIComponent(mail())}` : "";
+  const [cr, db] = await Promise.all([
+    getJSON(`https://api.crossref.org/works?query.bibliographic=${encodeURIComponent((q + " " + (m.people[0]?.family || "")).slice(0, 300))}&rows=6&select=DOI,title,subtitle,author,issued,published,container-title,publisher,URL,volume,issue,page,type${mm}`),
+    getJSON(`https://dblp.org/search/publ/api?q=${encodeURIComponent(q.replace(/[,:;|!?()"“”\[\]{}]/g, " ").slice(0, 250))}&format=json&h=6`)
+  ]);
+  const cands = [...(cr?.message?.items || []).map(fromCrossref), ...(db?.result?.hits?.hit || []).map(fromDblp)].filter(Boolean);
+  const good = c => c.kind !== "posted-content" && !/^10\.48550\//i.test(c.doi || "") && c.venue && !PREPRINT_RE.test(c.venue)
+    && coverage(c.title, q) >= 0.9 && coverage(q, c.title) >= 0.9
+    && (!fam || c.authors.some(a => norm(a) === fam))
+    && (!m.year || !c.year || +c.year >= +m.year - 1);
+  return cands.filter(good).sort((a, b) => (b.doi ? 1 : 0) - (a.doi ? 1 : 0))[0] || null;
+}
+async function extras(it){
+  const m = it.result?.match;
+  if(!m || it.result.status === "bad") return;
+  const jobs = [];
+  if(isDoi(m.doi) && !/^10\.48550\//i.test(m.doi)) jobs.push(checkUpdates(m.doi).then(u => {
+    it.updates = u;
+    it.retraction = u.find(x => SEVERE.has(x.type)) || null;
+    it.concern = u.find(x => x.type === "expression_of_concern") || null;
+    it.corrections = u.filter(x => !SEVERE.has(x.type) && x.type !== "expression_of_concern" && x.type !== "reinstatement");
+  }).catch(() => {}));
+  if(isPreprint(it, m)) jobs.push(findPublished(it, m).then(p => { if(p && coverage(p.venue, it.raw) < 0.6) it.published = p; }).catch(() => {}));
+  await Promise.all(jobs);
+}
+function findDuplicates(){
+  const seen = new Map();
+  items.forEach(it => { delete it.dupOf; delete it.dupKind; });
+  items.forEach((it, i) => {
+    const m = it.result && it.result.status !== "bad" ? it.result.match : null;
+    const keys = [];
+    const d = norm(m?.doi || it.doi); if(d) keys.push(["d:" + d, "same"]);
+    if(it.published?.doi) keys.push(["d:" + norm(it.published.doi), "version"]);
+    const t = norm(m?.title || it.title); if(t.split(" ").length >= 3) keys.push(["t:" + t, "same"]);
+    for(const [k, kind] of keys){
+      if(seen.has(k) && seen.get(k).i !== i){ it.dupOf = seen.get(k).i; it.dupKind = kind === "version" || seen.get(k).kind === "version" ? "version" : "same"; break; }
+    }
+    keys.forEach(([k, kind]) => { if(!seen.has(k)) seen.set(k, {i, kind}); });
+  });
+}
+
+/* ---------- in-text citation cross-check (PDF uploads) ---------- */
+let pdfContext = null;
+const CITE_STOP = new Set("figure fig table tab section sec eq equation appendix chapter see in the and also for from with january february march april may june july august september october november december spring summer fall autumn winter note version accessed retrieved".split(" "));
+function citeAnalysis(){
+  if(!pdfContext || !items.length) return null;
+  // IEEE writes ranges as "[2]–[4]": fold them into "[2–4]" first
+  const body = pdfContext.body.replace(/\[(\d{1,3})\]\s*[–—-]\s*\[(\d{1,3})\]/g, "[$1–$2]");
+  if(pdfContext.style === "numbered"){
+    const cited = new Map(); let total = 0;
+    for(const m of body.matchAll(/\[(\d{1,3}(?:\s*[,;–—-]\s*\d{1,3})*)\]/g)){
+      m[1].split(/\s*[,;]\s*/).forEach(part => {
+        const r = part.split(/\s*[–—-]\s*/).map(Number);
+        const nums = r.length === 2 && r[1] >= r[0] && r[1] - r[0] < 60 ? Array.from({length: r[1] - r[0] + 1}, (_, k) => r[0] + k) : [r[0]];
+        nums.forEach(n => { cited.set(n, (cited.get(n) || 0) + 1); total++; });
+      });
+    }
+    const perRef = items.map((_, i) => cited.get(i + 1) || 0);
+    return {style:"numbered", total, perRef, uncited: perRef.map((c, i) => c ? -1 : i).filter(i => i >= 0),
+      missing: [...cited.keys()].filter(n => n < 1 || n > items.length).sort((a, b) => a - b).map(n => `[${n}]`), edited: items.length !== pdfContext.count};
+  }
+  const yr = "(?:19|20)\\d{2}[a-z]?", nm = "[A-Z][A-Za-zÀ-ž'’\\-]+";
+  const cites = [];
+  for(const m of body.matchAll(new RegExp(`\\(([^()]{2,300}?${yr}[^()]{0,60})\\)`, "g"))){
+    m[1].split(/;/).forEach(part => {
+      const y = part.match(new RegExp(yr)); if(!y) return;
+      const name = (part.replace(/\b(see also|see|e\.g\.,?|cf\.|i\.e\.,?|for example|for a review,?|reviewed in)\s*/gi, "").match(new RegExp(nm)) || [])[0];
+      if(name) cites.push({name, year:y[0]});
+    });
+  }
+  for(const m of body.matchAll(new RegExp(`\\b(${nm})(?:\\s+et\\s+al\\.?|\\s+(?:and|&)\\s+${nm})?,?\\s*\\((${yr})`, "g"))) cites.push({name:m[1], year:m[2]});
+  const refs = items.map(it => ({fam: norm(it.firstAuthor || it.result?.match?.people?.[0]?.family || ""), year: String(it.year || it.result?.match?.year || "").slice(0, 4)}));
+  const perRef = items.map(() => 0), missing = new Map();
+  cites.forEach(c => {
+    const fam = norm(c.name), y4 = c.year.slice(0, 4);
+    let hit = false;
+    refs.forEach((r, i) => { if(r.fam && (r.fam === fam || r.fam.split(" ").pop() === fam) && r.year === y4){ perRef[i]++; hit = true; } });
+    if(!hit && !CITE_STOP.has(fam)) missing.set(`${c.name} (${c.year})`, true);
+  });
+  return {style:"author-year", total: cites.length, perRef, uncited: perRef.map((c, i) => c ? -1 : i).filter(i => i >= 0), missing: [...missing.keys()], edited: items.length !== pdfContext.count};
+}
+
+/* ---------- verification report ---------- */
+function shortRef(it){
+  const a = shortAuthors(it) || (it.result?.match?.people?.[0] ? it.result.match.people[0].family + (it.result.match.people.length > 1 ? " et al." : "") : "");
+  return {who: [a, it.year && `(${it.year})`].filter(Boolean).join(" "), title: it.title || it.result?.match?.title || it.raw.slice(0, 140)};
+}
+function reportStats(){
+  const sts = items.map(statusOf);
+  const c = k => sts.filter(s => s === k).length;
+  return {total: items.length, ok: c("ok"), fixed: c("fixed"), manual: c("manual"), warn: c("warn"), bad: c("bad") + c("error"), retracted: c("retracted"),
+    concern: items.filter(it => it.concern).length, dups: items.filter(it => it.dupOf !== undefined).length, published: items.filter(it => it.published).length};
+}
+function buildReport(){
+  findDuplicates();
+  const s = reportStats(), cite = citeAnalysis(), now = new Date();
+  const good = s.ok + s.fixed + s.manual, attention = s.warn + s.bad + s.retracted;
+  const when = now.toLocaleString(undefined, {year:"numeric", month:"long", day:"numeric", hour:"2-digit", minute:"2-digit"});
+  const site = /^https?:/.test(location.href) ? location.href.split("#")[0] : "atariq-hash.github.io/Publication";
+  const docName = pdfContext ? pdfContext.name : "Pasted reference list";
+  let verdict;
+  if(s.retracted) verdict = `${attention} of ${s.total} references need attention, including ${s.retracted} retracted ${s.retracted === 1 ? "paper" : "papers"}.`;
+  else if(attention) verdict = `${good} of ${s.total} references were matched to real publications. ${attention} need${attention === 1 ? "s" : ""} attention before submission.`;
+  else verdict = `All ${s.total} references were matched to real publications.`;
+  const ref = i => { const r = shortRef(items[i]); return `<span class="rn">[${i + 1}]</span> ${esc(r.who)}${r.who ? ". " : ""}<span class="rt">${esc(r.title)}</span>`; };
+  const doiLink = d => d ? `<a href="https://doi.org/${esc(d)}">doi.org/${esc(d)}</a>` : "";
+  const pill = it => { const st = statusOf(it); const cls = {ok:"ok", fixed:"fix", manual:"man", warn:"warn", bad:"bad", error:"bad", retracted:"ret", pending:"warn"}[st]; return `<span class="pill ${cls}">${esc(labelOf(it))}</span>`; };
+
+  const alerts = [];
+  items.forEach((it, i) => {
+    if(statusOf(it) === "retracted") alerts.push(["ret", "Retracted", i, `${esc({retraction:"Retracted", partial_retraction:"Partially retracted", withdrawal:"Withdrawn", removal:"Removed"}[it.retraction.type] || it.retraction.label)}${it.retraction.date ? " on " + fmtDate(it.retraction.date) : ""}${it.retraction.source === "retraction-watch" ? ", recorded by Retraction Watch" : ""}. ${it.retraction.notice ? "Notice: " + doiLink(it.retraction.notice) : ""}`]);
+    else if(it.retraction) alerts.push(["ret", "Retracted, cited intentionally", i, `${esc(it.retraction.label)}${it.retraction.date ? " on " + fmtDate(it.retraction.date) : ""}. The author confirmed this citation is intentional.`]);
+    if(it.concern) alerts.push(["warn", "Expression of concern", i, `Issued${it.concern.date ? " " + fmtDate(it.concern.date) : ""}. ${it.concern.notice ? "Notice: " + doiLink(it.concern.notice) : ""}`]);
+  });
+  items.forEach((it, i) => { const st = statusOf(it); if(st === "bad" || st === "error") alerts.push(["bad", it.error ? "Lookup failed" : "Not found", i, esc(it.error || (it.doiBroken ? `The DOI ${it.doi} doesn’t resolve, and no matching publication was found. Check this reference by hand.` : "No matching publication in any database. Check this reference by hand."))]); });
+  items.forEach((it, i) => { if(statusOf(it) === "warn") alerts.push(["warn", it.result.renamed ? "Title changed" : "Check details", i, esc(it.result.renamed ? `Found under a different title by the same authors: “${it.result.match.title}”. Probably renamed in a later version, so the citation is likely real.` : it.result.issues.join(" "))]); });
+  items.forEach((it, i) => { if(it.dupOf !== undefined) alerts.push(["dup", "Duplicate", i, it.dupKind === "version" ? `The same work as [${it.dupOf + 1}], cited once as a preprint and once as the published version.` : `The same paper as [${it.dupOf + 1}].`]); });
+
+  const sec = (title, inner, note) => `<section><h2>${title}</h2>${note ? `<p class="note">${note}</p>` : ""}${inner}</section>`;
+  const alertList = alerts.length ? `<table class="alerts"><tbody>${alerts.map(([k, label, i, detail]) => `<tr><td class="ak"><span class="pill ${k}">${label}</span></td><td>${ref(i)}<div class="detail">${detail}</div></td></tr>`).join("")}</tbody></table>` : "";
+
+  let citeSec = "";
+  if(cite){
+    const cited = s.total - cite.uncited.length;
+    citeSec = sec("In-text citations", `
+      <div class="mini">
+        <div><b>${cite.total}</b><span>citation${cite.total === 1 ? "" : "s"} found in the text</span></div>
+        <div><b>${cited} of ${s.total}</b><span>references cited at least once</span></div>
+        <div class="${cite.uncited.length ? "flag" : ""}"><b>${cite.uncited.length}</b><span>never cited</span></div>
+        <div class="${cite.missing.length ? "flag" : ""}"><b>${cite.missing.length}</b><span>citations with no matching reference</span></div>
+      </div>
+      ${cite.uncited.length ? `<h3>References never cited in the text</h3><ul class="plain">${cite.uncited.map(i => `<li>${ref(i)}</li>`).join("")}</ul>` : ""}
+      ${cite.missing.length ? `<h3>Citations with no matching reference</h3><p class="chips">${cite.missing.map(m => `<span>${esc(m)}</span>`).join("")}</p>` : ""}
+      ${!cite.uncited.length && !cite.missing.length ? `<p class="okline">Every reference is cited in the text, and every citation has a matching reference.</p>` : ""}`,
+      `Body text of <i>${esc(pdfContext.name)}</i> compared with its reference list (${cite.style === "numbered" ? "numbered citations such as [3] or [4–6]" : "author–year citations such as (Smith, 2020) or Smith et al. (2020)"}).${cite.edited ? " The reference list was edited after extraction, so numbering may not line up exactly." : ""}`);
+  }
+  const pubs = items.map((it, i) => it.published ? i : -1).filter(i => i >= 0);
+  const pubSec = pubs.length ? sec("Published versions available", `<ul class="plain">${pubs.map(i => { const p = items[i].published; return `<li>${ref(i)}<div class="detail">Cited as a preprint. Published in <b>${esc(p.venue)}</b>${p.year ? ` (${esc(p.year)})` : ""}${p.doi ? ", " + doiLink(p.doi) : ""}${items[i].usePublished ? ". The updated .bib uses the published version." : "."}</div></li>`; }).join("")}</ul>`, "Reviewers usually prefer the peer-reviewed version where one exists.") : "";
+  const fixes = items.map((it, i) => it.useFix && it.fixedBib && it.result?.status === "warn" ? i : -1).filter(i => i >= 0);
+  const changed = it => (it.changes?.length ? it.changes : diffFields(it, it.result?.match)).join(", ") || "details";
+  const fixSec = fixes.length ? sec("Corrections applied", `<ul class="plain">${fixes.map(i => `<li>${ref(i)}<div class="detail">Corrected ${esc(changed(items[i]))}${items[i].fixCheck === "confirmed" ? ", then re-validated against the database" : ""}.</div></li>`).join("")}</ul>`, "These entries were replaced with the matched record in the updated .bib file.") : "";
+
+  const first = t => String(t || "").split(/(?<=\.)\s/)[0].replace(/\.$/, "");
+  const PAST = {retraction:"Retracted", partial_retraction:"Partially retracted", withdrawal:"Withdrawn", removal:"Removed"};
+  const rows = items.map((it, i) => {
+    const m = it.result?.match, r = shortRef(it), st = statusOf(it), iss = it.result?.issues || [];
+    const notes = [];
+    if(it.retraction) notes.push(`${PAST[it.retraction.type] || it.retraction.label}${it.retraction.date ? " on " + fmtDate(it.retraction.date) : ""}${it.retractionAck ? " (cited intentionally)" : ""}`);
+    if(it.concern) notes.push("Expression of concern issued");
+    if(it.corrections?.length) notes.push(`${it.corrections[0].label} issued by the publisher`);
+    if(it.manual) notes.push("Verified manually" + (it.manualNote ? `: ${it.manualNote}` : ""));
+    else if(st === "error") notes.push("Lookup failed, check again");
+    else if(st === "bad") notes.push(iss.some(x => /loose/i.test(x)) ? "Only a loose match found" : /doesn’t resolve|doesn’t exist/.test(iss[0] || "") ? first(iss[0]) : "No match in any database");
+    else if(st === "fixed") notes.push(`Corrected ${changed(it)}, re-validated`);
+    else if(st === "warn") notes.push(it.result.renamed ? "Renamed in a later version, likely real" : first(iss[0]));
+    else if((st === "ok" || st === "retracted") && m) notes.push(`Matched in ${m.source}`);
+    if(it.published) notes.push(it.usePublished ? `Published version used (${it.published.venue})` : `Published in ${it.published.venue}${it.published.year ? " " + it.published.year : ""}`);
+    if(it.dupOf !== undefined) notes.push(`Duplicate of [${it.dupOf + 1}]`);
+    if(cite && !cite.perRef[i]) notes.push("Not cited in the text");
+    const d = st === "bad" || st === "error" ? it.doi : (m?.doi || it.doi);
+    return `<tr><td class="num">${i + 1}</td><td><div class="who">${esc(r.who)}</div><div class="rt">${esc(r.title)}</div>${d ? `<div class="doi">${doiLink(d)}</div>` : ""}</td><td>${pill(it)}</td><td class="nt">${notes.map(n => `<div>${esc(n)}</div>`).join("")}</td></tr>`;
+  }).join("");
+
+  const tile = (n, label, cls) => `<div class="tile ${cls}"><b>${n}</b><span>${label}</span></div>`;
+  const seg = (n, cls) => n ? `<span class="${cls}" style="flex:${n}"></span>` : "";
+  return `<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Reference Verification Report – ${esc(docName)}</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:opsz,wght@6..72,500;6..72,650&family=Atkinson+Hyperlegible:wght@400;700&display=swap" rel="stylesheet">
+<style>
+@page{size:A4;margin:16mm 15mm 18mm;@bottom-left{content:"Reference Verification Report";font:8.5pt "Atkinson Hyperlegible",sans-serif;color:#5F6780}@bottom-right{content:"Page " counter(page) " of " counter(pages);font:8.5pt "Atkinson Hyperlegible",sans-serif;color:#5F6780}}
+*{box-sizing:border-box}
+html{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+body{margin:0;background:#E9ECF3;color:#2A3247;font:10.5pt/1.5 "Atkinson Hyperlegible","Segoe UI",system-ui,sans-serif}
+.bar{position:sticky;top:0;z-index:2;display:flex;gap:.6rem;justify-content:center;align-items:center;padding:.75rem;background:#131A2E;color:#fff;font-size:.9rem}
+.bar button{font:700 .9rem "Atkinson Hyperlegible",sans-serif;padding:.55rem 1.1rem;border-radius:8px;border:1px solid #4C3FD1;background:#4C3FD1;color:#fff;cursor:pointer}
+.bar button.ghost{background:transparent;border-color:#4A526A}
+.bar span{opacity:.8}
+.sheet{width:210mm;min-height:297mm;margin:1.25rem auto;background:#fff;padding:16mm 15mm;box-shadow:0 2px 20px rgba(19,26,46,.12)}
+@media print{body{background:#fff}.bar{display:none}.sheet{width:auto;min-height:0;margin:0;padding:0;box-shadow:none}}
+@media screen and (max-width:820px){.sheet{width:auto;margin:0;padding:1.25rem}}
+header{display:flex;justify-content:space-between;align-items:flex-start;gap:1rem;padding-bottom:10pt;border-bottom:2px solid #131A2E}
+.brand{display:flex;align-items:center;gap:8pt;font:650 12pt "Newsreader",Georgia,serif;color:#131A2E}
+.brand i{display:grid;place-items:center;width:20pt;height:20pt;border-radius:5pt;background:#4C3FD1}
+.hmeta{text-align:right;font-size:8.5pt;color:#5F6780;line-height:1.45}
+h1{font:650 25pt/1.1 "Newsreader",Georgia,serif;color:#131A2E;margin:16pt 0 4pt;letter-spacing:-.01em}
+.sub{color:#5F6780;margin:0 0 12pt;font-size:10pt}
+.facts{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:0;border:1px solid #DCE1EA;border-radius:6pt;margin-bottom:12pt}
+.facts div{padding:7pt 9pt;border-right:1px solid #DCE1EA}.facts div:last-child{border-right:0}
+.facts span{display:block;font-size:7.5pt;font-weight:700;color:#5F6780;letter-spacing:.04em;text-transform:uppercase}
+.facts b{display:block;font-size:9.5pt;color:#131A2E;overflow-wrap:anywhere}
+.verdict{display:flex;gap:9pt;align-items:center;padding:10pt 12pt;border-radius:7pt;margin-bottom:12pt;font:500 13pt/1.35 "Newsreader",Georgia,serif;color:#131A2E;background:#ECEAFD}
+.verdict.warn{background:#FCF0D6}.verdict.bad{background:#FDE6E3}.verdict.ok{background:#E1F4EA}
+.verdict i{flex:none;width:9pt;height:9pt;border-radius:50%;background:#4C3FD1}.verdict.warn i{background:#B07A12}.verdict.bad i{background:#B42318}.verdict.ok i{background:#1E7A52}
+.tiles{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:6pt;margin-bottom:8pt}
+.tile{border:1px solid #DCE1EA;border-radius:6pt;padding:7pt 9pt}
+.tile b{display:block;font:650 19pt/1 "Newsreader",Georgia,serif;color:#131A2E}
+.tile span{font-size:8pt;color:#5F6780}
+.tile.ok b{color:#1E7A52}.tile.warn b{color:#8F5B06}.tile.bad b{color:#B42318}.tile.ret b{color:#7F1D1D}.tile.dup b{color:#4C3FD1}
+.meter{display:flex;height:6pt;border-radius:3pt;overflow:hidden;background:#EEF1F7;margin-bottom:4pt}
+.meter .ok{background:#1E7A52}.meter .fix{background:#0E6F8A}.meter .man{background:#4C3FD1}.meter .warn{background:#B07A12}.meter .bad{background:#B42318}.meter .ret{background:#7F1D1D}
+.legend{display:flex;flex-wrap:wrap;gap:4pt 12pt;font-size:8pt;color:#5F6780;margin-bottom:4pt}
+.legend span::before{content:"";display:inline-block;width:7pt;height:7pt;border-radius:2pt;margin-right:4pt;vertical-align:-.5pt;background:var(--c)}
+section{margin-top:16pt}
+h2{font:650 13.5pt "Newsreader",Georgia,serif;color:#131A2E;margin:0 0 6pt;padding-bottom:4pt;border-bottom:1px solid #DCE1EA;break-after:avoid}
+h3{font-size:9pt;font-weight:700;color:#131A2E;margin:10pt 0 4pt;break-after:avoid}
+.note{font-size:9pt;color:#5F6780;margin:0 0 7pt}
+.pill{display:inline-block;font-size:7.5pt;font-weight:700;padding:1.5pt 6pt;border-radius:3pt;white-space:nowrap}
+.pill.ok{background:#E1F4EA;color:#1E7A52}.pill.fix{background:#DDF2F7;color:#0E6F8A}.pill.man{background:#ECEAFD;color:#4C3FD1}.pill.warn{background:#FCF0D6;color:#8F5B06}.pill.bad{background:#FDE6E3;color:#B42318}.pill.ret{background:#7F1D1D;color:#fff}.pill.dup{background:#ECEAFD;color:#4C3FD1}
+table{width:100%;border-collapse:collapse}
+tr{break-inside:avoid}
+.alerts td{padding:5pt 0;border-bottom:1px solid #EEF1F7;vertical-align:top}
+.alerts .ak{width:1%;padding-right:9pt}
+.rn{font-weight:700;color:#131A2E}
+.rt{font-family:"Newsreader",Georgia,serif;font-style:italic;color:#131A2E}
+.detail{font-size:8.75pt;color:#4A526A;margin-top:1.5pt}
+a{color:#4C3FD1;text-decoration:none}
+.mini{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6pt}
+.mini div{border:1px solid #DCE1EA;border-radius:6pt;padding:6pt 8pt}
+.mini b{display:block;font:650 14pt "Newsreader",Georgia,serif;color:#131A2E}
+.mini span{font-size:8pt;color:#5F6780}
+.mini .flag b{color:#B42318}
+ul.plain{margin:0;padding:0;list-style:none}
+ul.plain li{padding:4pt 0;border-bottom:1px solid #EEF1F7;break-inside:avoid}
+.chips{display:flex;flex-wrap:wrap;gap:4pt;margin:0}
+.chips span{font-size:8.5pt;padding:1.5pt 6pt;border-radius:3pt;background:#FDE6E3;color:#B42318}
+.okline{margin:6pt 0 0;color:#1E7A52;font-weight:700;font-size:9.5pt}
+.all thead{display:table-header-group}
+.all th{text-align:left;font-size:7.5pt;font-weight:700;color:#5F6780;letter-spacing:.04em;text-transform:uppercase;padding:4pt 6pt;border-bottom:1.5px solid #131A2E}
+.all td{padding:5pt 6pt;border-bottom:1px solid #EEF1F7;vertical-align:top;font-size:9pt}
+.all .num{color:#5F6780;width:1%;text-align:right;font-variant-numeric:tabular-nums}
+.all .who{font-weight:700;color:#131A2E;font-size:8.5pt}
+.all .rt{font-size:9.5pt}
+.all .doi{font-size:8pt}
+.all .nt{color:#4A526A;font-size:8.5pt;width:30%}
+.all .nt div+div{margin-top:2pt}
+.all td:nth-child(3){width:1%}
+.method{font-size:8.75pt;color:#4A526A}
+.method p{margin:0 0 5pt}
+footer{margin-top:16pt;padding-top:7pt;border-top:1px solid #DCE1EA;font-size:8pt;color:#5F6780;display:flex;justify-content:space-between;gap:1rem}
+</style></head><body>
+<div class="bar"><button onclick="window.print()">Save as PDF or print</button><button class="ghost" onclick="window.close()">Close</button><span>Tip: choose “Save as PDF” as the printer</span></div>
+<main class="sheet">
+<header>
+  <div class="brand"><i><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></i>Reference Checker</div>
+  <div class="hmeta">${esc(when)}<br>${esc(site.replace(/^https?:\/\//, ""))}</div>
+</header>
+<h1>Reference Verification Report</h1>
+<p class="sub">Each reference was checked against public scholarly databases for existence, accuracy and integrity.</p>
+<div class="facts">
+  <div><span>Document</span><b>${esc(docName)}</b></div>
+  <div><span>References</span><b>${s.total}</b></div>
+  <div><span>Checked on</span><b>${esc(now.toLocaleDateString(undefined, {year:"numeric", month:"long", day:"numeric"}))}</b></div>
+  <div><span>Databases</span><b>CrossRef, DBLP, Semantic Scholar, arXiv${$("#oakey").value.trim() ? ", OpenAlex" : ""}</b></div>
+</div>
+<div class="verdict ${s.retracted || s.bad ? "bad" : attention ? "warn" : "ok"}"><i></i><span>${esc(verdict)}</span></div>
+<div class="tiles">
+  ${tile(good, "verified or corrected", "ok")}${tile(s.warn, "need review", "warn")}${tile(s.bad, "not found", "bad")}${tile(s.retracted, "retracted", "ret")}${tile(s.dups, "duplicates", "dup")}
+</div>
+<div class="meter">${seg(s.ok, "ok")}${seg(s.fixed, "fix")}${seg(s.manual, "man")}${seg(s.warn, "warn")}${seg(s.bad, "bad")}${seg(s.retracted, "ret")}</div>
+<div class="legend"><span style="--c:#1E7A52">Verified ${s.ok}</span><span style="--c:#0E6F8A">Corrected ${s.fixed}</span><span style="--c:#4C3FD1">Verified manually ${s.manual}</span><span style="--c:#B07A12">Needs review ${s.warn}</span><span style="--c:#B42318">Not found ${s.bad}</span><span style="--c:#7F1D1D">Retracted ${s.retracted}</span></div>
+${alerts.length ? sec("Items needing attention", alertList, "Listed in order of severity. Resolve these before submission.") : sec("Items needing attention", `<p class="okline">Nothing needs attention. Every reference matched a real publication with no retractions or duplicates.</p>`)}
+${citeSec}${pubSec}${fixSec}
+${sec("All references", `<table class="all"><thead><tr><th>#</th><th>Reference</th><th>Result</th><th>Notes</th></tr></thead><tbody>${rows}</tbody></table>`)}
+<section class="method"><h2>How this check works</h2>
+<p>Each reference was searched by DOI, arXiv ID and title in CrossRef, DBLP, Semantic Scholar, DataCite (arXiv)${$("#oakey").value.trim() ? " and OpenAlex" : ""}. The closest match was compared field by field: title, authors, year, venue and DOI. Retractions, withdrawals and expressions of concern come from CrossRef, which includes publisher notices and the Retraction Watch database.</p>
+<p>“Not found” means no close match was found in these databases. It is not proof that a reference is fabricated: books, theses, reports and very recent work are sometimes missing. Items marked “Verified manually” were confirmed by the author.</p>
+</section>
+<footer><span>Generated by Reference Checker, ${esc(site.replace(/^https?:\/\//, ""))}</span><span>${esc(when)}</span></footer>
+</main></body></html>`;
+}
+function openReport(){
+  if(!items.length || running) return;
+  const html = buildReport();
+  const url = URL.createObjectURL(new Blob([html], {type: "text/html"}));
+  const w = window.open(url, "_blank");
+  if(!w){ download("reference-verification-report.html", html, "text/html"); toast("Pop-ups are blocked, so the report was downloaded instead"); }
+  else toast("Report opened in a new tab. Use “Save as PDF” there.");
+}
 
 /* ---------- interface ---------- */
 const list = $("#list");
@@ -670,6 +1056,7 @@ const SVG = {
   warn:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M12 6v8M12 18.5v.01"/></svg>',
   bad:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M7 7l10 10M17 7L7 17"/></svg>',
   chev:'<svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>',
+  ret:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l9.5 17h-19z"/><path d="M12 10v4.5M12 17.5v.01"/></svg>',
   manual:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3.5"/><path d="M3 20c0-3.3 2.7-6 6-6 1.3 0 2.5.4 3.4 1.1"/><path d="M14.5 17.5l2.2 2.2L21 15.3"/></svg>',
   copy:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a1 1 0 0 1 1-1h9"/></svg>',
   redo:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 11a8 8 0 1 0-2.3 5.7"/><path d="M20 4v7h-7"/></svg>',
@@ -693,29 +1080,45 @@ async function copyText(text){
   toast("BibTeX copied");
 }
 
-const statusOf = it => it.manual ? "manual" : it.error ? "error" : !it.result ? "pending" : (it.useFix && it.fixCheck === "confirmed") ? "fixed" : it.result.status;
-const labelOf = it => ({error:"Lookup failed", pending:"Checking", fixed:"Corrected", manual:"Verified manually"})[statusOf(it)] || it.result.label;
+const statusOf = it => (it.retraction && !it.retractionAck && it.result) ? "retracted" : it.manual ? "manual" : it.error ? "error" : !it.result ? "pending" : (it.useFix && it.fixCheck === "confirmed") ? "fixed" : it.result.status;
+const labelOf = it => ({error:"Lookup failed", pending:"Checking", fixed:"Corrected", manual:"Verified manually", retracted:"Retracted"})[statusOf(it)] || it.result.label;
 const group = st => st === "error" ? "bad" : st;
 
 function citedAuthors(it){
   if(it.bibFields?.author) return it.bibFields.author.replace(/\s+and\s+/gi, "; ");
-  const m = it.raw.match(/^(.*?)[\s(,.]*\b(?:19|20)\d{2}\b/);
-  const a = (m ? m[1] : "").replace(/[\s,.(]+$/, "").trim();
+  const q = it.raw.search(/[“"]/);
+  const head = q > 0 ? it.raw.slice(0, q) : it.raw;
+  const m = head.match(/^(.*?)[\s(,.]*\b(?:19|20)\d{2}\b/);
+  const a = (m ? m[1] : q > 0 ? head : "").replace(/[\s,.(]+$/, "").trim();
   return a.length > 3 && a.length < 260 && a.split(/\s+/).length < 45 ? a : "";
 }
 function citedVenue(it){
   if(it.bibFields) return it.bibFields.journal || it.bibFields.booktitle || it.bibFields.howpublished || "";
   if(!it.title) return "";
   const at = it.raw.indexOf(it.title); if(at < 0) return "";
-  const rest = it.raw.slice(at + it.title.length).replace(/^[\s.?!"”’]+/, "");
-  const v = rest.split(/,\s*\d|\s\d+\s*\(|,\s*pp?\.|\.\s*(?:https?:|doi)|\s*https?:\/\//i)[0].replace(/[\s.,;]+$/, "");
+  const rest = it.raw.slice(at + it.title.length).replace(/^[\s.?!,"”’]+/, "").replace(/^in\s+/i, "");
+  const v = rest.split(/,\s*(?:vol|no|pp)\.|,\s*\d|\s\d+\s*\(|,\s*pp?\.|\.\s*(?:https?:|doi)|\s*https?:\/\/|,\s*(?:19|20)\d{2}/i)[0].replace(/[\s.,;]+$/, "");
   return v.length > 2 && v.length < 160 && !/^(\d|https?:|doi)/i.test(v) ? v : "";
 }
+function authorList(it){
+  if(it.bibFields?.author) return it.bibFields.author.split(/\s+and\s+/i).map(a => a.includes(",") ? a.split(",")[0].trim() : a.trim().split(/\s+/).pop()).filter(Boolean);
+  const a = citedAuthors(it); if(!a) return [];
+  const apa = [...a.matchAll(/([A-Z][A-Za-zÀ-ž'’\-]+(?:\s[A-Z][a-zà-ž]+)?),\s+[A-Z](?:\.|\b)/g)].map(m => m[1]);
+  const ieee = [...a.matchAll(/(?:[A-Z]\.[\s-]?)+\s*([A-Z][A-Za-zÀ-ž'’\-]+)/g)].map(m => m[1]);
+  const list = apa.length >= ieee.length ? apa : ieee;
+  return list.length ? list : [a.split(/,|\s&\s|\sand\s/)[0].trim()];
+}
 const shortAuthors = it => {
-  const a = citedAuthors(it); if(!a) return "";
-  const parts = a.split(/;|,\s*(?=[A-Z][^,]*,)|\s&\s/).map(s => s.trim()).filter(Boolean);
-  return parts.length > 2 ? parts[0].replace(/,.*$/, "") + " et al." : a.length > 60 ? a.slice(0, 57) + "…" : a;
+  const L = authorList(it); if(!L.length) return "";
+  return L.length > 2 || /et al/i.test(citedAuthors(it)) ? `${L[0]} et al.` : L.length === 2 ? `${L[0]} and ${L[1]}` : L[0];
 };
+// Fields that differ between the citation and the matched record
+function diffFields(it, m){
+  if(!m) return [];
+  const out = [...compareRows(it, m).matchAll(/<tr class="diff"><td><span[^>]*>[^<]*<\/span>(\w+)/g)].map(x => x[1].toLowerCase());
+  if(!it.doi && m.doi && !out.includes("doi")) out.push("DOI added");
+  return out;
+}
 
 function diffHTML(a, b){
   const ka = new Set(tokens(a)), kb = new Set(tokens(b));
@@ -728,7 +1131,7 @@ function compareRows(it, m){
   const am = authorMatch(it, m);
   const found = m.people.slice(0, 6).map(p => `${p.given} ${p.family}`.trim()).join(", ") + (m.people.length > 6 ? ", et al." : "");
   const rows = [
-    ["Title", it.title, m.title, coverage(m.title, it.title) >= .9 && coverage(it.title, m.title) >= .9, true],
+    ["Title", it.title, m.title + (titlesMatch(it, m) && m.subtitleMissing ? " (main title only; the database stores the subtitle separately)" : ""), titlesMatch(it, m), true],
     ["Authors", citedAuthors(it), found, am.first && am.ratio >= .5, false],
     ["Year", it.year, m.year, it.year === m.year, false],
     ["Venue", citedVenue(it), m.venue, Math.min(coverage(m.venue, citedVenue(it)), coverage(citedVenue(it), m.venue)) >= .75, true],
@@ -744,15 +1147,51 @@ function compareRows(it, m){
   }).join("");
 }
 
+function alertsHTML(it, i, cite){
+  const out = [];
+  const link = d => d ? ` <a href="https://doi.org/${esc(d)}" target="_blank" rel="noopener">Read the notice</a>` : "";
+  if(it.retraction){
+    const r = it.retraction;
+    const past = {retraction:"Retracted", partial_retraction:"Partially retracted", withdrawal:"Withdrawn", removal:"Removed"}[r.type] || r.label;
+    out.push(`<div class="alert ret">${SVG.ret}<div><b>${esc(past)}${r.date ? " on " + esc(fmtDate(r.date)) : ""}</b>
+      <p>This paper has been ${r.type === "withdrawal" ? "withdrawn" : r.type === "removal" ? "removed" : r.type === "partial_retraction" ? "partly retracted" : "retracted"}${r.source === "retraction-watch" ? ", as recorded by Retraction Watch" : " by the publisher"}. Remove it, or make clear in your text that you’re citing a retracted work.${link(r.notice)}</p>
+      <div class="ref-actions">${it.retractionAck ? `<button class="btn sm" data-act="unackRet" data-i="${i}">Undo</button>` : `<button class="btn sm" data-act="ackRet" data-i="${i}">I’m citing it intentionally</button>`}</div></div></div>`);
+  }
+  if(it.concern) out.push(`<div class="alert con">${SVG.warn}<div><b>Expression of concern${it.concern.date ? ", " + esc(fmtDate(it.concern.date)) : ""}</b><p>The publisher has raised concerns about this paper’s reliability. It hasn’t been retracted, but read the notice before relying on it.${link(it.concern.notice)}</p></div></div>`);
+  if(it.corrections?.length){ const c = it.corrections[0]; out.push(`<div class="alert cor">${SVG.edit}<div><b>${esc(c.label)} issued${c.date ? ", " + esc(fmtDate(c.date)) : ""}</b><p>The publisher has corrected this paper. Check that the part you cite wasn’t affected.${link(c.notice)}</p></div></div>`); }
+  if(it.dupOf !== undefined){
+    const o = items[it.dupOf];
+    out.push(`<div class="alert dup">${SVG.copy}<div><b>Duplicate of [${it.dupOf + 1}]</b><p>${it.dupKind === "version" ? "This is the same work as" : "This is the same paper as"} [${it.dupOf + 1}] “${esc(o.title || o.result?.match?.title || "")}”${it.dupKind === "version" ? ", cited once as a preprint and once as the published version" : ""}. Keep one and update your citations.</p>
+      <div class="ref-actions"><button class="btn sm" data-act="jump" data-i="${it.dupOf}">Show [${it.dupOf + 1}]</button></div></div></div>`);
+  }
+  if(it.published){
+    const p = it.published;
+    out.push(`<div class="alert pub">${SVG.fixed}<div><b>Now published${p.venue ? " in " + esc(p.venue) : ""}${p.year ? " (" + esc(p.year) + ")" : ""}</b>
+      <p>You cite the preprint, but a peer-reviewed version exists${p.title && coverage(p.title, it.title || "") < 0.9 ? ` under the title “${esc(p.title)}”` : ""}. Reviewers usually prefer the published version.${p.doi ? ` <a href="https://doi.org/${esc(p.doi)}" target="_blank" rel="noopener">${esc(p.doi)}</a>` : ""}</p>
+      <div class="ref-actions"><button class="btn sm ${it.usePublished ? "" : "primary"}" data-act="usePub" data-i="${i}">${it.usePublished ? "Keep the preprint instead" : "Use published version in .bib"}</button></div></div></div>`);
+  }
+  if(cite && !cite.perRef[i]) out.push(`<div class="alert unc">${SVG.warn}<div><b>Not cited in the text</b><p>This reference appears in the list, but no matching citation was found in the body of ${esc(pdfContext.name)}.</p></div></div>`);
+  return out.length ? `<div class="sec" style="display:grid;gap:.5rem">${out.join("")}</div>` : "";
+}
+let citeInfo = null;
 function card(it, i){
   const st = statusOf(it), r = it.result, m = r?.match;
-  const open = it.open ?? ["warn","bad","error"].includes(st);
+  const open = it.open ?? ["warn","bad","error","retracted"].includes(st);
   const li = document.createElement("li");
   li.className = `ref s-${st}${open ? " open" : ""}`;
-  const icon = st === "pending" ? '<span class="spin"></span>' : SVG[group(st) === "bad" ? "bad" : st];
+  const icon = st === "pending" ? '<span class="spin"></span>' : st === "retracted" ? SVG.ret : SVG[group(st) === "bad" ? "bad" : st];
+  const cite = citeInfo;
+  const tags = [];
+  if(it.retraction && it.retractionAck) tags.push(`<span class="rtag cor">Retracted, cited intentionally</span>`);
+  if(it.concern) tags.push(`<span class="rtag con">Expression of concern</span>`);
+  if(it.corrections?.length) tags.push(`<span class="rtag cor">${esc(it.corrections[0].label)} issued</span>`);
+  if(it.dupOf !== undefined) tags.push(`<span class="rtag dup">Duplicate of [${it.dupOf + 1}]</span>`);
+  if(it.published) tags.push(`<span class="rtag pub">${it.usePublished ? "Using published version" : "Published version available"}</span>`);
+  if(cite && !running && !cite.perRef[i]) tags.push(`<span class="rtag unc">Not cited in text</span>`);
   const meta = [`[${i+1}]`, shortAuthors(it), it.year].filter(Boolean).join("  ");
   let body = "";
   if(open && st !== "pending"){
+    body += alertsHTML(it, i, cite);
     if(st === "manual") body += `<div class="sec"><div class="manualbox"><p><b>You marked this reference as verified.</b> It goes into the .bib exactly as you wrote it${it.manualNote ? `, with your note: “${esc(it.manualNote)}”` : ""}.</p>
       <div class="ref-actions" style="margin-top:0"><button class="btn sm" data-act="undoManual" data-i="${i}">Undo</button></div></div></div>`;
     body += `<div class="sec"><h3>Your citation</h3><div class="raw">${esc(it.raw)}</div></div>`;
@@ -796,7 +1235,7 @@ function card(it, i){
   }
   li.innerHTML = `<button class="ref-head" id="h${i}" data-act="toggle" data-i="${i}" aria-expanded="${open}">
       <span class="ico" aria-hidden="true">${icon}</span>
-      <span class="ref-main"><span class="ref-title">${esc(it.title || m?.title || it.raw)}</span><span class="ref-meta">${esc(meta)}</span></span>
+      <span class="ref-main"><span class="ref-title">${esc(it.title || m?.title || it.raw)}</span><span class="ref-meta">${esc(meta)}</span>${tags.length ? `<span class="ref-tags">${tags.join("")}</span>` : ""}</span>
       <span class="badge">${esc(labelOf(it))}</span>${SVG.chev}</button>
     ${body ? `<div class="ref-body">${body}</div>` : ""}`;
   return li;
@@ -806,23 +1245,40 @@ function render(){
   $("#intro").hidden = items.length > 0;
   $("#out").hidden = items.length === 0;
   if(!items.length) return;
+  if(!running) findDuplicates();
+  citeInfo = running ? null : citeAnalysis();
   const sts = items.map(statusOf);
   const n = k => sts.filter(s => group(s) === k).length;
-  const counts = {ok:n("ok"), manual:n("manual"), fixed:n("fixed"), warn:n("warn"), bad:n("bad"), pending:n("pending")};
+  const counts = {ok:n("ok"), manual:n("manual"), fixed:n("fixed"), warn:n("warn"), bad:n("bad"), retracted:n("retracted"), pending:n("pending")};
+  const flags = {dup: items.filter(it => it.dupOf !== undefined).length, pub: items.filter(it => it.published).length, unc: citeInfo ? citeInfo.uncited.length : 0};
   const total = items.length, done = total - counts.pending;
-  $("#meter").innerHTML = ["ok","manual","fixed","warn","bad","pending"].map(k => `<span class="m-${k}" style="width:${100 * counts[k] / total}%"></span>`).join("");
+  $("#meter").innerHTML = ["ok","manual","fixed","warn","bad","retracted","pending"].map(k => `<span class="m-${k}" style="width:${100 * counts[k] / total}%"></span>`).join("");
   $("#meter").setAttribute("aria-label", `${counts.ok} verified, ${counts.manual} verified manually, ${counts.fixed} corrected, ${counts.warn} need checking, ${counts.bad} not found, ${counts.pending} pending`);
   $("#sumtitle").textContent = running ? `Checking ${done} of ${total}…` : `${total} reference${total === 1 ? "" : "s"} checked`;
-  $("#sumsub").textContent = done ? `${counts.ok + counts.fixed + counts.manual} look good, ${counts.warn} need a look, ${counts.bad} not found` : "";
-  const chips = [["all","All",total],["ok","Verified",counts.ok],["manual","Verified manually",counts.manual],["fixed","Corrected",counts.fixed],["warn","Check details",counts.warn],["bad","Not found",counts.bad]]
+  $("#sumsub").textContent = done ? `${counts.ok + counts.fixed + counts.manual} look good, ${counts.warn} need a look, ${counts.bad} not found${counts.retracted ? `, ${counts.retracted} retracted` : ""}` : "";
+  const chips = [["all","All",total],["ok","Verified",counts.ok],["manual","Verified manually",counts.manual],["fixed","Corrected",counts.fixed],["warn","Check details",counts.warn],["bad","Not found",counts.bad],["retracted","Retracted",counts.retracted]]
     .filter(([k,,c]) => k === "all" || c > 0 || filter === k);
-  $("#tally").innerHTML = chips.map(([k,l,c]) => `<button class="chip c-${k}" data-f="${k}" aria-pressed="${filter === k}"><i></i>${l} <em>${c}</em></button>`).join("");
+  const fchips = [["dup","Duplicates",flags.dup],["pub","Published version",flags.pub],["unc","Not cited in text",flags.unc]].filter(([k,,c]) => c > 0 || filter === k);
+  $("#tally").innerHTML = chips.map(([k,l,c]) => `<button class="chip c-${k}" data-f="${k}" aria-pressed="${filter === k}"><i></i>${l} <em>${c}</em></button>`).join("")
+    + (fchips.length ? `<span class="chipsep" aria-hidden="true"></span>` + fchips.map(([k,l,c]) => `<button class="chip flag" data-f="${k}" aria-pressed="${filter === k}"><i></i>${l} <em>${c}</em></button>`).join("") : "");
+  const cbox = $("#cites");
+  cbox.hidden = !citeInfo;
+  if(citeInfo){
+    const ci = citeInfo, cited = items.length - ci.uncited.length;
+    cbox.innerHTML = `<h3>In-text citations in ${esc(pdfContext.name)}</h3>
+      <p>${ci.total} citation${ci.total === 1 ? "" : "s"} found in the text. <b>${cited} of ${items.length}</b> references are cited at least once.</p>
+      ${ci.uncited.length ? `<p>Never cited: ${ci.uncited.map(i => `<button class="linkbtn" data-jump="${i}">[${i + 1}]</button>`).join(", ")}</p>` : ""}
+      ${ci.missing.length ? `<p>Cited but missing from the list: ${ci.missing.slice(0, 30).map(m => `<span class="missing">${esc(m)}</span>`).join("")}${ci.missing.length > 30 ? ` and ${ci.missing.length - 30} more` : ""}</p>` : ""}
+      ${!ci.uncited.length && !ci.missing.length ? `<p style="color:var(--ok);font-weight:700">Every reference is cited, and every citation has a reference.</p>` : ""}
+      ${ci.edited ? `<p class="hint" style="color:var(--muted)">The list was edited after extraction, so numbering may not line up exactly.</p>` : ""}`;
+  }
   $("#oanotice").hidden = !oaBlocked;
-  $("#expand").textContent = items.every((it, i) => it.open ?? ["warn","bad","error"].includes(sts[i])) ? "Collapse all" : "Expand all";
+  $("#expand").textContent = items.every((it, i) => it.open ?? ["warn","bad","error","retracted"].includes(sts[i])) ? "Collapse all" : "Expand all";
 
-  const rank = {bad:0, error:0, warn:1, pending:2, fixed:3, manual:4, ok:5};
+  const rank = {retracted:-1, bad:0, error:0, warn:1, pending:2, fixed:3, manual:4, ok:5};
+  const flagOk = i => filter === "dup" ? items[i].dupOf !== undefined : filter === "pub" ? !!items[i].published : filter === "unc" ? !!citeInfo && !citeInfo.perRef[i] : group(sts[i]) === filter;
   let idx = items.map((_, i) => i).filter(i => {
-    if(filter !== "all" && group(sts[i]) !== filter) return false;
+    if(filter !== "all" && !flagOk(i)) return false;
     if(query){ const hay = norm(items[i].raw + " " + (items[i].result?.match?.title || "")); if(!norm(query).split(" ").every(w => hay.includes(w))) return false; }
     return true;
   });
@@ -835,9 +1291,9 @@ function render(){
 }
 
 /* ---------- checking ---------- */
-const BTNS = ["#run", "#bibdl", "#recheckflag", "#verifybib", "#csv"];
+const BTNS = ["#run", "#bibdl", "#recheckflag", "#verifybib", "#csv", "#report"];
 function reset(it){
-  ["result","error","fixedBib","newKey","changes","useFix","editing","doiBroken","arxivBroken","fixCheck","fixIssues","manual","manualNote","confirming"].forEach(k => delete it[k]);
+  ["result","error","fixedBib","newKey","changes","useFix","editing","doiBroken","arxivBroken","fixCheck","fixIssues","manual","manualNote","confirming","updates","retraction","concern","corrections","published","usePublished","retractionAck","dupOf","dupKind"].forEach(k => delete it[k]);
 }
 async function check(indices){
   if(running || !indices.length) return;
@@ -849,17 +1305,18 @@ async function check(indices){
   const worker = async () => {
     while(queue.length){
       const it = items[queue.shift()];
-      try{ it.result = judge(it, await lookup(it)); prepareFixes(); }
+      try{ it.result = judge(it, await lookup(it)); prepareFixes(); await extras(it); }
       catch(e){ it.error = "Couldn’t reach the lookup services. Check your connection and try again."; }
       render();
     }
   };
   await Promise.all([worker(), worker(), worker()]);
-  prepareFixes();
+  prepareFixes(); findDuplicates();
   await verifyFixes(indices.filter(i => items[i].useFix && items[i].fixedBib));
   running = false; BTNS.forEach(b => $(b).disabled = false); render();
   const c = items.map(statusOf);
-  toast(`Done: ${c.filter(s => ["ok","fixed","manual"].includes(s)).length} good, ${c.filter(s => s === "warn").length} to review, ${c.filter(s => s === "bad" || s === "error").length} not found`);
+  const nr = c.filter(s => s === "retracted").length;
+  toast(`Done: ${c.filter(s => ["ok","fixed","manual"].includes(s)).length} good, ${c.filter(s => s === "warn").length} to review, ${c.filter(s => s === "bad" || s === "error").length} not found${nr ? `, ${nr} retracted` : ""}`);
 }
 async function verifyFixes(indices){
   if(!indices.length) return;
@@ -892,6 +1349,143 @@ async function run(){
   await check(items.map((_, i) => i));
 }
 
+/* ---------- PDF reference extraction ---------- */
+const PDFJS = "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/";
+let pdfjsReady;
+function loadPdfJs(){
+  if(window.pdfjsLib) return Promise.resolve(window.pdfjsLib);
+  if(!pdfjsReady) pdfjsReady = new Promise((res, rej) => {
+    const sc = document.createElement("script");
+    sc.src = PDFJS + "pdf.min.js";
+    sc.onload = () => { window.pdfjsLib.GlobalWorkerOptions.workerSrc = PDFJS + "pdf.worker.min.js"; res(window.pdfjsLib); };
+    sc.onerror = () => { pdfjsReady = null; rej(new Error("load")); };
+    document.head.appendChild(sc);
+  });
+  return pdfjsReady;
+}
+
+// Turn one page's text items into lines, reading two-column layouts column by column
+function pageLines(items, pageWidth, pageNo){
+  const mid = pageWidth / 2;
+  const its = items.filter(t => t.str && t.str.trim()).map(t => ({
+    str:t.str, x:t.transform[4], y:t.transform[5], w:t.width, size:Math.max(1, Math.abs(t.transform[3]) || t.height || 10)
+  })).sort((a, b) => b.y - a.y || a.x - b.x);
+  const rows = [];
+  for(const t of its){
+    const r = rows.find(r => Math.abs(r.y - t.y) <= Math.max(2, t.size * 0.45));
+    if(r) r.items.push(t); else rows.push({y:t.y, items:[t]});
+  }
+  const segs = [];
+  for(const r of rows){
+    r.items.sort((a, b) => a.x - b.x);
+    let cur = null;
+    for(const t of r.items){
+      const gap = cur ? t.x - cur.x1 : 0;
+      // split a row only at the gutter between two columns
+      if(cur && gap > t.size * 0.9 && cur.x1 <= mid + t.size && t.x >= mid - t.size * 3){ segs.push(cur); cur = null; }
+      if(!cur) cur = {text:t.str, x0:t.x, x1:t.x + t.w, y:r.y, size:t.size, page:pageNo};
+      else { cur.text += (gap > t.size * 0.12 && !/\s$/.test(cur.text) && !/^\s/.test(t.str) ? " " : "") + t.str; cur.x1 = Math.max(cur.x1, t.x + t.w); }
+    }
+    if(cur) segs.push(cur);
+  }
+  segs.forEach(s => { s.text = s.text.replace(/\s+/g, " ").trim(); s.col = s.x1 <= mid + s.size * 2 ? 0 : s.x0 >= mid - s.size * 2 ? 1 : -1; });
+  const right = segs.filter(s => s.col === 1).length;
+  const twoCol = right >= 5 && right >= segs.length * 0.25;
+  if(!twoCol){ segs.forEach(s => s.col = 0); return segs.sort((a, b) => b.y - a.y); }
+  const colTop = Math.max(...segs.filter(s => s.col >= 0).map(s => s.y));
+  const top = segs.filter(s => s.col === -1 && s.y >= colTop).sort((a, b) => b.y - a.y);
+  const bottom = segs.filter(s => s.col === -1 && s.y < colTop).sort((a, b) => b.y - a.y);
+  const by = c => segs.filter(s => s.col === c).sort((a, b) => b.y - a.y);
+  return [...top, ...by(0), ...by(1), ...bottom];
+}
+
+const REF_HEAD = /^\s*(?:(?:\d+|[IVXL]+|[A-Z])\.?\s+)?(references|bibliography|works cited|literature cited|reference list|references and notes|cited literature)\s*:?\s*$/i;
+const REF_END = /^\s*(?:(?:\d+|[A-Z])\.?\s+)?(appendix|appendices|supplementary|supplemental material|acknowledge?ments?|author biograph|biographies|about the authors?|checklist)\b/i;
+
+function extractReferences(pages){
+  // drop running headers, footers and page numbers
+  const seen = new Map();
+  pages.forEach(lines => new Set(lines.map(l => l.text.replace(/\d+/g, "#").toLowerCase())).forEach(k => seen.set(k, (seen.get(k) || 0) + 1)));
+  const minRepeat = Math.max(2, Math.ceil(pages.length * 0.4));
+  const lines = pages.flat().filter(l => {
+    if(/^[\divxlc\s.\-–|]{1,8}$/i.test(l.text)) return false;
+    const k = l.text.replace(/\d+/g, "#").toLowerCase();
+    return !(pages.length >= 3 && l.text.length < 120 && seen.get(k) >= minRepeat);
+  });
+  let start = -1;
+  lines.forEach((l, i) => { if(REF_HEAD.test(l.text)) start = i; });
+  if(start < 0) return {refs:[], found:false};
+  const bodyText = lines.slice(0, start).map(l => l.text).join("\n").replace(/([a-z])-\n([a-z])/g, "$1$2").replace(/\s*\n\s*/g, " ");
+  let body = lines.slice(start + 1);
+  const end = body.findIndex(l => REF_END.test(l.text) && l.text.length < 70);
+  if(end > 0) body = body.slice(0, end);
+  if(!body.length) return {refs:[], found:true};
+
+  const join = (a, b) => {
+    if(!a) return b;
+    if(/[A-Za-z]-$/.test(a) && /^[a-z]/.test(b)) return a.slice(0, -1) + b;   // re-join hyphenated words
+    if(/[A-Za-z]-$/.test(a) && /^[A-Z]/.test(b)) return a + b;                // hyphenated names, e.g. Warde-Farley
+    if(/(https?:\/\/|doi\.org|\/)\S*$/.test(a) && !/[.,;]$/.test(a) && /^[\w.\/\-?=&%#]/.test(b) && !/\s/.test(b.slice(0, 3))) return a + b;  // broken URLs and DOIs
+    return a + " " + b;
+  };
+  const num1 = body.filter(l => /^\[\d{1,3}\]/.test(l.text)).length;
+  const num2 = body.filter(l => /^\d{1,3}\.\s+\S/.test(l.text)).length;
+  let starts, style = "author-year";
+  if(num1 >= 2 || (num2 >= 3 && num2 >= body.length * 0.15)) style = "numbered";
+  if(num1 >= 2) starts = body.map(l => /^\[\d{1,3}\]/.test(l.text));
+  else if(num2 >= 3 && num2 >= body.length * 0.15) starts = body.map(l => /^\d{1,3}\.\s+\S/.test(l.text));
+  else {
+    // author-year: use the hanging indent when there is one, otherwise sentence-end + author pattern
+    const minX = {};
+    body.forEach(l => { const k = l.page + ":" + l.col; minX[k] = Math.min(minX[k] ?? 1e9, l.x0); });
+    const flush = body.map(l => l.x0 <= minX[l.page + ":" + l.col] + Math.max(2, l.size * 0.4));
+    const share = flush.filter(Boolean).length / body.length;
+    if(share > 0.12 && share < 0.75) starts = flush;
+    else {
+      const author = /^(?:[A-Z][A-Za-zÀ-ž'’\-]+,\s+(?:[A-Z]\.|[A-Z][a-zà-ž]+)|[A-Z][a-zà-ž]+(?:\s[A-Z]\.)+\s|[A-Z]\.(?:\s?[A-Z]\.)*\s[A-Z][a-zà-ž]+|[A-Z]{2,}[,\s])/;
+      starts = body.map((l, i) => i === 0 || (/[.)\]]$|\d$/.test(body[i-1].text) && author.test(l.text)));
+    }
+  }
+  const refs = [];
+  body.forEach((l, i) => { if(starts[i] || !refs.length) refs.push(l.text); else refs[refs.length - 1] = join(refs[refs.length - 1], l.text); });
+  return {
+    found:true, style, body: bodyText,
+    refs: refs.map(r => r.replace(/^\s*(\[\d{1,3}\]|\d{1,3}\.)\s*/, "").replace(/\s+/g, " ").trim()).filter(r => r.length > 25 && /[A-Za-z]{3}/.test(r))
+  };
+}
+
+async function loadPdf(f){
+  const dt = $("#detectText"), box = $("#detect");
+  box.classList.add("has"); dt.textContent = "Loading the PDF reader…";
+  let lib;
+  try{ lib = await loadPdfJs(); }
+  catch(e){ dt.textContent = "Couldn’t load the PDF reader"; toast("Couldn’t load the PDF reader. Check your connection and try again."); return; }
+  let doc;
+  try{ doc = await lib.getDocument({data: new Uint8Array(await f.arrayBuffer())}).promise; }
+  catch(e){ detect(); toast(/password/i.test(e?.name || e?.message) ? "This PDF is password-protected" : "This file couldn’t be read as a PDF"); return; }
+  const pages = [];
+  let chars = 0;
+  for(let p = 1; p <= doc.numPages; p++){
+    dt.textContent = `Reading page ${p} of ${doc.numPages}…`;
+    const page = await doc.getPage(p);
+    const tc = await page.getTextContent();
+    chars += tc.items.reduce((n, t) => n + (t.str || "").length, 0);
+    pages.push(pageLines(tc.items, page.getViewport({scale:1}).width, p));
+  }
+  if(chars < 200){ detect(); toast("This PDF has no selectable text. It may be a scan, so copy the references in by hand."); return; }
+  const {refs, found, style, body} = extractReferences(pages);
+  if(!refs.length){
+    detect();
+    toast(found ? "Found the References heading but couldn’t split the list. Try copying it in." : "No References or Bibliography section found in this PDF");
+    return;
+  }
+  input.value = refs.map((r, i) => `[${i + 1}] ${r}`).join("\n");
+  pdfContext = {name: f.name, body, style, count: refs.length};
+  input.scrollTop = 0;
+  detect();
+  toast(`Found ${refs.length} references in ${f.name}. Review them, then press Check references.`);
+}
+
 /* ---------- live detection ---------- */
 let detectTimer;
 function detect(){
@@ -906,11 +1500,15 @@ input.addEventListener("input", () => { clearTimeout(detectTimer); detectTimer =
 
 /* ---------- events ---------- */
 $("#run").addEventListener("click", run);
-const loadSample = () => { input.value = SAMPLE; detect(); input.focus(); toast("Example loaded. Press Check references."); };
+const loadSample = () => { pdfContext = null; input.value = SAMPLE; detect(); input.focus(); toast("Example loaded. Press Check references."); };
 $("#sample").addEventListener("click", loadSample);
 $("#sample2").addEventListener("click", () => { loadSample(); run(); });
-$("#clear").addEventListener("click", () => { if(running) return; input.value = ""; items = []; detect(); render(); input.focus(); });
-async function loadFile(f){ if(!f) return; input.value = await f.text(); detect(); toast(`Loaded ${f.name}`); }
+$("#clear").addEventListener("click", () => { if(running) return; pdfContext = null; input.value = ""; items = []; detect(); render(); input.focus(); });
+async function loadFile(f){
+  if(!f) return;
+  if(f.type === "application/pdf" || /\.pdf$/i.test(f.name)) return loadPdf(f);
+  pdfContext = null; input.value = await f.text(); detect(); toast(`Loaded ${f.name}`);
+}
 $("#file").addEventListener("change", e => { loadFile(e.target.files[0]); e.target.value = ""; });
 const drop = $("#drop");
 ["dragenter","dragover"].forEach(ev => drop.addEventListener(ev, e => { e.preventDefault(); drop.classList.add("over"); }));
@@ -934,15 +1532,24 @@ $("#q").addEventListener("input", e => { query = e.target.value.trim(); render()
 $("#sort").addEventListener("change", e => { sortMode = e.target.value; render(); });
 $("#expand").addEventListener("click", () => {
   const sts = items.map(statusOf);
-  const allOpen = items.every((it, i) => it.open ?? ["warn","bad","error"].includes(sts[i]));
+  const allOpen = items.every((it, i) => it.open ?? ["warn","bad","error","retracted"].includes(sts[i]));
   items.forEach(it => it.open = !allOpen); render();
 });
 
+function jumpTo(i){
+  filter = "all"; query = ""; $("#q").value = ""; items[i].open = true; render();
+  const h = document.getElementById("h" + i); if(!h) return;
+  h.scrollIntoView({behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth", block:"center"});
+  h.focus({preventScroll:true});
+  const li = h.closest(".ref"); li.classList.add("flash"); setTimeout(() => li.classList.remove("flash"), 1600);
+}
+$("#cites").addEventListener("click", e => { const b = e.target.closest("[data-jump]"); if(b) jumpTo(+b.dataset.jump); });
+$("#report").addEventListener("click", openReport);
 list.addEventListener("click", e => {
   const b = e.target.closest("[data-act]"); if(!b) return;
   const i = +b.dataset.i, it = items[i], act = b.dataset.act;
   if(act === "toggle"){
-    it.open = !(it.open ?? ["warn","bad","error"].includes(statusOf(it)));
+    it.open = !(it.open ?? ["warn","bad","error","retracted"].includes(statusOf(it)));
     render(); document.getElementById("h" + i)?.focus(); return;
   }
   if(act === "copy"){ copyText(it.result?.status === "ok" ? (it.bibText || it.fixedBib) : it.fixedBib); return; }
@@ -958,6 +1565,10 @@ list.addEventListener("click", e => {
     render(); document.getElementById("h" + i)?.focus();
     toast("Marked as verified. Your original entry will be kept.");
   }
+  if(act === "ackRet"){ it.retractionAck = true; render(); toast("Kept as an intentional citation of a retracted paper"); }
+  if(act === "unackRet"){ it.retractionAck = false; it.open = true; render(); }
+  if(act === "usePub"){ it.usePublished = !it.usePublished; render(); toast(it.usePublished ? "The .bib will use the published version" : "The .bib will keep the preprint"); }
+  if(act === "jump"){ jumpTo(i); }
   if(act === "undoManual"){ it.manual = false; delete it.manualNote; it.open = true; render(); toast("Manual verification removed"); }
   if(act === "save"){
     const text = document.getElementById("ed" + i).value.trim();
@@ -1004,9 +1615,13 @@ $("#verifybib").addEventListener("click", async () => {
 });
 $("#csv").addEventListener("click", () => {
   const q = v => `"${String(v ?? "").replace(/"/g,'""')}"`;
-  const rows = [["#","Status","Cited reference","Matched title","Matched authors","Matched year","Venue","DOI","Issues"]];
+  const ci = citeAnalysis();
+  const rows = [["#","Status","Cited reference","Matched title","Matched authors","Matched year","Venue","DOI","Issues","Retraction or notice","Duplicate of","Published version","Cited in text"]];
   items.forEach((it, i) => { const r = it.result, m = r?.match;
-    rows.push([i+1, labelOf(it), it.raw, m?.title, m?.authors.join("; "), m?.year, m?.venue, m?.doi, [...(it.manual ? ["Verified manually" + (it.manualNote ? ": " + it.manualNote : "")] : []), ...(r?.issues || [it.error])].join(" | ")]); });
+    rows.push([i+1, labelOf(it), it.raw, m?.title, m?.authors.join("; "), m?.year, m?.venue, m?.doi, [...(it.manual ? ["Verified manually" + (it.manualNote ? ": " + it.manualNote : "")] : []), ...(r?.issues || [it.error])].join(" | "),
+      [it.retraction, it.concern, ...(it.corrections || [])].filter(Boolean).map(u => `${u.label}${u.date ? " " + u.date : ""}${u.notice ? " (doi " + u.notice + ")" : ""}`).join("; "),
+      it.dupOf !== undefined ? it.dupOf + 1 : "", it.published ? `${it.published.venue} ${it.published.year || ""} ${it.published.doi || ""}`.trim() : "",
+      ci ? (ci.perRef[i] ? "Yes (" + ci.perRef[i] + ")" : "No") : ""]); });
   download("reference-check.csv", "\ufeff" + rows.map(r => r.map(q).join(",")).join("\n"), "text/csv");
   toast("Downloaded reference-check.csv");
 });
