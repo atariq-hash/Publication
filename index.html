@@ -165,6 +165,9 @@ h2{font-weight:600;font-size:clamp(2rem,4.2vw,3.1rem);line-height:1.04;letter-sp
 .meter{display:flex;height:10px;border-radius:999px;overflow:hidden;background:rgba(255,255,255,.18);margin-top:.7rem}
 .meter span{height:100%;transition:width .45s cubic-bezier(.2,.8,.2,1)}
 .meter .m-ok{background:#5EE0A1} .meter .m-fixed{background:#64D8F0} .meter .m-manual{background:#C9BBFF} .meter .m-warn{background:#F5C451} .meter .m-bad{background:#FF7A6E} .meter .m-retracted{background:#FF3B30}
+.meter .m-error{background:#B9B3CF}
+.s-error .ico{background:var(--sunk)!important;color:var(--muted)!important}
+.s-error .badge{background:var(--sunk)!important;color:var(--muted)!important;border:1px dashed var(--line)}
 .meter .m-pending{background:repeating-linear-gradient(-45deg,rgba(255,255,255,.45) 0 6px,transparent 6px 12px)}
 .summary{padding:1.4rem 1.5rem}
 .sum-top{display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:.4rem 1rem}
@@ -173,7 +176,7 @@ h2{font-weight:600;font-size:clamp(2rem,4.2vw,3.1rem);line-height:1.04;letter-sp
 .chips{display:flex;flex-wrap:wrap;gap:.4rem;margin-top:1rem}
 .chip{display:inline-flex;align-items:center;gap:.45rem;border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:.34rem .85rem;font-size:.84rem;cursor:pointer;color:var(--text);font-weight:600}
 .chip i{width:8px;height:8px;border-radius:50%;background:var(--pend)}
-.chip.c-ok i{background:var(--ok)} .chip.c-warn i{background:var(--warn)} .chip.c-bad i{background:var(--bad)} .chip.c-fixed i{background:var(--fix)} .chip.c-all i{background:var(--ink)} .chip.c-manual i{background:var(--accent)} .chip.c-retracted i{background:var(--ret)}
+.chip.c-ok i{background:var(--ok)} .chip.c-warn i{background:var(--warn)} .chip.c-bad i{background:var(--bad)} .chip.c-fixed i{background:var(--fix)} .chip.c-all i{background:var(--ink)} .chip.c-manual i{background:var(--accent)} .chip.c-retracted i{background:var(--ret)} .chip.c-error i{background:#8E88A8}
 .chip.flag i{border-radius:2px;background:transparent;border:2px solid var(--muted)}
 .chipsep{width:1px;align-self:stretch;background:var(--line);margin:0 .2rem}
 .chip[aria-pressed="true"]{background:var(--ink);color:var(--surface);border-color:var(--ink)}
@@ -805,16 +808,18 @@ const $ = s => document.querySelector(s);
 /* ---------- private visitor analytics (GoatCounter) ----------
    Put your GoatCounter code between the quotes, e.g. "citrue" for citrue.goatcounter.com.
    Leave it empty to switch analytics off. Only counts are sent: never references, titles or files. */
-const ANALYTICS_CODE = "";
-if(ANALYTICS_CODE){
+const ANALYTICS_CODE = "citrue";
+// accepts "citrue", "citrue.goatcounter.com" or "https://citrue.goatcounter.com/" alike
+const GC_CODE = String(ANALYTICS_CODE).trim().toLowerCase().replace(/^https?:\/\//, "").replace(/\.goatcounter\.com.*$/, "").replace(/[\/\s].*$/, "");
+if(GC_CODE){
   const gc = document.createElement("script");
   gc.async = true;
   gc.src = "https://gc.zgo.at/count.js";
-  gc.dataset.goatcounter = `https://${ANALYTICS_CODE}.goatcounter.com/count`;
+  gc.dataset.goatcounter = `https://${GC_CODE}.goatcounter.com/count`;
   document.head.appendChild(gc);
 }
 function track(name, title){
-  if(!ANALYTICS_CODE) return;
+  if(!GC_CODE) return;
   try{ window.goatcounter?.count?.({path: name, title: title || name, event: true}); }catch(e){}
 }
 const input = $("#input");
@@ -918,7 +923,49 @@ const oaParams = () => { const p = []; const k = $("#oakey").value.trim(); if(k)
 // Only real answers are kept (found or not found), never failures, so "Check again" still retries those.
 const lookupCache = new Map();
 let s2Throttled = 0;
+/* CrossRef limits since Dec 2025: without an email 1 request at a time and 1 search per second;
+   with an email (the "polite pool") 3 at a time and 3 searches per second. Every CrossRef request
+   waits its turn here so CrossRef never has to refuse one. */
+const CR = {active: 0, lastList: 0, lastSingle: 0, pauseUntil: 0};
+const sleep = ms => new Promise(r => setTimeout(r, ms));
+const crLimits = () => mail() ? {conc: 3, listGap: 360, singleGap: 110} : {conc: 1, listGap: 1080, singleGap: 220};
+async function crSlot(isList){
+  for(;;){
+    const L = crLimits(), now = Date.now();
+    const wait = Math.max(CR.pauseUntil - now, isList ? L.listGap - (now - CR.lastList) : L.singleGap - (now - CR.lastSingle));
+    if(CR.active < L.conc && wait <= 0){ CR.active++; if(isList) CR.lastList = now; else CR.lastSingle = now; return; }
+    await sleep(Math.max(30, Math.min(wait > 0 ? wait : 60, 1000)));
+  }
+}
+async function crossrefJSON(url, stats){
+  if(lookupCache.has(url)){ if(stats) stats.ok++; return lookupCache.get(url); }
+  const isList = /api\.crossref\.org\/works\?/.test(url);
+  const backoff = [2000, 4000, 6000, 9000];
+  for(let i = 0; i <= backoff.length; i++){
+    await crSlot(isList);
+    let r = null;
+    try{ r = await fetch(url); } catch(e){ r = null; }   // a refused request can surface as a network error
+    try{
+      if(r && r.status === 404){ if(stats) stats.ok++; lookupCache.set(url, null); return null; }
+      if(r && r.ok){
+        const data = await r.json();
+        if(stats) stats.ok++;
+        if(lookupCache.size > 5000) lookupCache.clear();
+        lookupCache.set(url, data);
+        return data;
+      }
+      if(r && r.status >= 400 && r.status < 500 && r.status !== 429){ if(stats) stats.ok++; return null; }
+    } finally { CR.active--; }
+    if(i === backoff.length) break;
+    // too busy (429), server error or network error: everyone pauses, then we try again
+    CR.pauseUntil = Math.max(CR.pauseUntil, Date.now() + backoff[i]);
+    await sleep(backoff[i]);
+  }
+  if(stats){ stats.fail++; stats.crFail = true; }
+  return null;
+}
 async function getJSON(url, stats){
+  if(url.includes("api.crossref.org")) return crossrefJSON(url, stats);
   if(lookupCache.has(url)){ if(stats) stats.ok++; return lookupCache.get(url); }
   const isS2 = url.includes("semanticscholar.org");
   for(let i = 0; i < 3; i++){
@@ -960,7 +1007,7 @@ function fromCrossref(w){
   const people = (w.author||[]).map(a => ({family:a.family || a.name || "", given:a.given || ""})).filter(p => p.family);
   return pack({title:joinTitle((w.title||[])[0], (w.subtitle||[])[0]), year:String(y||""), people,
           venue:(w["container-title"]||[])[0]||"", publisher:w.publisher||"", volume:w.volume||"", issue:w.issue||"",
-          pages:(w.page||"").replace(/-+/,"--"), kind:w.type||"", doi:w.DOI||"", url:w.DOI ? `https://doi.org/${w.DOI}` : w.URL}, "CrossRef");
+          pages:(w.page||"").replace(/-+/,"--"), kind:w.type||"", doi:w.DOI||"", url:w.DOI ? `https://doi.org/${w.DOI}` : w.URL, updatedBy: w["updated-by"] || []}, "CrossRef");
 }
 function fromOpenAlex(w){
   if(!w) return null;
@@ -1057,7 +1104,7 @@ async function lookup(ref){
   if(!(best()?.s >= 0.85)){
     const q = (ref.title || ref.raw).slice(0, 250).replace(/[,:;|!?()"“”\[\]{}]/g, " ").replace(/\s+/g, " ").trim();
     const [cr, db, s2, oa] = await Promise.all([
-      getJSON(`https://api.crossref.org/works?query.bibliographic=${encodeURIComponent(ref.raw.slice(0,400))}&rows=5&select=DOI,title,subtitle,author,issued,published,container-title,publisher,URL,volume,issue,page,type${m ? "&" + m : ""}`, stats),
+      getJSON(`https://api.crossref.org/works?query.bibliographic=${encodeURIComponent(ref.raw.slice(0,400))}&rows=5&select=DOI,title,subtitle,author,issued,published,container-title,publisher,URL,volume,issue,page,type,updated-by${m ? "&" + m : ""}`, stats),
       getJSON(`https://dblp.org/search/publ/api?q=${encodeURIComponent(q)}&format=json&h=5`, stats),
       s2Throttled >= 3 ? null : getJSON(`https://api.semanticscholar.org/graph/v1/paper/search?query=${encodeURIComponent(q)}&limit=5&fields=title,year,authors,venue,externalIds,journal,publicationTypes`, stats),
       useOA ? getJSON(`https://api.openalex.org/works?search=${encodeURIComponent(q)}&per-page=5&${oaParams()}`, stats) : null
@@ -1068,6 +1115,7 @@ async function lookup(ref){
     add((oa?.results||[]).map(fromOpenAlex));
   }
   if(!stats.ok) throw new Error("offline");
+  { const b0 = best(); if(stats.crFail && !(b0 && b0.s >= 0.85)) throw new Error("crossref-busy"); }
   best();
   return {best: best(), cands};
 }
@@ -1264,15 +1312,43 @@ async function findPublished(it, m){
 async function extras(it){
   const m = it.result?.match;
   if(!m || it.result.status === "bad") return;
-  const jobs = [];
-  if(isDoi(m.doi) && !/^10\.48550\//i.test(m.doi)) jobs.push(checkUpdates(m.doi).then(u => {
-    it.updates = u;
-    it.retraction = u.find(x => SEVERE.has(x.type)) || null;
-    it.concern = u.find(x => x.type === "expression_of_concern") || null;
-    it.corrections = u.filter(x => !SEVERE.has(x.type) && x.type !== "expression_of_concern" && x.type !== "reinstatement");
-  }).catch(() => {}));
-  if(isPreprint(it, m)) jobs.push(findPublished(it, m).then(p => { if(p && coverage(p.venue, it.raw) < 0.6) it.published = p; }).catch(() => {}));
-  await Promise.all(jobs);
+  if(isPreprint(it, m)){ try{ const p = await findPublished(it, m); if(p && coverage(p.venue, it.raw) < 0.6) it.published = p; }catch(e){} }
+}
+// Retractions and other notices for many papers in a few requests: the paper's own "updated-by"
+// list plus a grouped search for notices that point at it (20 papers per request)
+async function batchRetractions(indices){
+  const byDoi = new Map();
+  indices.map(i => items[i]).forEach(it => {
+    const m = it.result?.match;
+    if(!m || it.result.status === "bad" || !isDoi(m.doi) || /^10\.48550\//i.test(m.doi)) return;
+    const key = m.doi.toLowerCase();
+    if(!byDoi.has(key)) byDoi.set(key, {its: [], ups: []});
+    const e = byDoi.get(key); e.its.push(it);
+    (m.updatedBy || []).forEach(u => e.ups.push([u, u.DOI]));
+  });
+  const dois = [...byDoi.keys()];
+  const mm = mail() ? `&mailto=${encodeURIComponent(mail())}` : "";
+  for(let k = 0; k < dois.length; k += 20){
+    const chunk = dois.slice(k, k + 20);
+    const data = await getJSON(`https://api.crossref.org/works?filter=${chunk.map(d => "updates:" + encodeURIComponent(d)).join(",")}&rows=100&select=DOI,update-to,type${mm}`);
+    (data?.message?.items || []).forEach(w => (w["update-to"] || []).forEach(u => { const e = byDoi.get(String(u.DOI || "").toLowerCase()); if(e) e.ups.push([u, w.DOI]); }));
+  }
+  byDoi.forEach(({its, ups}) => {
+    const out = [], seen = new Set();
+    ups.forEach(([u, notice]) => {
+      const type = String(u?.type || "").toLowerCase().replace(/[\s-]+/g, "_"); if(!type) return;
+      const key = type + "|" + norm(notice || "") + "|" + dateOf(u.updated).slice(0, 7);
+      if(seen.has(key)) return; seen.add(key);
+      out.push({type, label: UPD_LABEL[type] || u.label || type, notice: isDoi(notice) ? notice : "", source: u.source || "publisher", date: dateOf(u.updated)});
+    });
+    out.sort((a, b) => (b.date || "").localeCompare(a.date || ""));
+    its.forEach(it => {
+      it.updates = out;
+      it.retraction = out.find(x => SEVERE.has(x.type)) || null;
+      it.concern = out.find(x => x.type === "expression_of_concern") || null;
+      it.corrections = out.filter(x => !SEVERE.has(x.type) && x.type !== "expression_of_concern" && x.type !== "reinstatement");
+    });
+  });
 }
 function findDuplicates(){
   const seen = new Map();
@@ -1362,7 +1438,7 @@ function buildReport(){
     else if(it.retraction) alerts.push(["ret", "Retracted, cited intentionally", i, `${esc(it.retraction.label)}${it.retraction.date ? " on " + fmtDate(it.retraction.date) : ""}. The author confirmed this citation is intentional.`]);
     if(it.concern) alerts.push(["warn", "Expression of concern", i, `Issued${it.concern.date ? " " + fmtDate(it.concern.date) : ""}. ${it.concern.notice ? "Notice: " + doiLink(it.concern.notice) : ""}`]);
   });
-  items.forEach((it, i) => { const st = statusOf(it); if(st === "bad" || st === "error") alerts.push(["bad", it.error ? "Lookup failed" : "Not found", i, esc(it.error || (it.doiBroken ? `The DOI ${it.doi} doesn’t resolve, and no matching publication was found. Check this reference by hand.` : "No matching publication in any database. Check this reference by hand."))]); });
+  items.forEach((it, i) => { const st = statusOf(it); if(st === "bad" || st === "error") alerts.push(["bad", it.error ? "Couldn’t finish" : "Not found", i, esc(it.error || (it.doiBroken ? `The DOI ${it.doi} doesn’t resolve, and no matching publication was found. Check this reference by hand.` : "No matching publication in any database. Check this reference by hand."))]); });
   items.forEach((it, i) => { if(statusOf(it) === "warn") alerts.push(["warn", it.result.renamed ? "Title changed" : "Check details", i, esc(it.result.renamed ? `Found under a different title by the same authors: “${it.result.match.title}”. Probably renamed in a later version, so the citation is likely real.` : it.result.issues.join(" "))]); });
   items.forEach((it, i) => { if(it.dupOf !== undefined) alerts.push(["dup", "Duplicate", i, it.dupKind === "version" ? `The same work as [${it.dupOf + 1}], cited once as a preprint and once as the published version.` : `The same paper as [${it.dupOf + 1}].`]); });
 
@@ -1622,8 +1698,8 @@ async function copyText(text){
 }
 
 const statusOf = it => (it.retraction && !it.retractionAck && it.result) ? "retracted" : it.manual ? "manual" : it.error ? "error" : !it.result ? "pending" : (it.useFix && it.fixCheck === "confirmed") ? "fixed" : it.result.status;
-const labelOf = it => ({error:"Lookup failed", pending:"Checking", fixed:"Corrected", manual:"Verified manually", retracted:"Retracted"})[statusOf(it)] || it.result.label;
-const group = st => st === "error" ? "bad" : st;
+const labelOf = it => ({error:"Couldn’t finish", pending:"Checking", fixed:"Corrected", manual:"Verified manually", retracted:"Retracted"})[statusOf(it)] || it.result.label;
+const group = st => st;
 
 function citedAuthors(it){
   if(it.bibFields?.author) return it.bibFields.author.replace(/\s+and\s+/gi, "; ");
@@ -1720,7 +1796,7 @@ function card(it, i){
   const open = it.open ?? ["warn","bad","error","retracted"].includes(st);
   const li = document.createElement("li");
   li.className = `ref s-${st}${open ? " open" : ""}`;
-  const icon = st === "pending" ? '<span class="spin"></span>' : st === "retracted" ? SVG.ret : SVG[group(st) === "bad" ? "bad" : st];
+  const icon = st === "pending" ? '<span class="spin"></span>' : st === "retracted" ? SVG.ret : st === "error" ? SVG.redo : SVG[st];
   const cite = citeInfo;
   const tags = [];
   if(it.retraction && it.retractionAck) tags.push(`<span class="rtag cor">Retracted, cited intentionally</span>`);
@@ -1791,18 +1867,18 @@ function render(){
   citeInfo = running ? null : citeAnalysis();
   const sts = items.map(statusOf);
   const n = k => sts.filter(s => group(s) === k).length;
-  const counts = {ok:n("ok"), manual:n("manual"), fixed:n("fixed"), warn:n("warn"), bad:n("bad"), retracted:n("retracted"), pending:n("pending")};
+  const counts = {ok:n("ok"), manual:n("manual"), fixed:n("fixed"), warn:n("warn"), bad:n("bad"), error:n("error"), retracted:n("retracted"), pending:n("pending")};
   const flags = {dup: items.filter(it => it.dupOf !== undefined).length, pub: items.filter(it => it.published).length, unc: citeInfo ? citeInfo.uncited.length : 0};
   const total = items.length, done = total - counts.pending;
-  $("#meter").innerHTML = ["ok","manual","fixed","warn","bad","retracted","pending"].map(k => `<span class="m-${k}" style="width:${100 * counts[k] / total}%"></span>`).join("");
+  $("#meter").innerHTML = ["ok","manual","fixed","warn","bad","error","retracted","pending"].map(k => `<span class="m-${k}" style="width:${100 * counts[k] / total}%"></span>`).join("");
   $("#meter").setAttribute("aria-label", `${counts.ok} verified, ${counts.manual} verified manually, ${counts.fixed} corrected, ${counts.warn} need checking, ${counts.bad} not found, ${counts.pending} pending`);
   const goodN = counts.ok + counts.fixed + counts.manual;
   $("#score").textContent = done ? Math.round(100 * goodN / total) + "%" : "…";
   $("#scorecap").textContent = done ? `${goodN} of ${total} references verified or corrected` : "Checking your references…";
   $("#sumtitle").textContent = !running ? `${total} reference${total === 1 ? "" : "s"} checked`
     : done < total ? `Checking ${done} of ${total}…` : extrasLeft > 0 ? `Checking for retractions and newer versions…` : `Finishing up…`;
-  $("#sumsub").textContent = done ? `${counts.ok + counts.fixed + counts.manual} look good, ${counts.warn} need a look, ${counts.bad} not found${counts.retracted ? `, ${counts.retracted} retracted` : ""}` : "";
-  const chips = [["all","All",total],["ok","Verified",counts.ok],["manual","Verified manually",counts.manual],["fixed","Corrected",counts.fixed],["warn","Check details",counts.warn],["bad","Not found",counts.bad],["retracted","Retracted",counts.retracted]]
+  $("#sumsub").textContent = done ? `${counts.ok + counts.fixed + counts.manual} look good, ${counts.warn} need a look, ${counts.bad} not found${counts.error ? `, ${counts.error} couldn’t finish` : ""}${counts.retracted ? `, ${counts.retracted} retracted` : ""}` : "";
+  const chips = [["all","All",total],["ok","Verified",counts.ok],["manual","Verified manually",counts.manual],["fixed","Corrected",counts.fixed],["warn","Check details",counts.warn],["bad","Not found",counts.bad],["error","Couldn’t finish",counts.error],["retracted","Retracted",counts.retracted]]
     .filter(([k,,c]) => k === "all" || c > 0 || filter === k);
   const fchips = [["dup","Duplicates",flags.dup],["pub","Published version",flags.pub],["unc","Not cited in text",flags.unc]].filter(([k,,c]) => c > 0 || filter === k);
   $("#tally").innerHTML = chips.map(([k,l,c]) => `<button class="chip c-${k}" data-f="${k}" aria-pressed="${filter === k}"><i></i>${l} <em>${c}</em></button>`).join("")
@@ -1821,7 +1897,7 @@ function render(){
   $("#oanotice").hidden = !oaBlocked;
   $("#expand").textContent = items.every((it, i) => it.open ?? ["warn","bad","error","retracted"].includes(sts[i])) ? "Collapse all" : "Expand all";
 
-  const rank = {retracted:-1, bad:0, error:0, warn:1, pending:2, fixed:3, manual:4, ok:5};
+  const rank = {retracted:-1, bad:0, error:0.5, warn:1, pending:2, fixed:3, manual:4, ok:5};
   const flagOk = i => filter === "dup" ? items[i].dupOf !== undefined : filter === "pub" ? !!items[i].published : filter === "unc" ? !!citeInfo && !citeInfo.perRef[i] : group(sts[i]) === filter;
   let idx = items.map((_, i) => i).filter(i => {
     if(filter !== "all" && !flagOk(i)) return false;
@@ -1868,17 +1944,22 @@ async function check(indices){
         extrasLeft++;
         pending.push(background(() => extras(it)).catch(() => {}).finally(() => { extrasLeft--; renderSoon(); }));
       }
-      catch(e){ it.error = "Couldn’t reach the lookup services. Check your connection and try again."; }
+      catch(e){ it.error = e.message === "crossref-busy"
+        ? "CrossRef was too busy to answer, so this reference couldn’t be fully checked. Use Re-check flagged in a minute."
+        : "Couldn’t reach the lookup services. Check your connection and try again."; }
       renderSoon();
     }
   };
   await Promise.all(Array.from({length: Math.min(6, indices.length)}, worker));
   prepareFixes();
   await Promise.all([Promise.all(pending), verifyFixes(indices.filter(i => items[i].useFix && items[i].fixedBib))]);
+  await batchRetractions(indices);
   findDuplicates();
   running = false; BTNS.forEach(b => $(b).disabled = false); render();
   const c = items.map(statusOf);
   const nr = c.filter(s => s === "retracted").length;
+  const nf = c.filter(s => s === "error").length;
+  if(nf){ toast(`${nf} reference${nf === 1 ? "" : "s"} couldn’t be finished because CrossRef was busy. Use Re-check flagged in a minute.`); return; }
   toast(`Done: ${c.filter(s => ["ok","fixed","manual"].includes(s)).length} good, ${c.filter(s => s === "warn").length} to review, ${c.filter(s => s === "bad" || s === "error").length} not found${nr ? `, ${nr} retracted` : ""}`);
 }
 async function verifyFixes(indices){
@@ -1909,6 +1990,7 @@ async function run(){
   const parsed = parseInput(text);
   if(!parsed.length){ toast("No references found. Put each one on its own line."); return; }
   items = parsed; filter = "all"; query = ""; $("#q").value = "";
+  if(!mail() && parsed.length >= 8) setTimeout(() => toast("Tip: add your email under Options to check up to 3× faster"), 400);
   render();
   $("#results").scrollIntoView({behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth", block: "start"});
   await check(items.map((_, i) => i));
