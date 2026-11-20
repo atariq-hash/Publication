@@ -838,9 +838,11 @@ const SAMPLE = `[1] Vaswani, A., Shazeer, N., Parmar, N., Uszkoreit, J., Jones, 
 const STOP = new Set("a an the of and or in on for to with by from at as is are via its into using towards toward".split(" "));
 const norm = s => (s||"").normalize("NFKD").replace(/[\u0300-\u036f]/g,"").toLowerCase().replace(/<[^>]+>/g," ").replace(/[^a-z0-9]+/g," ").trim();
 const tokens = s => norm(s).split(" ").filter(w => w && !STOP.has(w));
-function coverage(a, b){ // share of a's tokens found in b
-  const ta = tokens(a); if(!ta.length) return 0;
-  const tb = new Set(tokens(b)); return ta.filter(t => tb.has(t)).length / ta.length;
+// singular and plural count as the same word: network/networks, study/studies, process/processes
+const stem = w => w.length <= 3 ? w : w.replace(/ies$/, "y").replace(/(ch|sh|x|ss)es$/, "$1").replace(/([^s])s$/, "$1");
+function coverage(a, b){ // share of a's words found in b
+  const ta = tokens(a).map(stem); if(!ta.length) return 0;
+  const tb = new Set(tokens(b).map(stem)); return ta.filter(t => tb.has(t)).length / ta.length;
 }
 const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 
@@ -1103,16 +1105,21 @@ async function lookup(ref){
   const best = () => cands.reduce((b, c) => (c.s = score(ref, c)) > (b?.s ?? -1) ? c : b, null);
   if(!(best()?.s >= 0.85)){
     const q = (ref.title || ref.raw).slice(0, 250).replace(/[,:;|!?()"“”\[\]{}]/g, " ").replace(/\s+/g, " ").trim();
-    const [cr, db, s2, oa] = await Promise.all([
+    // arXiv's own records (DataCite, prefix 10.48550), searched by title words: finds preprints cited without an arXiv number
+    const tw = tokens(ref.title || q).filter(w => w.length > 2).slice(0, 12);
+    const dcq = tw.length >= 2 ? `titles.title:(${tw.join(" ")})` : "";
+    const [cr, db, s2, oa, dc] = await Promise.all([
       getJSON(`https://api.crossref.org/works?query.bibliographic=${encodeURIComponent(ref.raw.slice(0,400))}&rows=5&select=DOI,title,subtitle,author,issued,published,container-title,publisher,URL,volume,issue,page,type,updated-by${m ? "&" + m : ""}`, stats),
       getJSON(`https://dblp.org/search/publ/api?q=${encodeURIComponent(q)}&format=json&h=5`, stats),
       s2Throttled >= 3 ? null : getJSON(`https://api.semanticscholar.org/graph/v1/paper/search?query=${encodeURIComponent(q)}&limit=5&fields=title,year,authors,venue,externalIds,journal,publicationTypes`, stats),
-      useOA ? getJSON(`https://api.openalex.org/works?search=${encodeURIComponent(q)}&per-page=5&${oaParams()}`, stats) : null
+      useOA ? getJSON(`https://api.openalex.org/works?search=${encodeURIComponent(q)}&per-page=5&${oaParams()}`, stats) : null,
+      dcq ? getJSON(`https://api.datacite.org/dois?query=${encodeURIComponent(dcq)}&prefix=10.48550&page%5Bsize%5D=5`, stats) : null
     ]);
     add((cr?.message?.items||[]).map(fromCrossref));
     add((db?.result?.hits?.hit||[]).map(fromDblp));
     add((s2?.data||[]).map(fromS2));
     add((oa?.results||[]).map(fromOpenAlex));
+    add((dc?.data||[]).map(fromDataCite));
   }
   if(!stats.ok) throw new Error("offline");
   { const b0 = best(); if(stats.crFail && !(b0 && b0.s >= 0.85)) throw new Error("crossref-busy"); }
@@ -1738,9 +1745,9 @@ function diffFields(it, m){
 }
 
 function diffHTML(a, b){
-  const ka = new Set(tokens(a)), kb = new Set(tokens(b));
+  const ka = new Set(tokens(a).map(stem)), kb = new Set(tokens(b).map(stem));
   const mark = (s, other, cls) => s.split(/(\s+)/).map(w => {
-    const k = norm(w); return k && !STOP.has(k) && !other.has(k) ? `<mark class="${cls}">${esc(w)}</mark>` : esc(w);
+    const k = stem(norm(w)); return k && !STOP.has(norm(w)) && !other.has(k) ? `<mark class="${cls}">${esc(w)}</mark>` : esc(w);
   }).join("");
   return [mark(a, kb, "del"), mark(b, ka, "add")];
 }
