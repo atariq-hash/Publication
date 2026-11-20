@@ -439,6 +439,21 @@ mark.add{background:var(--ok-bg);color:var(--ok);border-radius:3px;padding:0 .1e
 /* Verification report on the results panel: solid indigo, NEW tag kept */
 #report.btn{background:#4338CA;border-color:#4338CA;color:#FFFFFF;box-shadow:0 8px 20px -10px rgba(67,56,202,.85)}
 #report.btn:hover:not(:disabled){background:#3730A3;border-color:#3730A3;color:#FFFFFF;box-shadow:0 14px 28px -12px rgba(55,48,163,.95),0 0 0 4px rgba(99,102,241,.2)}
+/* secondary result actions: blue, amber and green from the site palette */
+#csv.btn{background:#E8F1FE;border-color:#C3DAFB;color:#1D5FD1}
+#csv.btn:hover:not(:disabled){background:#3F86F4;border-color:#3F86F4;color:#FFFFFF;box-shadow:0 12px 24px -12px rgba(63,134,244,.9)}
+#recheckflag.btn{background:#FFF4DE;border-color:#F2D9A6;color:#8A5A07}
+#recheckflag.btn:hover:not(:disabled){background:#E9A23B;border-color:#E9A23B;color:#FFFFFF;box-shadow:0 12px 24px -12px rgba(233,162,59,.9)}
+#verifybib.btn{background:#E3F6EC;border-color:#B7E6CD;color:#1F7A4F}
+#verifybib.btn:hover:not(:disabled){background:#34C77B;border-color:#34C77B;color:#FFFFFF;box-shadow:0 12px 24px -12px rgba(52,199,123,.9)}
+:root[data-theme="dark"] #csv.btn{background:rgba(63,134,244,.15);border-color:rgba(63,134,244,.4);color:#A9CBFF}
+:root[data-theme="dark"] #recheckflag.btn{background:rgba(233,162,59,.14);border-color:rgba(233,162,59,.4);color:#F5CE85}
+:root[data-theme="dark"] #verifybib.btn{background:rgba(52,199,123,.14);border-color:rgba(52,199,123,.4);color:#8EE5B6}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]) #csv.btn{background:rgba(63,134,244,.15);border-color:rgba(63,134,244,.4);color:#A9CBFF}
+  :root:not([data-theme="light"]) #recheckflag.btn{background:rgba(233,162,59,.14);border-color:rgba(233,162,59,.4);color:#F5CE85}
+  :root:not([data-theme="light"]) #verifybib.btn{background:rgba(52,199,123,.14);border-color:rgba(52,199,123,.4);color:#8EE5B6}
+}
 /* Report in the integrity box: green, matching its border */
 #hsReport.btn{background:linear-gradient(120deg,#5BD495 0%,#34C77B 100%);border-color:transparent;color:#053D22;font-weight:600;box-shadow:0 8px 20px -10px rgba(52,199,123,.8)}
 #hsReport.btn:hover:not(:disabled){background:linear-gradient(120deg,#4ACB88 0%,#24A862 100%);border-color:transparent;color:#032B17;box-shadow:0 14px 28px -12px rgba(36,168,98,.9),0 0 0 4px rgba(94,224,161,.25)}
@@ -579,6 +594,7 @@ dialog.dlg[open]{animation:dlgin .28s cubic-bezier(.2,.8,.2,1)}
 @media (max-width:380px){.dlg-actions .btn{font-size:.88rem;gap:.35rem}}
 .srcline{margin:0;font-size:.88rem;color:var(--muted)}
 .srcno{color:var(--warn)}
+.trailline{margin-bottom:.35rem!important;font-size:.82rem!important}
 .fldlabel{display:block;font-weight:600;color:var(--ink);font-size:.88rem;margin-bottom:.35rem}
 .shotzone{display:grid;justify-items:center;gap:.25rem;padding:1rem;border:1.5px dashed var(--line);border-radius:16px;background:var(--sunk);text-align:center;cursor:pointer;transition:border-color .2s,background-color .2s}
 .shotzone>svg{width:26px;height:26px;color:var(--accent)}
@@ -1035,7 +1051,7 @@ const oaParams = () => { const p = []; const k = $("#oakey").value.trim(); if(k)
 // Answers are remembered for the session, so re-checks and re-validation don't repeat lookups.
 // Only real answers are kept (found or not found), never failures, so "Check again" still retries those.
 const lookupCache = new Map();
-let s2Throttled = 0, dblpDown = 0;
+let s2Throttled = 0, dblpDown = 0, oaTitleParamBad = false;
 /* CrossRef limits since Dec 2025: without an email 1 request at a time and 1 search per second;
    with an email (the "polite pool") 3 at a time and 3 searches per second. Every CrossRef request
    waits its turn here so CrossRef never has to refuse one. */
@@ -1082,6 +1098,9 @@ async function crossrefJSON(url, stats){
 const SRC_NAMES = {crossref:"CrossRef", dblp:"DBLP", s2:"Semantic Scholar", openalex:"OpenAlex", datacite:"arXiv (DataCite)"};
 const srcOf = url => url.includes("crossref.org") ? "crossref" : url.includes("dblp.org") ? "dblp" : url.includes("semanticscholar.org") ? "s2" : url.includes("openalex.org") ? "openalex" : url.includes("datacite.org") ? "datacite" : "";
 const SOURCE_HEALTH = {};
+// which OpenAlex search a URL is, in plain words, for the per-reference search trail
+const oaKind = url => url.includes("filter=title.search") ? "title filter" : url.includes("search.title=") ? "title search" : /[?&]search=%22/.test(url) ? "exact phrase" : url.includes("search=") ? "general search" : url.includes("/works/doi:") ? "DOI lookup" : "lookup";
+function trail(stats, url, text){ if(stats && url.includes("openalex.org")){ (stats.trail = stats.trail || []).push(`${oaKind(url)}: ${text}`); } }
 function srcMark(stats, url, ok, why){
   const k = srcOf(url); if(!k) return;
   const h = SOURCE_HEALTH[k] || (SOURCE_HEALTH[k] = {ok: 0, fail: 0, why: ""});
@@ -1096,14 +1115,16 @@ async function getJSON(url, stats){
     try{
       const r = await fetch(url);
       if(stats) stats.ok++;
-      if(r.status === 404){ srcMark(stats, url, true); lookupCache.set(url, null); return null; }
-      if(url.includes("openalex.org") && [401,403,409].includes(r.status)){ oaBlocked = true; srcMark(stats, url, false, "needs an API key"); return null; }
+      if(r.status === 404){ srcMark(stats, url, true); trail(stats, url, "not found"); lookupCache.set(url, null); return null; }
+      if(url.includes("openalex.org") && [401,403,409].includes(r.status)){ oaBlocked = true; srcMark(stats, url, false, "needs an API key"); trail(stats, url, `refused (${r.status}, API key needed or daily limit reached)`); return null; }
+      if(url.includes("openalex.org") && r.status === 400){ if(url.includes("search.title=")) oaTitleParamBad = true; srcMark(stats, url, false, "rejected the query"); trail(stats, url, "rejected (400)"); return null; }
       // Semantic Scholar rate-limits anonymous use; skip it rather than wait, the other databases cover it
       if(isS2 && r.status === 429){ s2Throttled++; srcMark(stats, url, false, "busy"); return null; }
       if(r.status === 429 || r.status >= 500){ await new Promise(s => setTimeout(s, 1200 * (i+1))); continue; }
       if(!r.ok){ srcMark(stats, url, false, "error " + r.status); return null; }
       const data = await r.json();
       srcMark(stats, url, true);
+      trail(stats, url, `${(data?.results || []).length} result${(data?.results || []).length === 1 ? "" : "s"}`);
       if(lookupCache.size > 5000) lookupCache.clear();
       lookupCache.set(url, data);
       return data;
@@ -1253,7 +1274,11 @@ async function lookup(ref){
       getJSON(`https://api.crossref.org/works?query.bibliographic=${encodeURIComponent(ref.raw.slice(0,400))}&rows=5&select=DOI,title,subtitle,author,issued,published,container-title,publisher,URL,volume,issue,page,type,updated-by${m ? "&" + m : ""}`, stats),
       dblpDown >= 2 ? null : getJSON(`https://dblp.org/search/publ/api?q=${encodeURIComponent(q)}&format=json&h=5`, stats),
       s2Throttled >= 3 ? null : getJSON(`https://api.semanticscholar.org/graph/v1/paper/search?query=${encodeURIComponent(q)}&limit=5&fields=title,year,authors,venue,externalIds,journal,publicationTypes`, stats),
-      useOA ? getJSON(`https://api.openalex.org/works?search.title=${encodeURIComponent('"' + oaPhrase + '"')}&per-page=5&${oaParams()}`, stats) : null,
+      // OpenAlex: an exact-phrase search and the title-only filter together; keep whichever finds the paper
+      useOA ? Promise.all([
+        getJSON(`https://api.openalex.org/works?search=${encodeURIComponent('"' + oaPhrase + '"')}&per-page=5&${oaParams()}`, stats),
+        getJSON(`https://api.openalex.org/works?filter=title.search:${encodeURIComponent(oaPhrase)}&per-page=5&${oaParams()}`, stats)
+      ]).then(rs => ({results: rs.flatMap(r => r?.results || [])})) : null,
       dcq ? getJSON(`https://api.datacite.org/dois?query=${encodeURIComponent(dcq)}&prefix=10.48550&page%5Bsize%5D=5`, stats) : null
     ]);
     add((cr?.message?.items||[]).map(fromCrossref));
@@ -1264,6 +1289,7 @@ async function lookup(ref){
     // OpenAlex holds many papers CrossRef doesn't (JMLR, USENIX, OpenReview…): widen the search step by step
     if(useOA && oaPhrase.split(" ").length >= 2){
       for(const param of ["search.title", "search"]){
+        if(param === "search.title" && oaTitleParamBad) continue;      // OpenAlex rejected this form before: don't resend it
         if(best()?.s >= 0.85 || !(useOA = $("#oakey").value.trim() || !oaBlocked)) break;
         const more = await getJSON(`https://api.openalex.org/works?${param}=${encodeURIComponent(oaPhrase)}&per-page=5&${oaParams()}`, stats);
         add((more?.results || []).map(fromOpenAlex));
@@ -1273,7 +1299,7 @@ async function lookup(ref){
   if(!stats.ok) throw new Error("offline");
   { const b0 = best(); if(stats.crFail && !(b0 && b0.s >= 0.85)) throw new Error("crossref-busy"); }
   best();
-  return {best: best(), cands, src: stats.src || {}};
+  return {best: best(), cands, src: stats.src || {}, trail: stats.trail || []};
 }
 // the citation names one venue and the record a clearly different one (e.g. USENIX Security vs NDSS)
 function venueClash(ref, c){
@@ -1999,7 +2025,8 @@ function card(it, i){
     if(["bad","error"].includes(st) && it.sources && Object.keys(it.sources).length){
       const ok = Object.entries(it.sources).filter(([, v]) => v === "ok").map(([k]) => SRC_NAMES[k]);
       const no = Object.entries(it.sources).filter(([, v]) => v !== "ok").map(([k, v]) => `${SRC_NAMES[k]} (${v})`);
-      body += `<div class="sec"><h3>Databases checked</h3><p class="srcline">${ok.length ? `Searched ${esc(ok.join(", "))}.` : ""}${no.length ? ` <span class="srcno">Couldn’t use ${esc(no.join(", "))}, so a real paper could be missing for that reason. Try Check again later${it.sources.openalex && it.sources.openalex !== "ok" ? ", or add a free OpenAlex key under Options" : ""}.</span>` : ""}</p></div>`;
+      const tr = (it.trail || []).length ? `<p class="srcline trailline">OpenAlex search details: ${esc(it.trail.join("; "))}.</p>` : "";
+      body += `<div class="sec"><h3>Databases checked</h3>${tr}<p class="srcline">${ok.length ? `Searched ${esc(ok.join(", "))}.` : ""}${no.length ? ` <span class="srcno">Couldn’t use ${esc(no.join(", "))}, so a real paper could be missing for that reason. Try Check again later${it.sources.openalex && it.sources.openalex !== "ok" ? ", or add a free OpenAlex key under Options" : ""}.</span>` : ""}</p></div>`;
     }
     if(r?.status === "warn" && it.fixedBib){
       const rc = it.useFix && it.fixCheck ? `<div class="recheck ${it.fixCheck}">${
@@ -2107,7 +2134,7 @@ function render(){
 /* ---------- checking ---------- */
 const BTNS = ["#run", "#bibdl", "#recheckflag", "#verifybib", "#csv", "#report", "#hsReport"];
 function reset(it){
-  ["result","error","fixedBib","newKey","changes","useFix","editing","doiBroken","arxivBroken","fixCheck","fixIssues","manual","manualNote","confirming","sources","updates","retraction","concern","corrections","published","usePublished","retractionAck","dupOf","dupKind"].forEach(k => delete it[k]);
+  ["result","error","fixedBib","newKey","changes","useFix","editing","doiBroken","arxivBroken","fixCheck","fixIssues","manual","manualNote","confirming","sources","trail","updates","retraction","concern","corrections","published","usePublished","retractionAck","dupOf","dupKind"].forEach(k => delete it[k]);
 }
 // Run async jobs with at most `n` in flight
 function limiter(n){
@@ -2132,7 +2159,7 @@ async function check(indices){
       const it = items[queue.shift()];
       try{
         const found = await lookup(it);
-        it.result = judge(it, found); it.sources = found.src; prepareFixes();
+        it.result = judge(it, found); it.sources = found.src; it.trail = found.trail; prepareFixes();
         // show the match straight away; retraction and published-version checks follow in the background
         extrasLeft++;
         pending.push(background(() => extras(it)).catch(() => {}).finally(() => { extrasLeft--; renderSoon(); }));
@@ -2604,7 +2631,9 @@ function refContext(i){
   const r = it.result, m = r?.match;
   return [`Reference [${i + 1}]: ${it.raw}`, `Result: ${labelOf(it)}`, r?.issues?.length ? `Notes: ${r.issues.join(" ")}` : "",
     m ? `Matched: ${m.title}${m.year ? " (" + m.year + ")" : ""}, ${m.source}${m.doi ? ", doi " + m.doi : ""}` : "",
-    it.retraction ? `Retraction: ${it.retraction.label} ${it.retraction.date || ""}` : ""].filter(Boolean).join("\n");
+    it.retraction ? `Retraction: ${it.retraction.label} ${it.retraction.date || ""}` : "",
+    it.trail?.length ? `OpenAlex search details: ${it.trail.join("; ")}` : "",
+    it.sources ? `Databases: ${Object.entries(it.sources).map(([k, v]) => SRC_NAMES[k] + " " + v).join(", ")}` : ""].filter(Boolean).join("\n");
 }
 function openBug(i){
   bugRef = Number.isInteger(i) ? i : null;
