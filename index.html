@@ -1222,7 +1222,7 @@ async function lookup(ref){
   const m = mail() ? `mailto=${encodeURIComponent(mail())}` : "";
   const stats = {ok:0, fail:0};
   const cands = [], add = (list, viaId) => list.filter(Boolean).forEach(c => cands.push(viaId ? {...c, viaId:true} : c));
-  const useOA = $("#oakey").value.trim() || !oaBlocked;
+  let useOA = $("#oakey").value.trim() || !oaBlocked;
 
   if(ref.doi){
     const d = await getJSON(`https://api.crossref.org/works/${encodeURIComponent(ref.doi)}?${m}`, stats);
@@ -1246,12 +1246,14 @@ async function lookup(ref){
     const q = (ref.title || ref.raw).slice(0, 250).replace(/[,:;|!?()"“”\[\]{}]/g, " ").replace(/\s+/g, " ").trim();
     // arXiv's own records (DataCite, prefix 10.48550), searched by title words: finds preprints cited without an arXiv number
     const tw = tokens(ref.title || q).filter(w => w.length > 2).slice(0, 12);
+    // OpenAlex search syntax: drop characters that have special meaning inside a quoted phrase
+    const oaPhrase = (ref.title || q).replace(/["“”:()\[\]{}?!*~^\\\/|,;\-–—]/g, " ").replace(/\s+/g, " ").trim().slice(0, 200);
     const dcq = tw.length >= 2 ? `titles.title:(${tw.join(" ")})` : "";
     const [cr, db, s2, oa, dc] = await Promise.all([
       getJSON(`https://api.crossref.org/works?query.bibliographic=${encodeURIComponent(ref.raw.slice(0,400))}&rows=5&select=DOI,title,subtitle,author,issued,published,container-title,publisher,URL,volume,issue,page,type,updated-by${m ? "&" + m : ""}`, stats),
       dblpDown >= 2 ? null : getJSON(`https://dblp.org/search/publ/api?q=${encodeURIComponent(q)}&format=json&h=5`, stats),
       s2Throttled >= 3 ? null : getJSON(`https://api.semanticscholar.org/graph/v1/paper/search?query=${encodeURIComponent(q)}&limit=5&fields=title,year,authors,venue,externalIds,journal,publicationTypes`, stats),
-      useOA ? getJSON(`https://api.openalex.org/works?filter=title.search:${encodeURIComponent(q.replace(/[,|]/g, " ").slice(0, 200))}&per-page=5&${oaParams()}`, stats) : null,
+      useOA ? getJSON(`https://api.openalex.org/works?search.title=${encodeURIComponent('"' + oaPhrase + '"')}&per-page=5&${oaParams()}`, stats) : null,
       dcq ? getJSON(`https://api.datacite.org/dois?query=${encodeURIComponent(dcq)}&prefix=10.48550&page%5Bsize%5D=5`, stats) : null
     ]);
     add((cr?.message?.items||[]).map(fromCrossref));
@@ -1259,11 +1261,25 @@ async function lookup(ref){
     add((s2?.data||[]).map(fromS2));
     add((oa?.results||[]).map(fromOpenAlex));
     add((dc?.data||[]).map(fromDataCite));
+    // OpenAlex holds many papers CrossRef doesn't (JMLR, USENIX, OpenReview…): widen the search step by step
+    if(useOA && oaPhrase.split(" ").length >= 2){
+      for(const param of ["search.title", "search"]){
+        if(best()?.s >= 0.85 || !(useOA = $("#oakey").value.trim() || !oaBlocked)) break;
+        const more = await getJSON(`https://api.openalex.org/works?${param}=${encodeURIComponent(oaPhrase)}&per-page=5&${oaParams()}`, stats);
+        add((more?.results || []).map(fromOpenAlex));
+      }
+    }
   }
   if(!stats.ok) throw new Error("offline");
   { const b0 = best(); if(stats.crFail && !(b0 && b0.s >= 0.85)) throw new Error("crossref-busy"); }
   best();
   return {best: best(), cands, src: stats.src || {}};
+}
+// the citation names one venue and the record a clearly different one (e.g. USENIX Security vs NDSS)
+function venueClash(ref, c){
+  const cv = citedVenue(ref), fv = c.venue || "";
+  if(!cv || !fv || PREPRINT_RE.test(cv) || PREPRINT_RE.test(fv)) return false;
+  return Math.min(coverage(cv, fv), coverage(fv, cv)) < 0.5;
 }
 function judge(ref, {best, cands}){
   const issues = [];
@@ -1279,7 +1295,9 @@ function judge(ref, {best, cands}){
     // Same authors and year but a different title: usually a paper renamed in a later version
     const renamed = cands
       .map(c => ({c, a:authorMatch(ref, c), t:Math.max(coverage(ref.title || ref.raw, c.title), coverage(c.title, ref.raw))}))
-      .filter(x => x.a.first && x.a.ratio >= 0.5 && (x.c.viaId || x.t >= 0.3) &&
+      // without a DOI or arXiv number linking them, demand real evidence it's the same work renamed,
+      // not just another paper by the same group on a similar topic
+      .filter(x => x.a.first && (x.c.viaId ? x.a.ratio >= 0.5 : (x.t >= 0.5 && x.a.ratio >= 0.75 && !venueClash(ref, x.c))) &&
                    (!ref.year || !x.c.year || Math.abs(+ref.year - +x.c.year) <= 1))
       .sort((x, y) => (y.c.viaId - x.c.viaId) || (y.a.ratio + y.t) - (x.a.ratio + x.t))[0];
     if(renamed){
