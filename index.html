@@ -88,18 +88,62 @@ kbd{font:500 .7rem var(--mono);padding:.08rem .35rem;border-radius:5px;border:1p
 @media (max-width:860px){.navlinks{display:none}}
 @media (max-width:480px){.navcta{display:none}}
 
-.hero-inner{position:relative;z-index:2;max-width:960px;margin:0 auto;padding:3.5rem 1.5rem 5.5rem;text-align:center}
+.hero-inner{position:relative;z-index:2;max-width:960px;margin:0 auto;padding:clamp(.8rem,3vh,3.5rem) 1.5rem clamp(3rem,7vh,5.5rem);text-align:center}
 .eyebrow{display:inline-flex;align-items:center;gap:.5rem;padding:.38rem .95rem;border-radius:999px;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.22);font-size:.85rem;font-weight:600;backdrop-filter:blur(6px)}
 .eyebrow i{width:7px;height:7px;border-radius:50%;background:#7CF0B5;box-shadow:0 0 0 4px rgba(124,240,181,.2)}
-h1{margin:1.4rem 0 0;font-weight:600;font-size:clamp(3.2rem,9.5vw,7rem);line-height:.96;letter-spacing:-.035em;color:#fff;text-wrap:balance}
+h1{margin:clamp(.7rem,2vh,1.4rem) 0 0;font-weight:600;font-size:clamp(2.6rem,min(9.5vw,12vh),7rem);line-height:.96;letter-spacing:-.035em;color:#fff;text-wrap:balance}
 h1 .soft{background:linear-gradient(100deg,#CDBDFF 0%,#FFFFFF 70%);-webkit-background-clip:text;background-clip:text;color:transparent}
-.lede{max-width:620px;margin:1.3rem auto 0;font-size:clamp(1.02rem,1.6vw,1.2rem);color:rgba(255,255,255,.84)}
+.lede{max-width:780px;margin:clamp(.6rem,1.8vh,1.3rem) auto 0;font-size:clamp(1rem,min(1.6vw,2.5vh),1.2rem);line-height:1.5;color:rgba(255,255,255,.84)}
 
+/* results mode: input on the left, integrity score on the right */
+.hero-score{display:none}
+.hero.has-results .hero-inner{max-width:1280px;display:grid;grid-template-columns:minmax(0,1fr) minmax(380px,1fr);gap:2.2rem;align-items:start;text-align:left;padding:2rem 1.5rem 3.5rem}
+.hero.has-results .hero-main{min-width:0}
+.hero.has-results h1{font-size:clamp(2.4rem,4.6vw,3.8rem);margin-top:.9rem}
+.hero.has-results .lede,.hero.has-results .trust,.hero.has-results .sources,.hero.has-results .floaters{display:none}
+.hero.has-results .prompt{margin:1.4rem 0 0;max-width:none}
+.hero.has-results .announce{margin:0}
+.hero.has-results .prompt-bar .detect{order:10;width:100%;margin:.15rem 0 0 .35rem}
+.hero.has-results .hero-score{display:flex;flex-direction:column;gap:.5rem;margin-top:.5rem;padding:2rem 2rem 1.8rem;border-radius:28px;color:#fff;
+  background:radial-gradient(90% 70% at 100% 0%,rgba(139,108,255,.55) 0%,transparent 60%),radial-gradient(80% 80% at 0% 100%,rgba(43,196,232,.45) 0%,transparent 55%),rgba(255,255,255,.08);
+  border:1px solid rgba(255,255,255,.24);backdrop-filter:blur(10px);box-shadow:0 30px 80px -30px rgba(10,0,60,.7);animation:hsIn .5s cubic-bezier(.2,.8,.2,1)}
+/* green accent along the bottom edge of the integrity box */
+.hero.has-results .hero-score{position:relative;overflow:hidden;box-shadow:0 30px 80px -30px rgba(10,0,60,.7)}
+.hero.has-results .hero-score::after{content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;
+  border:solid transparent;border-width:0 0 6px 0;
+  /* solid green, with a narrow shine gliding right to left (the green stays visible all along) */
+  background:linear-gradient(100deg,transparent 46%,rgba(225,255,240,.95) 50%,transparent 54%) 0 0/300% 100% no-repeat border-box,
+             linear-gradient(90deg,#34D27B,#4ADE8A 50%,#34D27B) border-box;
+  -webkit-mask:linear-gradient(#000 0 0) padding-box,linear-gradient(#000 0 0) border-box;-webkit-mask-composite:xor;
+  mask:linear-gradient(#000 0 0) padding-box exclude,linear-gradient(#000 0 0) border-box;
+  animation:hsShine 3.2s ease-in-out infinite}
+@keyframes hsShine{0%,30%{background-position:0% 0,0 0}100%{background-position:100% 0,0 0}}
+@keyframes hsIn{from{opacity:0;transform:translateX(24px)}to{opacity:1;transform:none}}
+.hs-lbl{font-size:.9rem;font-weight:500;color:rgba(255,255,255,.82)}
+.hs-big{font-weight:600;font-size:clamp(4.4rem,8vw,6.8rem);line-height:.92;letter-spacing:-.05em;background:linear-gradient(180deg,#fff 35%,rgba(255,255,255,.6));-webkit-background-clip:text;background-clip:text;color:transparent}
+.hs-cap{font-size:.95rem;font-weight:500;color:rgba(255,255,255,.9)}
+.hs-meter{margin-top:.5rem}
+.hs-counts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:.45rem;margin-top:.7rem}
+.hs-counts span{display:flex;align-items:center;gap:.55rem;padding:.75rem .9rem;border-radius:14px;background:rgba(255,255,255,.1);font-size:.95rem;color:rgba(255,255,255,.92)}
+.hs-counts b{font-weight:600;font-size:1.3rem;color:#fff;margin-left:auto}
+.hs-counts i{width:9px;height:9px;border-radius:50%;flex:none}
+.hs-actions{display:grid;grid-template-columns:1fr auto;gap:.6rem;margin-top:.9rem}
+.hs-actions .btn{width:100%;white-space:nowrap}
+@media (max-width:480px){.hs-actions{grid-template-columns:1fr}}
+#hsView svg{transition:transform .25s cubic-bezier(.2,.8,.2,1)}
+#hsView:hover svg{transform:translateY(3px)}
+/* the lower score card is no longer needed: the summary panel takes the full width */
+.hero.has-results ~ main .scorecard{display:none}
+.hero.has-results ~ main .sumgrid{grid-template-columns:1fr}
+@media (max-width:980px){
+  .hero.has-results .hero-inner{grid-template-columns:1fr;gap:1.2rem}
+  .hero.has-results .hero-score{margin-top:0}
+}
 /* prompt box */
-.prompt{margin:2.4rem auto 0;max-width:820px;padding:9px;border-radius:28px;background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.26);backdrop-filter:blur(10px);text-align:left;box-shadow:0 30px 80px -30px rgba(10,0,60,.65)}
+.prompt{margin:clamp(1rem,3vh,2.4rem) auto 0;max-width:820px;padding:9px;border-radius:28px;background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.26);backdrop-filter:blur(10px);text-align:left;box-shadow:0 30px 80px -30px rgba(10,0,60,.65)}
 .prompt-card{background:var(--surface);color:var(--text);border-radius:21px;overflow:hidden}
 .drop{position:relative}
-textarea#input{display:block;width:100%;min-height:170px;max-height:46vh;resize:vertical;padding:1.2rem 1.35rem .6rem;border:0;background:transparent;color:var(--ink);font:16px/1.65 var(--sans)}
+textarea#input{display:block;width:100%;min-height:clamp(96px,17vh,170px);max-height:46vh;resize:vertical;padding:1.2rem 1.35rem .6rem;border:0;background:transparent;color:var(--ink);font:16px/1.65 var(--sans)}
 textarea#input::placeholder{color:var(--muted)}
 textarea#input:focus{outline:none}
 .drop-hint{position:absolute;inset:8px;display:none;place-items:center;border:2px dashed var(--accent);border-radius:16px;background:color-mix(in srgb,var(--accent-soft) 94%,transparent);color:var(--accent);font-weight:700;pointer-events:none}
@@ -134,6 +178,8 @@ details.opts[open] summary svg{transform:rotate(90deg)}
 .sources span{display:inline-flex;align-items:center;gap:.45rem}
 .sources svg{width:16px;height:16px;opacity:.8}
 
+/* live AI network behind the hero */
+.netbg{position:absolute;inset:0;z-index:0;pointer-events:none;display:block}
 /* floating decorative reference cards */
 .floaters{position:absolute;inset:0;z-index:1;pointer-events:none}
 .float{position:absolute;width:250px;padding:14px 15px;border-radius:16px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.16);color:rgba(255,255,255,.78);font-size:11.5px;line-height:1.45;transform:rotate(var(--r,0deg));animation:drift 11s ease-in-out infinite;animation-delay:var(--d,0s)}
@@ -143,6 +189,7 @@ details.opts[open] summary svg{transform:rotate(90deg)}
 .fp.ok{background:rgba(124,240,181,.22);color:#B7F7D6} .fp.fix{background:rgba(106,211,232,.22);color:#BDEFF8} .fp.ret{background:rgba(255,120,110,.28);color:#FFD0CB} .fp.warn{background:rgba(242,196,107,.25);color:#FBE3AE}
 @keyframes drift{0%,100%{transform:translateY(0) rotate(var(--r,0deg))}50%{transform:translateY(-12px) rotate(var(--r,0deg))}}
 @media (max-width:1100px){.float.f3,.float.f4{display:none}}
+@media (max-height:880px){.float.f2,.float.f4{display:none}}
 @media (max-width:860px){.floaters{display:none}}
 
 /* ---------- sections ---------- */
@@ -389,7 +436,12 @@ mark.add{background:var(--ok-bg);color:var(--ok);border-radius:3px;padding:0 .1e
 #run:hover:not(:disabled) svg{transform:translateY(-3px)}
 #bibdl:hover:not(:disabled) svg{transform:translateY(2px)}
 #report:hover:not(:disabled) svg{transform:rotate(-8deg) scale(1.1)}
-#report:hover:not(:disabled){background:var(--accent);color:var(--accent-ink)!important;border-color:var(--accent)!important}
+/* Verification report on the results panel: solid indigo, NEW tag kept */
+#report.btn{background:#4338CA;border-color:#4338CA;color:#FFFFFF;box-shadow:0 8px 20px -10px rgba(67,56,202,.85)}
+#report.btn:hover:not(:disabled){background:#3730A3;border-color:#3730A3;color:#FFFFFF;box-shadow:0 14px 28px -12px rgba(55,48,163,.95),0 0 0 4px rgba(99,102,241,.2)}
+/* Report in the integrity box: green, matching its border */
+#hsReport.btn{background:linear-gradient(120deg,#5BD495 0%,#34C77B 100%);border-color:transparent;color:#053D22;font-weight:600;box-shadow:0 8px 20px -10px rgba(52,199,123,.8)}
+#hsReport.btn:hover:not(:disabled){background:linear-gradient(120deg,#4ACB88 0%,#24A862 100%);border-color:transparent;color:#032B17;box-shadow:0 14px 28px -12px rgba(36,168,98,.9),0 0 0 4px rgba(94,224,161,.25)}
 .btn[data-act="recheck"]:hover:not(:disabled) svg,#recheckflag:hover svg{transform:rotate(-180deg)}
 .btn.vouch:hover:not(:disabled){background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
 /* prompt-bar controls */
@@ -574,15 +626,15 @@ dialog.dlg[open]{animation:dlgin .28s cubic-bezier(.2,.8,.2,1)}
       <a class="btn light navcta" href="#checker">Check references</a>
     </div>
   </nav>
-
+  <canvas class="netbg" aria-hidden="true"></canvas>
   <div class="floaters" aria-hidden="true">
-    <div class="float f1" style="left:3%;top:120px;--r:-5deg;--d:0s"><span class="fp ok">Verified</span><b>Deep residual learning for image recognition</b><em>doi.org/10.1109/CVPR.2016.90</em></div>
     <div class="float f2" style="left:1.5%;top:600px;--r:4deg;--d:-3s"><span class="fp ret">Retracted</span><b>Ileal-lymphoid-nodular hyperplasia, non-specific colitis…</b><em>Retracted on 6 February 2010</em></div>
-    <div class="float f3" style="right:4%;top:110px;--r:5deg;--d:-6s"><span class="fp fix">Corrected</span><b>BERT: Pre-training of deep bidirectional transformers</b><em>Year 2018 → 2019, venue fixed</em></div>
+    
     <div class="float f4" style="right:3%;top:470px;--r:-4deg;--d:-2s"><span class="fp warn">Now published</span><b>Causal inference Q-network</b><em>AAAI 2022 version available</em></div>
   </div>
 
   <div class="hero-inner" id="checker">
+   <div class="hero-main">
     <a class="announce" href="#features"><span class="newtag">New</span><span>Retraction alerts<span class="ann-long"> and PDF verification reports</span></span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
     <h1><span class="soft">Every reference,</span><br>verified.</h1>
     <p class="lede">Paste a reference list or drop in a paper. Each entry is checked against five scholarly databases, retractions are flagged, and mistakes come back as a corrected .bib.</p>
@@ -635,6 +687,20 @@ dialog.dlg[open]{animation:dlgin .28s cubic-bezier(.2,.8,.2,1)}
     <div class="sources" aria-label="Databases checked">
       <span>Crossref</span><span>DBLP</span><span>Semantic Scholar</span><span>arXiv</span><span>OpenAlex</span><span>Retraction Watch</span>
     </div>
+   </div>
+   <aside class="hero-score" id="heroScore" aria-live="polite" aria-label="Integrity score">
+     <span class="hs-lbl">Integrity score</span>
+     <span class="hs-big" id="hsScore">…</span>
+     <span class="hs-cap" id="hsCap">Checking your references…</span>
+     <div class="meter hs-meter" id="hsMeter"></div>
+     <div class="hs-counts" id="hsCounts"></div>
+     <div class="hs-actions">
+       <button class="btn light" id="hsView">View all results
+         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M6 13l6 6 6-6"/></svg></button>
+       <button class="btn glass" id="hsReport">
+         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H6a1 1 0 0 0-1 1v16a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V8z"/><path d="M14 3v5h5M8.5 13h7M8.5 17h5"/></svg>Report</button>
+     </div>
+   </aside>
   </div>
 </header>
 
@@ -667,7 +733,7 @@ dialog.dlg[open]{animation:dlgin .28s cubic-bezier(.2,.8,.2,1)}
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v12M7 11l5 5 5-5M5 20h14"/></svg>
               Download updated .bib
             </button>
-            <button class="btn sm" id="report" style="border-color:color-mix(in srgb,var(--accent) 50%,var(--line));color:var(--accent)">
+            <button class="btn sm" id="report">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H6a1 1 0 0 0-1 1v16a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V8z"/><path d="M14 3v5h5M8.5 13h7M8.5 17h5"/></svg>
               Verification report
               <span class="newtag">New</span>
@@ -1241,8 +1307,13 @@ function judge(ref, {best, cands}){
   }
   const venueNote = best.venue && norm(best.venue).length > 3 && coverage(best.venue, ref.raw) < 0.5 && !/arxiv|corr|ssrn|biorxiv|medrxiv/i.test(best.venue)
     ? `The database lists the venue as ${best.venue}. This is often just an abbreviation or a different name for the same venue.` : "";
-  if(!issues.length) return {status:"ok", label:"Verified", match:best, issues: venueNote ? [venueNote] : []};
-  if(venueNote) issues.push(venueNote);
+  // same title apart from spacing, e.g. "SupportingTrust" vs "Supporting Trust": still the same paper, but say how it's officially written
+  const sq = t => norm(t).replace(/ /g, "");
+  const spacingNote = ref.title && best.title && norm(ref.title) !== norm(best.title) && sq(ref.title) === sq(best.title)
+    ? `The publisher writes the title as “${best.title}”, with different spacing. It’s the same paper; use the official form if your style guide requires exact titles.` : "";
+  const notes = [spacingNote, venueNote].filter(Boolean);
+  if(!issues.length) return {status:"ok", label:"Verified", match:best, issues: notes};
+  issues.push(...notes);
   return {status:"warn", label:"Check details", match:best, issues};
 }
 
@@ -1956,6 +2027,7 @@ function card(it, i){
 }
 
 function render(){
+  document.querySelector(".hero").classList.toggle("has-results", items.length > 0);
   $("#intro").hidden = items.length > 0;
   $("#out").hidden = items.length === 0;
   if(!items.length) return;
@@ -1967,8 +2039,14 @@ function render(){
   const flags = {dup: items.filter(it => it.dupOf !== undefined).length, pub: items.filter(it => it.published).length, unc: citeInfo ? citeInfo.uncited.length : 0};
   const total = items.length, done = total - counts.pending;
   $("#meter").innerHTML = ["ok","manual","fixed","warn","bad","error","retracted","pending"].map(k => `<span class="m-${k}" style="width:${100 * counts[k] / total}%"></span>`).join("");
+  $("#hsMeter").innerHTML = $("#meter").innerHTML;
   $("#meter").setAttribute("aria-label", `${counts.ok} verified, ${counts.manual} verified manually, ${counts.fixed} corrected, ${counts.warn} need checking, ${counts.bad} not found, ${counts.pending} pending`);
   const goodN = counts.ok + counts.fixed + counts.manual;
+  // hero score panel
+  $("#hsScore").textContent = done ? Math.round(100 * goodN / total) + "%" : "…";
+  $("#hsCap").textContent = running ? (done < total ? `Checking ${done} of ${total}…` : "Checking retractions and newer versions…") : `${goodN} of ${total} references verified or corrected`;
+  const hsRows = [["Verified", goodN, "#5EE0A1"], ["Need review", counts.warn, "#F5C451"], ["Not found", counts.bad + counts.error, "#FF7A6E"], ["Retracted", counts.retracted, "#FF3B30"]];
+  $("#hsCounts").innerHTML = hsRows.map(([l, n, c]) => `<span><i style="background:${c}"></i>${l}<b>${n}</b></span>`).join("");
   $("#score").textContent = done ? Math.round(100 * goodN / total) + "%" : "…";
   $("#scorecap").textContent = done ? `${goodN} of ${total} references verified or corrected` : "Checking your references…";
   $("#sumtitle").textContent = !running ? `${total} reference${total === 1 ? "" : "s"} checked`
@@ -2009,7 +2087,7 @@ function render(){
 }
 
 /* ---------- checking ---------- */
-const BTNS = ["#run", "#bibdl", "#recheckflag", "#verifybib", "#csv", "#report"];
+const BTNS = ["#run", "#bibdl", "#recheckflag", "#verifybib", "#csv", "#report", "#hsReport"];
 function reset(it){
   ["result","error","fixedBib","newKey","changes","useFix","editing","doiBroken","arxivBroken","fixCheck","fixIssues","manual","manualNote","confirming","sources","updates","retraction","concern","corrections","published","usePublished","retractionAck","dupOf","dupKind"].forEach(k => delete it[k]);
 }
@@ -2089,7 +2167,7 @@ async function run(){
   items = parsed; filter = "all"; query = ""; $("#q").value = "";
   if(!mail() && parsed.length >= 8) setTimeout(() => toast("Tip: add your email under Options to check up to 3× faster"), 400);
   render();
-  $("#results").scrollIntoView({behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth", block: "start"});
+  if(scrollY > 200) document.querySelector(".hero").scrollIntoView({behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth"});
   await check(items.map((_, i) => i));
 }
 
@@ -2294,6 +2372,197 @@ function jumpTo(i){
 }
 $("#cites").addEventListener("click", e => { const b = e.target.closest("[data-jump]"); if(b) jumpTo(+b.dataset.jump); });
 $("#report").addEventListener("click", openReport);
+
+/* ---------- animated AI network in the hero ---------- */
+(function netBackground(){
+  const hero = document.querySelector(".hero"), cv = document.querySelector(".netbg");
+  if(!hero || !cv || !cv.getContext) return;
+  const ctx = cv.getContext("2d");
+  const still = matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const LINK = 135, MOUSE = 175;
+  let W = 0, H = 0, nodes = [], signals = [], ripples = [], mouse = {x: -1e4, y: -1e4, on: false};
+  let visible = true, raf = 0, lastSignal = 0, qubits = [];
+  // quantum layer: qubits with orbitals, in entangled pairs, kept near the sides (away from the text)
+  function makeQubits(){
+    const n = W < 700 ? 2 : 4; qubits = [];
+    for(let i = 0; i < n; i++){
+      const left = n === 2 ? true : i < n / 2;     // each entangled pair stays on one side, never across the text
+      const x0 = left ? rnd(.04, .2) * W : rnd(.8, .96) * W;
+      qubits.push({x: x0, y: rnd(.18, .85) * H, vx: rnd(-.18, .18), vy: rnd(-.18, .18), R: rnd(16, 24), tilt: rnd(0, 3.14), ph: rnd(0, 6.3), spin: rnd(.6, 1.1) * (Math.random() < .5 ? -1 : 1), left, collapse: 0});
+    }
+    cv.qubits = qubits;
+  }
+  const rnd = (a, b) => a + Math.random() * (b - a);
+  const make = () => ({x: rnd(0, W), y: rnd(0, H), vx: rnd(-.32, .32), vy: rnd(-.32, .32), r: rnd(1.2, 2.6), hub: Math.random() < .13, ph: rnd(0, 6.3)});
+  function size(){
+    const r = hero.getBoundingClientRect(), dpr = Math.min(1.5, devicePixelRatio || 1);   // a soft background needn't be drawn at full retina sharpness
+    W = r.width; H = r.height;
+    cv.width = Math.round(W * dpr); cv.height = Math.round(H * dpr);
+    cv.style.width = W + "px"; cv.style.height = H + "px";
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    const want = Math.round(Math.max(28, Math.min(W < 700 ? 42 : 110, W * H / 12500)));
+    while(nodes.length < want) nodes.push(make());
+    nodes.length = want;
+    nodes.forEach(n => { n.x = Math.min(n.x, W); n.y = Math.min(n.y, H); });
+    if(!qubits.length || (W < 700) !== (qubits.length === 2)) makeQubits();
+    qubits.forEach(q => { q.x = Math.min(q.x, W - 30); q.y = Math.min(q.y, H - 30); });
+  }
+  // fainter in the middle column, where the headline and box sit
+  const calm = x => .55 + .45 * Math.min(1, Math.abs(x - W / 2) / (W * .36));
+  function frame(t){
+    ctx.clearRect(0, 0, W, H);
+    // move
+    for(const n of nodes){
+      if(!still){
+        const dx = mouse.x - n.x, dy = mouse.y - n.y, d = Math.hypot(dx, dy);
+        if(mouse.on && d < MOUSE && d > 1){ n.vx += dx / d * .012; n.vy += dy / d * .012; }
+        const sp = Math.hypot(n.vx, n.vy), max = .9;
+        if(sp > max){ n.vx *= max / sp; n.vy *= max / sp; }
+        n.vx *= .995; n.vy *= .995;
+        if(sp < .12){ n.vx += rnd(-.02, .02); n.vy += rnd(-.02, .02); }
+        n.x += n.vx; n.y += n.vy;
+        if(n.x < 0 || n.x > W) n.vx *= -1;
+        if(n.y < 0 || n.y > H) n.vy *= -1;
+      }
+    }
+    // links between nearby nodes, batched into a few brightness levels (far fewer draw calls)
+    const pairs = [], LEVELS = 5, buckets = {lilac: [...Array(LEVELS)].map(() => []), mint: [...Array(LEVELS)].map(() => [])};
+    for(let i = 0; i < nodes.length; i++){
+      const a = nodes[i];
+      for(let j = i + 1; j < nodes.length; j++){
+        const b = nodes[j], dx = a.x - b.x, dy = a.y - b.y;
+        if(dx > LINK || dx < -LINK || dy > LINK || dy < -LINK) continue;
+        const d = Math.hypot(dx, dy);
+        if(d < LINK){
+          pairs.push([a, b]);
+          const mx = (a.x + b.x) / 2, my = (a.y + b.y) / 2;
+          const near = mouse.on && Math.hypot(mx - mouse.x, my - mouse.y) < MOUSE;
+          const al = (1 - d / LINK) * calm(mx);
+          buckets[near ? "mint" : "lilac"][Math.min(LEVELS - 1, Math.floor(al * LEVELS))].push(a, b);
+        }
+      }
+    }
+    for(const [kind, rgb, top, lw] of [["lilac", "200,190,255", .42, 1], ["mint", "124,240,181", .85, 1.5]]){
+      ctx.lineWidth = lw;
+      buckets[kind].forEach((list, lv) => {
+        if(!list.length) return;
+        ctx.strokeStyle = `rgba(${rgb},${((lv + .5) / LEVELS) * top})`; ctx.beginPath();
+        for(let k = 0; k < list.length; k += 2){ ctx.moveTo(list[k].x, list[k].y); ctx.lineTo(list[k + 1].x, list[k + 1].y); }
+        ctx.stroke();
+      });
+    }
+    // links to the cursor
+    if(mouse.on) for(const n of nodes){
+      const d = Math.hypot(n.x - mouse.x, n.y - mouse.y);
+      if(d < MOUSE){
+        ctx.strokeStyle = `rgba(124,240,181,${(1 - d / MOUSE) * .9})`; ctx.lineWidth = 1.3;
+        ctx.beginPath(); ctx.moveTo(n.x, n.y); ctx.lineTo(mouse.x, mouse.y); ctx.stroke();
+      }
+    }
+    // data signals travelling along links
+    if(!still && pairs.length && t - lastSignal > 260){
+      lastSignal = t;
+      const [a, b] = pairs[Math.floor(Math.random() * pairs.length)];
+      signals.push({a, b, t0: t, dur: rnd(700, 1300)});
+    }
+    signals = signals.filter(sg => t - sg.t0 < sg.dur);
+    for(const sg of signals){
+      const k = (t - sg.t0) / sg.dur, x = sg.a.x + (sg.b.x - sg.a.x) * k, y = sg.a.y + (sg.b.y - sg.a.y) * k;
+      const tx = sg.a.x + (sg.b.x - sg.a.x) * Math.max(0, k - .18), ty = sg.a.y + (sg.b.y - sg.a.y) * Math.max(0, k - .18);
+      const g = ctx.createLinearGradient(tx, ty, x, y); g.addColorStop(0, "rgba(124,240,181,0)"); g.addColorStop(1, "rgba(124,240,181,.85)");
+      ctx.strokeStyle = g; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(tx, ty); ctx.lineTo(x, y); ctx.stroke();
+      ctx.fillStyle = "#C9FFE4"; ctx.beginPath(); ctx.arc(x, y, 2.2, 0, 6.283); ctx.fill();
+    }
+    // quantum layer
+    for(const q of qubits){
+      if(!still){
+        q.x += q.vx; q.y += q.vy;
+        const lo = q.left ? .02 * W : .76 * W, hi = q.left ? .24 * W : .98 * W;
+        if(q.x < lo || q.x > hi) q.vx *= -1;
+        if(q.y < .1 * H || q.y > .92 * H) q.vy *= -1;
+      }
+      const near = mouse.on && Math.hypot(q.x - mouse.x, q.y - mouse.y) < q.R * 3.2;
+      q.collapse += ((near ? 1 : 0) - q.collapse) * .12;          // measurement: orbitals collapse while hovered
+    }
+    // entanglement: a waving link between each pair, with photons travelling along it
+    for(let i = 0; i + 1 < qubits.length; i += 2){
+      const a = qubits[i], b = qubits[i + 1];
+      const dx = b.x - a.x, dy = b.y - a.y, L = Math.hypot(dx, dy) || 1, nx = -dy / L, ny = dx / L;
+      const amp = 9 * (1 - .7 * Math.max(a.collapse, b.collapse)), steps = 48;
+      ctx.lineWidth = 1.2;
+      for(const [off, alpha] of [[0, .42], [Math.PI, .22]]){
+        ctx.strokeStyle = `rgba(230,168,255,${alpha})`; ctx.beginPath();
+        for(let k = 0; k <= steps; k++){
+          const u = k / steps, w = Math.sin(u * Math.PI * 6 - t / 260 + off) * amp * Math.sin(u * Math.PI);
+          const x = a.x + dx * u + nx * w, y = a.y + dy * u + ny * w;
+          k ? ctx.lineTo(x, y) : ctx.moveTo(x, y);
+        }
+        ctx.stroke();
+      }
+      if(!still) for(const f of [0, .5]){
+        const u = ((t / 2600) + f) % 1, w = Math.sin(u * Math.PI * 6 - t / 260) * amp * Math.sin(u * Math.PI);
+        const x = a.x + dx * u + nx * w, y = a.y + dy * u + ny * w;
+        ctx.fillStyle = "rgba(255,214,250,.95)"; ctx.beginPath(); ctx.arc(x, y, 2, 0, 6.283); ctx.fill();
+      }
+    }
+    // qubits: nucleus, three orbitals with electrons; when measured they collapse to one bright ring
+    for(const q of qubits){
+      const c = q.collapse, spinT = still ? 0 : t / 1000 * q.spin;
+      const glow = ctx.createRadialGradient(q.x, q.y, 0, q.x, q.y, q.R * 1.8);
+      glow.addColorStop(0, `rgba(143,227,255,${.22 + .3 * c})`); glow.addColorStop(1, "rgba(143,227,255,0)");
+      ctx.fillStyle = glow; ctx.beginPath(); ctx.arc(q.x, q.y, q.R * 1.8, 0, 6.283); ctx.fill();
+      for(let o = 0; o < 3; o++){
+        const ang = q.tilt + o * Math.PI / 3 + (still ? 0 : t / 9000), ry = q.R * .38 * (1 - c) + q.R * c;
+        ctx.save(); ctx.translate(q.x, q.y); ctx.rotate(ang * (1 - c));
+        ctx.strokeStyle = `rgba(170,225,255,${(.5 + .45 * c) * (o === 0 || c < .5 ? 1 : 1 - c)})`; ctx.lineWidth = 1 + c;
+        ctx.beginPath(); ctx.ellipse(0, 0, q.R, ry, 0, 0, 6.283); ctx.stroke();
+        const e = spinT * (1 + o * .35) + q.ph + o * 2.1;
+        ctx.fillStyle = "#E6F8FF"; ctx.beginPath(); ctx.arc(Math.cos(e) * q.R, Math.sin(e) * ry, 2.1, 0, 6.283); ctx.fill();
+        ctx.restore();
+      }
+      ctx.fillStyle = c > .3 ? `rgba(124,240,181,${.7 + .3 * c})` : "#B9E9FF";
+      ctx.beginPath(); ctx.arc(q.x, q.y, 3.4 + 1.6 * c, 0, 6.283); ctx.fill();
+      if(c > .05){ ctx.strokeStyle = `rgba(124,240,181,${c * .55})`; ctx.lineWidth = 1.5; ctx.beginPath(); ctx.arc(q.x, q.y, q.R * (1.35 + .25 * Math.sin(t / 160)), 0, 6.283); ctx.stroke(); }
+    }
+    // nodes, with pulsing hubs
+    for(const n of nodes){
+      const c = calm(n.x);
+      if(n.hub){
+        const pulse = still ? .5 : (Math.sin(t / 700 + n.ph) + 1) / 2;
+        ctx.fillStyle = `rgba(143,211,255,${(.18 + .24 * pulse) * c})`;
+        ctx.beginPath(); ctx.arc(n.x, n.y, n.r + 5 + pulse * 5, 0, 6.283); ctx.fill();
+        ctx.fillStyle = `rgba(160,220,255,${.95 * c})`;
+        ctx.beginPath(); ctx.arc(n.x, n.y, n.r + 1.6, 0, 6.283); ctx.fill();
+      } else {
+        ctx.fillStyle = `rgba(236,232,255,${.92 * c})`;
+        ctx.beginPath(); ctx.arc(n.x, n.y, n.r, 0, 6.283); ctx.fill();
+      }
+    }
+    // click ripples
+    ripples = ripples.filter(r => t - r.t0 < 1100);
+    for(const r of ripples){
+      const k = (t - r.t0) / 1100;
+      ctx.strokeStyle = `rgba(124,240,181,${(1 - k) * .7})`; ctx.lineWidth = 2;
+      ctx.beginPath(); ctx.arc(r.x, r.y, 12 + k * 220, 0, 6.283); ctx.stroke();
+    }
+    if(!still && visible) raf = requestAnimationFrame(frame);
+  }
+  function start(){ cancelAnimationFrame(raf); if(still) frame(0); else raf = requestAnimationFrame(frame); }
+  size(); start();
+  new ResizeObserver(() => { size(); if(still) frame(0); }).observe(hero);
+  if("IntersectionObserver" in window) new IntersectionObserver(([e]) => { const was = visible; visible = e.isIntersecting && !document.hidden; if(visible && !was) start(); }).observe(hero);
+  document.addEventListener("visibilitychange", () => { const was = visible; visible = !document.hidden; if(visible && !was) start(); });
+  hero.addEventListener("pointermove", e => { const r = hero.getBoundingClientRect(); mouse.x = e.clientX - r.left; mouse.y = e.clientY - r.top; mouse.on = true; });
+  hero.addEventListener("pointerleave", () => { mouse.on = false; mouse.x = mouse.y = -1e4; });
+  hero.addEventListener("pointerdown", e => {
+    if(still || e.target.closest("textarea, input, button, a, label, details, .prompt")) return;
+    const r = hero.getBoundingClientRect(), x = e.clientX - r.left, y = e.clientY - r.top;
+    ripples.push({x, y, t0: performance.now()});
+    for(const n of nodes){ const d = Math.hypot(n.x - x, n.y - y); if(d < 220 && d > 1){ n.vx += (n.x - x) / d * 1.6; n.vy += (n.y - y) / d * 1.6; } }
+  });
+})();
+$("#hsReport").addEventListener("click", openReport);
+$("#hsView").addEventListener("click", () => $("#results").scrollIntoView({behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth", block: "start"}));
 
 /* ---------- feedback ---------- */
 const BUG_EMAIL = "a.tariq@newuu.uz";   // where feedback is sent: change this one line to use another address
